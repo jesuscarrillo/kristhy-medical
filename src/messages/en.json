@@ -1,0 +1,136 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Dr. Kristhy Karina Moreno Molina",
+    "tagline": "Comprehensive, human-centered care for every stage of your gynecological health.",
+    "badge": "12+ years in medicine",
+    "badge_secondary": "ULA-certified specialist",
+    "cta_primary": "Book an appointment",
+    "cta_secondary": "Learn more",
+    "experience": "years of experience",
+    "patients": "Patients cared for"
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Comprehensive care for every stage of your gynecological health",
+    "items": {
+      "prenatal": {
+        "title": "Prenatal Care",
+        "description": "Thorough monitoring of your pregnancy with regular checkups, education, and empathetic support so you experience a safe and calm journey to motherhood."
+      },
+      "highRisk": {
+        "title": "High-Risk Pregnancies",
+        "description": "Advanced monitoring and updated protocols for pregnancies with special conditions, prioritizing maternal-fetal safety and informed decisions."
+      },
+      "gynecology": {
+        "title": "General Gynecology",
+        "description": "Preventive checkups, Pap smears, colposcopy, and intimate health care throughout all life stages."
+      },
+      "surgery": {
+        "title": "Gynecologic Surgery",
+        "description": "Minimally invasive procedures and emergency surgical care focused on quick recovery and personalized follow-up."
+      },
+      "ultrasound": {
+        "title": "Obstetric Ultrasound",
+        "description": "Ultrasound and maternal-fetal Doppler evaluations to monitor your baby's well-being and anticipate complications."
+      },
+      "urogynecology": {
+        "title": "Cervical Pathology & Urogynecology",
+        "description": "Diagnosis and treatment of cervical conditions, incontinence, and pelvic floor issues with a respectful, comprehensive approach."
+      }
+    }
+  },
+  "about": {
+    "title": "Meet Dr. Kristhy",
+    "subtitle": "Evidence-based care with empathy and active listening.",
+    "bio": [
+      "I’m Dr. Kristhy Karina Moreno Molina, Specialist in Obstetrics & Gynecology. Since 2013 I’ve cared for women with warmth and clinical rigor. I trained and specialized at Universidad de los Andes (ULA), combining solid academics with a close, human approach.",
+      "My work at Hospital Central de San Cristóbal prepared me for obstetric emergencies, gynecologic surgery, and high-risk pregnancies, always prioritizing maternal-fetal safety. Experience in clinics, rural care, and hospital shifts helps me understand every need.",
+      "I stay in continuous training: Public and Occupational Health diplomas, maternal-fetal Doppler ultrasound, and updated surgical techniques. Each visit is a safe space with clear communication, active listening, and personalized plans."
+    ],
+    "highlights": [
+      "12+ years in medicine",
+      "ULA-certified specialist",
+      "Expert in high-risk pregnancies",
+      "Continuous training in maternal-fetal Doppler"
+    ],
+    "education": "Physician and Specialist in Obstetrics & Gynecology (ULA). Diplomas in Public and Occupational Health. Ongoing training in maternal-fetal Doppler.",
+    "philosophy": {
+      "title": "My Care Philosophy",
+      "content": [
+        "The doctor-patient relationship comes first: I listen, accompany, and respect your decisions to deliver humanized care.",
+        "I guide every reproductive stage with clear communication so you understand each step and feel supported and safe.",
+        "I use evidence-based protocols and multidisciplinary teams when needed, blending clinical precision with genuine warmth."
+      ]
+    },
+    "cta": "Book your visit"
+  },
+  "highlights": [
+    "12+ years in medicine",
+    "ULA-certified specialist",
+    "Expert in high-risk pregnancies",
+    "Continuous training in maternal-fetal Doppler",
+    "Humanized, personalized care"
+  ],
+  "testimonials": {
+    "title": "What my patients say",
+    "subtitle": "Real stories of support and trust",
+    "items": [
+      {
+        "name": "Maria G. · San Cristóbal",
+        "role": "Prenatal care (2 months ago)",
+        "rating": 5,
+        "text": "From the first visit I felt heard and calm. Her close follow-up made my pregnancy safe and stress-free."
+      },
+      {
+        "name": "Laura P. · Táchira",
+        "role": "High-risk pregnancy (3 months ago)",
+        "rating": 5,
+        "text": "Her professionalism and warmth were key. She explained every decision and guided me safely through a high-risk pregnancy."
+      },
+      {
+        "name": "Andrea R. · San Cristóbal",
+        "role": "Gynecology visit (1 month ago)",
+        "rating": 4.5,
+        "text": "She helped me choose the best plan for my health with clear explanations and empathy. Her experience and up-to-date care are evident."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contact me",
+    "subtitle": "Schedule your visit or ask any questions",
+    "address": "Av. España, Res. Orquimaira Tower B 3-A, Pueblo Nuevo, San Cristóbal, Táchira",
+    "schedule": "Mon - Fri: 8:00 AM - 5:00 PM",
+    "phone": "+58 424-764-8994",
+    "email": "contact@drakristhy.com",
+    "map_label": "View location on Google Maps",
+    "form": {
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "reason": "Reason for visit",
+      "message": "Message",
+      "privacy": "I accept the privacy policy",
+      "submit": "Send message",
+      "reasons": {
+        "prenatal": "Prenatal care",
+        "gynecology": "Gynecology",
+        "fertility": "Fertility",
+        "other": "Other"
+      }
+    },
+    "toast": {
+      "success": "Message sent successfully",
+      "error": "Something went wrong, please try again"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "privacy": "Privacy policy"
+  }
+}

@@ -1,0 +1,9 @@
+.next
+node_modules
+.turbo
+.DS_Store
+.env*
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+.idea

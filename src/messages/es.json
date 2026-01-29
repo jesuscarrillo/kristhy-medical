@@ -1,0 +1,136 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "about": "Sobre Mí",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "title": "Dra. Kristhy Karina Moreno Molina",
+    "tagline": "Atención integral y humanizada en cada etapa de tu salud ginecológica.",
+    "badge": "12+ años en medicina",
+    "badge_secondary": "Especialista certificada ULA",
+    "cta_primary": "Agendar consulta",
+    "cta_secondary": "Conocer más",
+    "experience": "años de experiencia",
+    "patients": "Pacientes acompañadas"
+  },
+  "services": {
+    "title": "Servicios",
+    "subtitle": "Atención integral para cada etapa de tu salud ginecológica",
+    "items": {
+      "prenatal": {
+        "title": "Control Prenatal",
+        "description": "Seguimiento cuidadoso de tu embarazo con controles periódicos, educación continua y acompañamiento empático para que vivas una gestación segura y tranquila."
+      },
+      "highRisk": {
+        "title": "Embarazos de Alto Riesgo",
+        "description": "Monitoreo avanzado y protocolos actualizados para embarazos con condiciones especiales, priorizando la seguridad materno-fetal y la toma de decisiones informadas."
+      },
+      "gynecology": {
+        "title": "Ginecología General",
+        "description": "Chequeos preventivos, papanicolaou, colposcopía y cuidado de la salud íntima en todas las etapas del ciclo vital."
+      },
+      "surgery": {
+        "title": "Cirugía Ginecológica",
+        "description": "Procedimientos mínimamente invasivos y resolución de emergencias quirúrgicas con enfoque en recuperación rápida y cuidado personalizado."
+      },
+      "ultrasound": {
+        "title": "Ultrasonido Obstétrico",
+        "description": "Evaluaciones ecográficas y Doppler materno-fetal para vigilar el bienestar del bebé y anticipar complicaciones."
+      },
+      "urogynecology": {
+        "title": "Patología de Cuello y Uroginecología",
+        "description": "Diagnóstico y tratamiento de patología cervical, incontinencia y piso pélvico, con abordaje integral y respetuoso."
+      }
+    }
+  },
+  "about": {
+    "title": "Conoce a la Dra. Kristhy",
+    "subtitle": "Atención basada en evidencia, empatía y escucha activa.",
+    "bio": [
+      "Soy la Dra. Kristhy Karina Moreno Molina, Especialista en Obstetricia y Ginecología. Desde 2013 acompaño a cada mujer con calidez y rigor clínico. Me formé como Médico Cirujano y especialista en la Universidad de los Andes (ULA), combinando la academia con el trato cercano.",
+      "Mi experiencia en el Hospital Central de San Cristóbal me ha preparado para emergencias obstétricas, cirugías ginecológicas y embarazos de alto riesgo, siempre priorizando la seguridad materno-fetal. He trabajado en consulta general, áreas rurales y guardias hospitalarias para entender mejor cada necesidad.",
+      "Me mantengo en formación continua: diplomados en Salud Pública y Ocupacional, ultrasonido Doppler materno-fetal y técnicas quirúrgicas actualizadas. Cada consulta es un espacio seguro con comunicación clara, escucha activa y planes personalizados."
+    ],
+    "highlights": [
+      "12+ años en medicina",
+      "Especialista certificada ULA",
+      "Experta en embarazos de alto riesgo",
+      "Formación continua en Doppler materno-fetal"
+    ],
+    "education": "Médico Cirujano y Especialista en Obstetricia y Ginecología (ULA). Diplomados en Salud Pública y Salud Ocupacional. Formación continua en Doppler materno-fetal.",
+    "philosophy": {
+      "title": "Mi Filosofía de Atención",
+      "content": [
+        "La relación médico-paciente es el centro: escucho, acompaño y respeto tus decisiones para brindarte un cuidado humanizado.",
+        "Te acompaño en cada etapa con comunicación clara, para que entiendas cada paso y te sientas segura y respaldada.",
+        "Trabajo con protocolos basados en evidencia y equipos multidisciplinarios cuando es necesario, uniendo precisión clínica y calidez."
+      ]
+    },
+    "cta": "Agenda tu consulta"
+  },
+  "highlights": [
+    "12+ años en medicina",
+    "Especialista certificada ULA",
+    "Experta en embarazos de alto riesgo",
+    "Formación continua en Doppler materno-fetal",
+    "Atención humanizada y personalizada"
+  ],
+  "testimonials": {
+    "title": "Lo que dicen mis pacientes",
+    "subtitle": "Historias reales de acompañamiento y confianza",
+    "items": [
+      {
+        "name": "María G. · San Cristóbal",
+        "role": "Control prenatal (hace 2 meses)",
+        "rating": 5,
+        "text": "Desde la primera cita me sentí escuchada y tranquila. Su seguimiento cercano hizo que mi embarazo fuera seguro y sin sobresaltos."
+      },
+      {
+        "name": "Laura P. · Táchira",
+        "role": "Embarazo de alto riesgo (hace 3 meses)",
+        "rating": 5,
+        "text": "Su profesionalismo y calidez fueron claves. Me explicó cada decisión y me acompañó en un embarazo de alto riesgo con seguridad y confianza."
+      },
+      {
+        "name": "Andrea R. · San Cristóbal",
+        "role": "Consulta ginecológica (hace 1 mes)",
+        "rating": 4.5,
+        "text": "Me ayudó a elegir el mejor plan para mi salud con explicaciones claras y un trato empático. Se nota su experiencia y actualización."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contáctame",
+    "subtitle": "Programa tu consulta o resuelve tus dudas",
+    "address": "Av. España, Res. Orquimaira Torre B 3-A, Pueblo Nuevo, San Cristóbal, Táchira",
+    "schedule": "Lun - Vie: 8:00 AM - 5:00 PM",
+    "phone": "+58 424-764-8994",
+    "email": "contacto@drakristhy.com",
+    "map_label": "Ver ubicación en Google Maps",
+    "form": {
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "reason": "Motivo de consulta",
+      "message": "Mensaje",
+      "privacy": "Acepto la política de privacidad",
+      "submit": "Enviar mensaje",
+      "reasons": {
+        "prenatal": "Control prenatal",
+        "gynecology": "Ginecología general",
+        "fertility": "Fertilidad",
+        "other": "Otro"
+      }
+    },
+    "toast": {
+      "success": "Mensaje enviado exitosamente",
+      "error": "Ocurrió un error, intenta nuevamente"
+    }
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados",
+    "privacy": "Política de privacidad"
+  }
+}
