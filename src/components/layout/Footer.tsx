@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
@@ -57,6 +58,16 @@ export function Footer() {
                 <a href="#contact" className="hover:text-slate-900">
                   {t("nav.contact")}
                 </a>
+              </li>
+              <li>
+                <Link href="/privacidad" className="hover:text-slate-900">
+                  {t("privacy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/terminos" className="hover:text-slate-900">
+                  {t("terms")}
+                </Link>
               </li>
             </ul>
           </div>

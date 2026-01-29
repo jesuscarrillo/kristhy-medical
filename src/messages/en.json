@@ -135,9 +135,12 @@
       "submit": "Send message",
       "reasons": {
         "prenatal": "Prenatal care",
-        "gynecology": "Gynecology",
-        "fertility": "Fertility",
-        "other": "Other"
+        "highRisk": "High-Risk Pregnancy",
+        "gynecology": "General Gynecology",
+        "surgery": "Gynecologic Surgery",
+        "ultrasound": "Obstetric Ultrasound",
+        "cervical": "Cervical Pathology",
+        "other": "Other consultation"
       }
     },
     "toast": {

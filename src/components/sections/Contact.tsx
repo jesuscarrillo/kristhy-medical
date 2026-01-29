@@ -85,6 +85,15 @@ export function Contact() {
               loading="lazy"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.39475797573!2d-72.2290!3d7.7700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e664561b8a56955%3A0x6d9b5568b71310e9!2sPueblo%20Nuevo%2C%20San%20Crist%C3%B3bal%2C%20T%C3%A1chira%2C%20Venezuela!5e0!3m2!1sen!2sve!4v1700000000001!5m2!1sen!2sve"
             />
+            <a
+              href="https://maps.google.com/?q=Av.+Espa%C3%B1a+Res+Orquimaira+Torre+B+San+Crist%C3%B3bal+T%C3%A1chira"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-between bg-white px-4 py-3 text-sm font-semibold text-sky-700 underline"
+            >
+              {t("map_label")}
+              <span aria-hidden>↗</span>
+            </a>
           </div>
         </div>
 

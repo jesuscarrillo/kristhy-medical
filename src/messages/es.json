@@ -135,9 +135,12 @@
       "submit": "Enviar mensaje",
       "reasons": {
         "prenatal": "Control prenatal",
-        "gynecology": "Ginecología general",
-        "fertility": "Fertilidad",
-        "other": "Otro"
+        "highRisk": "Embarazo de Alto Riesgo",
+        "gynecology": "Consulta Ginecológica General",
+        "surgery": "Cirugía Ginecológica",
+        "ultrasound": "Ultrasonido Obstétrico",
+        "cervical": "Patología de Cuello",
+        "other": "Otra consulta"
       }
     },
     "toast": {

@@ -19,7 +19,7 @@ export function About() {
           <div className="relative">
             <div className="absolute -left-6 -top-6 h-24 w-24 rounded-full bg-emerald-100 blur-3xl" />
             <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-sky-100 blur-3xl" />
-            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-white shadow-xl ring-1 ring-slate-100">
+            <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-3xl border border-white shadow-xl ring-1 ring-slate-100 sm:mb-0">
               <Image
                 src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80"
                 alt="Dra. Kristhy en consultorio"

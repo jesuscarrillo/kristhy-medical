@@ -164,8 +164,11 @@ export function ContactForm() {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="prenatal">{t("form.reasons.prenatal")}</SelectItem>
+                  <SelectItem value="highRisk">{t("form.reasons.highRisk")}</SelectItem>
                   <SelectItem value="gynecology">{t("form.reasons.gynecology")}</SelectItem>
-                  <SelectItem value="fertility">{t("form.reasons.fertility")}</SelectItem>
+                  <SelectItem value="surgery">{t("form.reasons.surgery")}</SelectItem>
+                  <SelectItem value="ultrasound">{t("form.reasons.ultrasound")}</SelectItem>
+                  <SelectItem value="cervical">{t("form.reasons.cervical")}</SelectItem>
                   <SelectItem value="other">{t("form.reasons.other")}</SelectItem>
                 </SelectContent>
               </Select>

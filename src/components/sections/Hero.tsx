@@ -10,7 +10,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-emerald-50 pb-16 pt-10 sm:pb-20 sm:pt-16"
+      className="relative min-h-[80vh] overflow-hidden bg-gradient-to-br from-sky-50 via-white to-emerald-50 pb-16 pt-10 sm:pb-20 sm:pt-16"
     >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -left-20 top-10 h-40 w-40 rounded-full bg-sky-100 blur-3xl" />
@@ -79,7 +79,7 @@ export function Hero() {
           </div>
 
           <div className="relative">
-            <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-slate-100 lg:max-w-2xl">
+            <div className="relative mx-auto w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-slate-100">
               <Image
                 src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80"
                 alt="Dra. Kristhy en consulta"

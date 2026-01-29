@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Baby, ShieldPlus, Stethoscope, Scan, Syringe, Activity } from "lucide-react";
 import { ServiceCard } from "@/components/shared/ServiceCard";
+import { Reveal } from "@/components/shared/Reveal";
 
 const icons = {
   prenatal: Baby,
@@ -29,14 +30,15 @@ export function Services() {
           {Object.entries(items).map(([key, value], index) => {
             const iconKey = key as keyof typeof icons;
             return (
-              <ServiceCard
-                key={key}
-                title={value.title}
-                description={value.description}
-                icon={icons[iconKey]}
-                accent={accents[index % accents.length]}
-                cta={cta}
-              />
+              <Reveal key={key} delay={index * 0.05}>
+                <ServiceCard
+                  title={value.title}
+                  description={value.description}
+                  icon={icons[iconKey]}
+                  accent={accents[index % accents.length]}
+                  cta={cta}
+                />
+              </Reveal>
             );
           })}
         </div>
