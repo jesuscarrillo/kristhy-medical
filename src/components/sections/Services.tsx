@@ -16,9 +16,10 @@ const accents: ("blue" | "green" | "pink")[] = ["blue", "green", "pink", "blue",
 export function Services() {
   const t = useTranslations("services");
   const items = t.raw("items") as Record<keyof typeof icons, { title: string; description: string }>;
+  const cta = t("cta");
 
   return (
-    <section id="services" className="bg-white py-16 sm:py-20">
+    <section id="services" className="bg-white py-16 scroll-mt-24 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-3 text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-sky-600">{t("title")}</p>
@@ -34,6 +35,7 @@ export function Services() {
                 description={value.description}
                 icon={icons[iconKey]}
                 accent={accents[index % accents.length]}
+                cta={cta}
               />
             );
           })}

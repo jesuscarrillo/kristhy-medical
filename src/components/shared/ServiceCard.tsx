@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { LucideIcon, ArrowRight } from "lucide-react";
 
 type ServiceCardProps = {
   title: string;
   description: string;
   icon: LucideIcon;
   accent?: "blue" | "green" | "pink";
+  cta?: string;
 };
 
 const accentMap = {
@@ -15,11 +17,13 @@ const accentMap = {
   pink: "from-pink-100 to-white text-pink-600 border-pink-100",
 };
 
-export function ServiceCard({ title, description, icon: Icon, accent = "blue" }: ServiceCardProps) {
+export function ServiceCard({ title, description, icon: Icon, accent = "blue", cta }: ServiceCardProps) {
   return (
-    <Card className={`h-full border ${accentMap[accent]} bg-gradient-to-br shadow-sm`}>
+    <Card
+      className={`group h-full transform border ${accentMap[accent]} bg-gradient-to-br shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg`}
+    >
       <CardHeader className="flex flex-row items-center gap-3 space-y-0">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner transition group-hover:scale-105">
           <Icon className="h-6 w-6" />
         </div>
         <CardTitle className="text-lg text-slate-900">{title}</CardTitle>
@@ -29,6 +33,17 @@ export function ServiceCard({ title, description, icon: Icon, accent = "blue" }:
         <Badge variant="secondary" className="rounded-full bg-white text-xs font-semibold text-slate-600">
           {title}
         </Badge>
+        {cta && (
+          <Button
+            variant="ghost"
+            className="px-0 text-sm font-semibold text-slate-800 hover:text-sky-700"
+            asChild
+          >
+            <a href="#contact" className="inline-flex items-center gap-1">
+              {cta} <ArrowRight className="h-4 w-4" />
+            </a>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

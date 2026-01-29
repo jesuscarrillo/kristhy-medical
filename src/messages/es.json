@@ -43,21 +43,34 @@
         "title": "Patología de Cuello y Uroginecología",
         "description": "Diagnóstico y tratamiento de patología cervical, incontinencia y piso pélvico, con abordaje integral y respetuoso."
       }
-    }
+    },
+    "cta": "Leer más →"
   },
   "about": {
     "title": "Conoce a la Dra. Kristhy",
     "subtitle": "Atención basada en evidencia, empatía y escucha activa.",
     "bio": [
-      "Soy la Dra. Kristhy Karina Moreno Molina, Especialista en Obstetricia y Ginecología. Desde 2013 acompaño a cada mujer con calidez y rigor clínico. Me formé como Médico Cirujano y especialista en la Universidad de los Andes (ULA), combinando la academia con el trato cercano.",
-      "Mi experiencia en el Hospital Central de San Cristóbal me ha preparado para emergencias obstétricas, cirugías ginecológicas y embarazos de alto riesgo, siempre priorizando la seguridad materno-fetal. He trabajado en consulta general, áreas rurales y guardias hospitalarias para entender mejor cada necesidad.",
-      "Me mantengo en formación continua: diplomados en Salud Pública y Ocupacional, ultrasonido Doppler materno-fetal y técnicas quirúrgicas actualizadas. Cada consulta es un espacio seguro con comunicación clara, escucha activa y planes personalizados."
+      "Soy la Dra. Kristhy Karina Moreno Molina, Especialista en Obstetricia y Ginecología. Desde 2013 acompaño a cada mujer con calidez y rigor clínico para que se sienta segura y acompañada.",
+      "Me formé en la Universidad de los Andes (ULA) y en el Hospital Central de San Cristóbal, donde atendí emergencias, cirugías y embarazos de alto riesgo, siempre priorizando la seguridad materno-fetal.",
+      "Trabajo con planes personalizados, comunicación clara y escucha activa para que cada decisión se tome con información y confianza."
     ],
     "highlights": [
-      "12+ años en medicina",
-      "Especialista certificada ULA",
-      "Experta en embarazos de alto riesgo",
-      "Formación continua en Doppler materno-fetal"
+      {
+        "title": "Formación de Excelencia",
+        "description": "Universidad de los Andes (ULA)"
+      },
+      {
+        "title": "Experiencia Comprobada",
+        "description": "1500+ pacientes atendidas"
+      },
+      {
+        "title": "Actualización Continua",
+        "description": "Diplomados y certificaciones recientes"
+      },
+      {
+        "title": "Atención Humanizada",
+        "description": "Comunicación empática y escucha activa"
+      }
     ],
     "education": "Médico Cirujano y Especialista en Obstetricia y Ginecología (ULA). Diplomados en Salud Pública y Salud Ocupacional. Formación continua en Doppler materno-fetal.",
     "philosophy": {
@@ -83,21 +96,21 @@
     "items": [
       {
         "name": "María G. · San Cristóbal",
-        "role": "Control prenatal (hace 2 meses)",
+        "role": "Control prenatal • Hace 3 meses",
         "rating": 5,
-        "text": "Desde la primera cita me sentí escuchada y tranquila. Su seguimiento cercano hizo que mi embarazo fuera seguro y sin sobresaltos."
+        "text": "Desde la primera cita me explicó cada paso y me dio tranquilidad. Sentí un acompañamiento real durante todo mi embarazo."
       },
       {
         "name": "Laura P. · Táchira",
-        "role": "Embarazo de alto riesgo (hace 3 meses)",
+        "role": "Embarazo de alto riesgo • Hace 2 meses",
         "rating": 5,
-        "text": "Su profesionalismo y calidez fueron claves. Me explicó cada decisión y me acompañó en un embarazo de alto riesgo con seguridad y confianza."
+        "text": "Tuvo la paciencia de explicar cada decisión y ajustar el plan cuando lo necesitábamos. Su calma y claridad me hicieron sentir segura."
       },
       {
         "name": "Andrea R. · San Cristóbal",
-        "role": "Consulta ginecológica (hace 1 mes)",
+        "role": "Cirugía ginecológica • Hace 1 mes",
         "rating": 4.5,
-        "text": "Me ayudó a elegir el mejor plan para mi salud con explicaciones claras y un trato empático. Se nota su experiencia y actualización."
+        "text": "El seguimiento post-operatorio fue impecable. Respondió mis dudas y me guió en la recuperación con empatía y profesionalismo."
       }
     ]
   },
@@ -115,6 +128,9 @@
       "phone": "Teléfono",
       "reason": "Motivo de consulta",
       "message": "Mensaje",
+      "messagePlaceholder": "Cuéntame cómo puedo ayudarte...",
+      "sending": "Enviando...",
+      "privacy_link": "Política de Privacidad",
       "privacy": "Acepto la política de privacidad",
       "submit": "Enviar mensaje",
       "reasons": {
@@ -126,11 +142,33 @@
     },
     "toast": {
       "success": "Mensaje enviado exitosamente",
-      "error": "Ocurrió un error, intenta nuevamente"
+      "success_detail": "Te contactaremos pronto. Revisa tu email.",
+      "error": "Ocurrió un error, intenta nuevamente",
+      "error_detail": "Por favor intenta nuevamente o llámanos."
     }
   },
   "footer": {
-    "rights": "Todos los derechos reservados",
-    "privacy": "Política de privacidad"
+    "rights": "© 2026 Dra. Kristhy Moreno. Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "terms": "Términos y Condiciones",
+    "crafted": "Diseñado para brindar confianza y cercanía.",
+    "nav": {
+      "home": "Inicio",
+      "services": "Servicios",
+      "about": "Sobre Mí",
+      "contact": "Contacto"
+    },
+    "services": [
+      "Control Prenatal",
+      "Embarazos de Alto Riesgo",
+      "Ginecología General",
+      "Cirugía Ginecológica",
+      "Ultrasonido Obstétrico"
+    ],
+    "badges": {
+      "cmt": "CMT: 6687",
+      "mpps": "MPPS: 154436"
+    },
+    "mini_bio": "Atención personalizada en obstetricia y ginecología con enfoque humano y basado en evidencia."
   }
 }

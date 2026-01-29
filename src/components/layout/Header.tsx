@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Menu } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CalendarClock, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -29,10 +30,26 @@ const navAnchors = [
 
 export function Header({ currentLocale }: { currentLocale: string }) {
   const t = useTranslations();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/70 bg-white/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+    <header
+      className={`sticky top-0 z-30 transition-all duration-300 ${
+        scrolled ? "bg-white/80 shadow-md backdrop-blur-lg" : "bg-white/60"
+      }`}
+    >
+      <div
+        className={`mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 ${
+          scrolled ? "py-3" : "py-4"
+        } transition-all duration-300`}
+      >
         <Link href="#hero" className="flex items-center gap-3 font-semibold text-slate-900">
           <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
             <Image src="/images/logo.png" alt="Logo Dra. Kristhy" fill sizes="48px" className="object-contain p-1" />
@@ -59,8 +76,14 @@ export function Header({ currentLocale }: { currentLocale: string }) {
             </NavigationMenuList>
           </NavigationMenu>
           <LanguageSwitcher currentLocale={currentLocale} />
-          <Button asChild>
-            <Link href="#contact">{t("hero.cta_primary")}</Link>
+          <Button
+            asChild
+            className="shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            <Link href="#contact">
+              <CalendarClock className="mr-2 h-4 w-4" />
+              {t("hero.cta_primary")}
+            </Link>
           </Button>
         </nav>
 

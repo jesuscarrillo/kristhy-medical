@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { ArrowRight, HeartPulse, ShieldCheck } from "lucide-react";
+import { ArrowRight, HeartPulse, ShieldCheck, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -37,11 +37,11 @@ export function Hero() {
               <Button
                 size="lg"
                 asChild
-                className="shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl"
+                className="shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:scale-[1.02]"
               >
                 <a href="#contact">
+                  <CalendarClock className="mr-2 h-4 w-4" />
                   {t("cta_primary")}
-                  <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
               <Button
@@ -50,7 +50,10 @@ export function Hero() {
                 asChild
                 className="border-sky-200 text-slate-700 transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50"
               >
-                <a href="#about">{t("cta_secondary")}</a>
+                <a href="#about">
+                  {t("cta_secondary")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-4 rounded-2xl border border-white bg-white/70 p-4 shadow-lg sm:max-w-lg">
@@ -84,6 +87,9 @@ export function Hero() {
                 height={1400}
                 className="h-full w-full object-cover"
                 priority
+                quality={85}
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN0d3f0HwAFWAKvVr1TngAAAABJRU5ErkJggg=="
               />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
               <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-white/85 p-3 shadow-lg backdrop-blur">

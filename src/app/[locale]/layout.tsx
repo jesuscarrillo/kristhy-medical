@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ToasterProvider } from "@/components/layout/ToasterProvider";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -10,14 +12,21 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: "Dra. Kristhy - Obstetricia y Ginecología",
+  title: "Dra. Kristhy Moreno | Obstetricia y Ginecología | San Cristóbal",
   description:
-    "Atención integral en obstetricia y ginecología con un enfoque cálido, profesional y humano.",
+    "Especialista en Obstetricia y Ginecología con 12+ años de experiencia. Atención personalizada, control prenatal, embarazos de alto riesgo. San Cristóbal, Táchira.",
+  keywords: [
+    "ginecóloga San Cristóbal",
+    "obstetra Táchira",
+    "control prenatal",
+    "embarazo alto riesgo",
+    "Dra Kristhy Moreno",
+    "ginecología Venezuela",
+  ],
   metadataBase: new URL("https://drakristhy.com"),
   openGraph: {
-    title: "Dra. Kristhy - Obstetricia y Ginecología",
-    description:
-      "Agenda tu consulta con la Dra. Kristhy, especialista en salud integral para la mujer.",
+    title: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
+    description: "Atención integral en salud reproductiva con 12+ años de experiencia",
     images: ["/og-image.jpg"],
   },
 };
@@ -38,6 +47,8 @@ export default async function LocaleLayout({
         <Header currentLocale={locale} />
         <main className="flex-1">{children}</main>
         <Footer />
+        <WhatsAppButton />
+        <ToasterProvider />
       </div>
     </NextIntlClientProvider>
   );

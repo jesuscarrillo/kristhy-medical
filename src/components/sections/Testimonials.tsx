@@ -27,7 +27,7 @@ export function Testimonials() {
   };
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-16 scroll-mt-24 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-3 text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-emerald-600">

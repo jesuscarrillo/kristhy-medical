@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { CheckCircle2 } from "lucide-react";
+import { GraduationCap, Stethoscope, Sparkles, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -9,10 +9,11 @@ export function About() {
   const heroT = useTranslations("hero");
   const bio = t.raw("bio") as string[];
   const philosophy = t.raw("philosophy.content") as string[];
-  const highlights = t.raw("highlights") as string[];
+  const highlights = t.raw("highlights") as { title: string; description: string }[];
+  const highlightIcons = [GraduationCap, Stethoscope, Sparkles, HeartHandshake];
 
   return (
-    <section id="about" className="relative overflow-hidden bg-muted/30 py-16 sm:py-20">
+    <section id="about" className="relative overflow-hidden bg-muted/30 py-16 scroll-mt-24 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="relative">
@@ -25,7 +26,9 @@ export function About() {
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 540px"
-                priority={false}
+                quality={85}
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN0d3f0HwAFWAKvVr1TngAAAABJRU5ErkJggg=="
               />
               <div className="absolute -bottom-6 -right-6 rounded-xl bg-white p-5 shadow-lg">
                 <p className="text-4xl font-bold text-primary">12+</p>
@@ -50,12 +53,23 @@ export function About() {
             </div>
             {Array.isArray(highlights) && (
               <div className="grid gap-3 md:grid-cols-2">
-                {highlights.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 rounded-xl bg-white/80 p-3 shadow-sm ring-1 ring-slate-100">
-                    <CheckCircle2 className="mt-1 h-5 w-5 text-emerald-500" />
-                    <p className="text-sm text-slate-700">{item}</p>
-                  </div>
-                ))}
+                {highlights.map((item, idx) => {
+                  const Icon = highlightIcons[idx % highlightIcons.length];
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-3 rounded-xl bg-white/80 p-4 shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-50 text-sky-600">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                        <p className="text-xs text-slate-600">{item.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
             <div className="rounded-2xl border border-sky-100/70 bg-white/80 p-4 shadow-sm">

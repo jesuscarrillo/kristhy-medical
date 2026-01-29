@@ -7,7 +7,7 @@ export function Contact() {
   const t = useTranslations("contact");
 
   return (
-    <section id="contact" className="bg-gradient-to-b from-white to-sky-50/70 py-16 sm:py-20">
+    <section id="contact" className="bg-gradient-to-b from-white to-sky-50/70 py-16 scroll-mt-24 sm:py-20">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
         <div className="space-y-6">
           <div className="space-y-2">
