@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { HeaderClient } from "@/components/layout/HeaderClient";
 import { ToasterProvider } from "@/components/layout/ToasterProvider";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { routing } from "@/i18n/routing";
@@ -29,6 +29,18 @@ export const metadata: Metadata = {
     description: "Atención integral en salud reproductiva con 12+ años de experiencia",
     images: ["/og-image.jpg"],
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    other: [
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
 };
 
 export default async function LocaleLayout({
@@ -44,7 +56,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-white to-white text-slate-900">
-        <Header currentLocale={locale} />
+        <HeaderClient currentLocale={locale} />
         <main className="flex-1">{children}</main>
         <Footer currentLocale={locale} />
         <WhatsAppButton />

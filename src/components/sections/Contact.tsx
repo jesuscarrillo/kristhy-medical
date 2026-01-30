@@ -1,7 +1,14 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ContactForm } from "@/components/shared/ContactForm";
+
+const ContactForm = dynamic(
+  () => import("@/components/shared/ContactForm").then((m) => m.ContactForm),
+  { ssr: false, loading: () => <div className="h-[420px] w-full animate-pulse rounded-xl bg-slate-100" /> },
+);
 
 export function Contact() {
   const t = useTranslations("contact");

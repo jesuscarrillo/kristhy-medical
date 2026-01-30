@@ -60,7 +60,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
         <Link href={anchorHref("#hero")} className="flex items-center gap-3 font-semibold text-slate-900">
           <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
             <Image
-              src="/images/logo.png"
+              src="/images/header-logo.png"
               alt="Logo Dra. Kristhy Moreno"
               fill
               sizes="80px"
