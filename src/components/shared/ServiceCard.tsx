@@ -1,14 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { LucideIcon, ArrowRight } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 type ServiceCardProps = {
   title: string;
   description: string;
   icon: LucideIcon;
   accent?: "blue" | "green" | "pink";
-  cta?: string;
 };
 
 const accentMap = {
@@ -17,7 +15,7 @@ const accentMap = {
   pink: "from-pink-100 to-white text-pink-600 border-pink-100",
 };
 
-export function ServiceCard({ title, description, icon: Icon, accent = "blue", cta }: ServiceCardProps) {
+export function ServiceCard({ title, description, icon: Icon, accent = "blue" }: ServiceCardProps) {
   return (
     <Card
       className={`group h-full transform border ${accentMap[accent]} bg-gradient-to-br shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg`}
@@ -33,17 +31,6 @@ export function ServiceCard({ title, description, icon: Icon, accent = "blue", c
         <Badge variant="secondary" className="rounded-full bg-white text-xs font-semibold text-slate-600">
           {title}
         </Badge>
-        {cta && (
-          <Button
-            variant="ghost"
-            className="px-0 text-sm font-semibold text-slate-800 hover:text-sky-700"
-            asChild
-          >
-            <a href="#contact" className="inline-flex items-center gap-1">
-              {cta} <ArrowRight className="h-4 w-4" />
-            </a>
-          </Button>
-        )}
       </CardContent>
     </Card>
   );

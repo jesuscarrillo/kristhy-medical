@@ -81,7 +81,6 @@ export function ContactForm() {
     icon: React.ReactNode,
     placeholder: string,
     type = "text",
-    helper?: string,
     id?: string,
   ) => (
     <div className="space-y-1.5">
@@ -95,7 +94,6 @@ export function ContactForm() {
           {...field}
         />
       </div>
-      {helper && <p className="text-xs text-slate-500">{helper}</p>}
       <FormMessage />
     </div>
   );
@@ -107,10 +105,10 @@ export function ContactForm() {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="contact-name">{t("form.name")}</FormLabel>
+            <FormItem id="contact-name">
+              <FormLabel>{t("form.name")}</FormLabel>
               <FormControl>
-                {renderInput(field, <User className="h-4 w-4" />, "María González", "text", undefined, "contact-name")}
+                {renderInput(field, <User className="h-4 w-4" />, "María González", "text", "contact-name")}
               </FormControl>
             </FormItem>
           )}
@@ -120,45 +118,50 @@ export function ContactForm() {
           <FormField
             control={form.control}
             name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="contact-email">{t("form.email")}</FormLabel>
-              <FormControl>
-                {renderInput(field, <Mail className="h-4 w-4" />, "maria@email.com", "email", undefined, "contact-email")}
-              </FormControl>
-            </FormItem>
-          )}
-        />
+            render={({ field }) => (
+              <FormItem id="contact-email">
+                <FormLabel>{t("form.email")}</FormLabel>
+                <FormControl>
+                  {renderInput(
+                    field,
+                    <Mail className="h-4 w-4" />,
+                    "maria@email.com",
+                    "email",
+                    "contact-email",
+                  )}
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="contact-phone">{t("form.phone")}</FormLabel>
-              <FormControl>
-                {renderInput(
-                  field,
-                  <Phone className="h-4 w-4" />,
-                  "+58 424-XXX-XXXX",
-                  "text",
-                  "Formato: +58 XXX-XXX-XXXX",
-                  "contact-phone",
-                )}
-              </FormControl>
-            </FormItem>
-          )}
-        />
+            render={({ field }) => (
+              <FormItem id="contact-phone">
+                <FormLabel>{t("form.phone")}</FormLabel>
+                <FormControl>
+                  {renderInput(
+                    field,
+                    <Phone className="h-4 w-4" />,
+                    "+58 424-764-8994",
+                    "text",
+                    "contact-phone",
+                  )}
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
           control={form.control}
           name="reason"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="contact-reason">{t("form.reason")}</FormLabel>
+            <FormItem id="contact-reason">
+              <FormLabel>{t("form.reason")}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger id="contact-reason" className={statusClass("reason")}>
+                  <SelectTrigger className={statusClass("reason")}>
                     <SelectValue placeholder={t("form.reason")} />
                   </SelectTrigger>
                 </FormControl>
@@ -181,7 +184,7 @@ export function ContactForm() {
           control={form.control}
           name="message"
           render={({ field }) => (
-            <FormItem>
+            <FormItem id="contact-message">
               <FormLabel>{t("form.message")}</FormLabel>
               <FormControl>
                 <div className="relative">
@@ -192,7 +195,6 @@ export function ContactForm() {
                     rows={4}
                     placeholder={t("form.messagePlaceholder") ?? "Cuéntame cómo puedo ayudarte..."}
                     className={`pl-10 ${statusClass("message")}`}
-                    id="contact-message"
                     {...field}
                   />
                 </div>
