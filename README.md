@@ -92,9 +92,17 @@ pnpm db:studio
   - `/dashboard/pacientes/[id]/imagenes`
 
 ### Historial clinico
-- Crear: `src/server/actions/medicalRecord.ts`
+- CRUD completo: `src/server/actions/medicalRecord.ts`
+  - `createMedicalRecord` - Crear registro
+  - `getMedicalRecords` - Listar registros de un paciente
+  - `getMedicalRecord` - Obtener registro individual
+  - `updateMedicalRecord` - Actualizar registro
+  - `deleteMedicalRecord` - Eliminar registro
 - Formulario: `src/components/patients/MedicalRecordForm.tsx`
-- Lista y alta: `/dashboard/pacientes/[id]/historial`
+- UI:
+  - `/dashboard/pacientes/[id]/historial` - Lista y crear
+  - `/dashboard/pacientes/[id]/historial/[recordId]` - Ver detalle
+  - `/dashboard/pacientes/[id]/historial/[recordId]/editar` - Editar
 
 ### Citas
 - CRUD: `src/server/actions/appointment.ts`
@@ -132,13 +140,12 @@ pnpm db:studio
 
 ## Proximos pasos sugeridos
 1. Mejorar performance en dev (cache de sesiones, reducir logs prisma).
-2. CRUD completo de historial medico (editar/eliminar).
-3. Calendario de citas (vista mensual/semanal).
-4. Reportes con filtros y export CSV/PDF.
-5. Prescripciones (modelo + UI).
-6. Notificaciones (recordatorios de citas).
-7. RLS en Supabase y politicas de Storage.
-8. Auditoria de accesos (logging).
+2. Calendario de citas (vista mensual/semanal).
+3. Reportes con filtros y export CSV/PDF.
+4. Prescripciones (modelo + UI).
+5. Notificaciones (recordatorios de citas).
+6. RLS en Supabase y politicas de Storage.
+7. Auditoria de accesos (logging).
 
 ## Notas
 - Landing multi-idioma vive en `src/app/[locale]`.
