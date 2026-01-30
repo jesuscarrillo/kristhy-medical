@@ -112,20 +112,23 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 - [x] Crear página de edición del historial
 - [x] Agregar botones de ver/editar en la lista
 
-### 1.2 Vista de Calendario para Citas
-**Archivos a crear:**
-- `src/components/appointments/CalendarView.tsx` - Componente calendario
-- `src/app/(dashboard)/dashboard/citas/calendario/page.tsx` - Ruta
+### 1.2 Vista de Calendario para Citas - COMPLETADO
+**Archivos creados:**
+- `src/components/appointments/CalendarView.tsx` - Componente calendario custom
+- `src/app/(dashboard)/dashboard/citas/calendario/page.tsx` - Página de calendario
+- `src/server/actions/appointment.ts` - Agregado `getAppointmentsByDateRange`
 
-**Dependencias sugeridas:**
-- `@fullcalendar/react` o similar, o implementación custom con grid CSS
+**Implementación:** Componente custom con Tailwind CSS (sin dependencias externas)
 
-**Tareas:**
-- [ ] Instalar librería de calendario (o crear componente custom)
-- [ ] Crear vista mensual de citas
-- [ ] Crear vista semanal de citas
-- [ ] Permitir click en día/hora para crear cita
-- [ ] Mostrar estado de citas con colores
+**Tareas completadas:**
+- [x] Crear componente CalendarView custom con Tailwind
+- [x] Crear vista mensual de citas
+- [x] Crear vista semanal de citas
+- [x] Permitir click en día para crear cita (enlace a /nuevo?date=)
+- [x] Mostrar estado de citas con colores por tipo
+- [x] Navegación entre meses/semanas
+- [x] Botón "Hoy" para volver a fecha actual
+- [x] Actualizar página de citas con botón de calendario
 
 ---
 

@@ -31,6 +31,35 @@ export async function getAppointments() {
   });
 }
 
+export async function getAppointmentsByDateRange(
+  startDate: Date,
+  endDate: Date
+) {
+  await requireDoctor();
+
+  return prisma.appointment.findMany({
+    where: {
+      date: {
+        gte: startDate,
+        lte: endDate,
+      },
+      status: {
+        not: "cancelled",
+      },
+    },
+    include: {
+      patient: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    orderBy: { date: "asc" },
+  });
+}
+
 export async function getAppointment(id: string) {
   await requireDoctor();
 

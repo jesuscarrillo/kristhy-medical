@@ -3,8 +3,29 @@ import { getPatients } from "@/server/actions/patient";
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { Button } from "@/components/ui/button";
 
-export default async function NewAppointmentPage() {
+type NewAppointmentPageProps = {
+  searchParams: Promise<{
+    date?: string;
+  }>;
+};
+
+export default async function NewAppointmentPage({
+  searchParams,
+}: NewAppointmentPageProps) {
   const patients = await getPatients();
+  const { date } = await searchParams;
+
+  // Parse date from searchParams (format: YYYY-MM-DD)
+  // Add default time of 9:00 AM if only date is provided
+  let initialDate: Date | undefined;
+  if (date) {
+    const parsedDate = new Date(date);
+    if (!Number.isNaN(parsedDate.getTime())) {
+      // Set default time to 9:00 AM
+      parsedDate.setHours(9, 0, 0, 0);
+      initialDate = parsedDate;
+    }
+  }
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-10">
@@ -19,7 +40,10 @@ export default async function NewAppointmentPage() {
       </div>
 
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <AppointmentForm patients={patients} />
+        <AppointmentForm
+          patients={patients}
+          initialData={initialDate ? { date: initialDate } : undefined}
+        />
       </div>
     </div>
   );

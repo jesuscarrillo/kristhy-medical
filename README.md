@@ -106,12 +106,16 @@ pnpm db:studio
 
 ### Citas
 - CRUD: `src/server/actions/appointment.ts`
+  - `getAppointmentsByDateRange` - Obtener citas por rango de fechas (para calendario)
 - Validacion: `src/lib/validators/appointment.ts`
 - UI:
-  - `/dashboard/citas`
-  - `/dashboard/citas/nuevo`
-  - `/dashboard/citas/[id]`
-  - `/dashboard/citas/[id]/editar`
+  - `/dashboard/citas` - Lista de citas
+  - `/dashboard/citas/calendario` - Vista de calendario (mensual/semanal)
+  - `/dashboard/citas/nuevo` - Crear cita (acepta ?date=YYYY-MM-DD)
+  - `/dashboard/citas/[id]` - Ver detalle
+  - `/dashboard/citas/[id]/editar` - Editar cita
+- Componentes:
+  - `CalendarView` - Calendario con vista mensual y semanal
 
 ### Imagenes medicas (Supabase Storage)
 - Cliente: `src/lib/supabase.ts`
@@ -140,12 +144,11 @@ pnpm db:studio
 
 ## Proximos pasos sugeridos
 1. Mejorar performance en dev (cache de sesiones, reducir logs prisma).
-2. Calendario de citas (vista mensual/semanal).
-3. Reportes con filtros y export CSV/PDF.
-4. Prescripciones (modelo + UI).
-5. Notificaciones (recordatorios de citas).
-6. RLS en Supabase y politicas de Storage.
-7. Auditoria de accesos (logging).
+2. Reportes con filtros y export CSV/PDF.
+3. Prescripciones (modelo + UI).
+4. Notificaciones (recordatorios de citas).
+5. RLS en Supabase y politicas de Storage.
+6. Auditoria de accesos (logging).
 
 ## Notas
 - Landing multi-idioma vive en `src/app/[locale]`.

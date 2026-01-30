@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAppointments } from "@/server/actions/appointment";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "lucide-react";
 
 export default async function AppointmentsPage() {
   const appointments = await getAppointments();
@@ -12,9 +13,17 @@ export default async function AppointmentsPage() {
           <h1 className="text-2xl font-semibold">Citas</h1>
           <p className="text-sm text-slate-600">Agenda y controla las citas médicas.</p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/citas/nuevo">Nueva cita</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href="/dashboard/citas/calendario">
+              <Calendar className="mr-2 h-4 w-4" />
+              Calendario
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/dashboard/citas/nuevo">Nueva cita</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-4">
