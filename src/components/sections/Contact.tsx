@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -12,6 +13,26 @@ const ContactForm = dynamic(
 
 export function Contact() {
   const t = useTranslations("contact");
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    const node = mapRef.current;
+    if (!node || showMap) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShowMap(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [showMap]);
 
   return (
     <section id="contact" className="bg-gradient-to-b from-white to-sky-50/70 py-16 scroll-mt-24 sm:py-20">
@@ -60,13 +81,19 @@ export function Contact() {
               </CardContent>
             </Card>
 
-            <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-              <iframe
-                title={t("map_label")}
-                className="h-64 w-full"
-                loading="lazy"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.3721640000994!2d-72.228!3d7.769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e66459a83329507%3A0x4c02561b00000000!2sCentro%20de%20San%20Crist%C3%B3bal%2C%20San%20Crist%C3%B3bal%207500%2C%20T%C3%A1chira%2C%20Venezuela!5e0!3m2!1sen!2sve!4v1700000000002!5m2!1sen!2sve"
-              />
+            <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm" ref={mapRef}>
+              {showMap ? (
+                <iframe
+                  title={t("map_label")}
+                  className="h-64 w-full"
+                  loading="lazy"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.3721640000994!2d-72.228!3d7.769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e66459a83329507%3A0x4c02561b00000000!2sCentro%20de%20San%20Crist%C3%B3bal%2C%20San%20Crist%C3%B3bal%207500%2C%20T%C3%A1chira%2C%20Venezuela!5e0!3m2!1sen!2sve!4v1700000000002!5m2!1sen!2sve"
+                />
+              ) : (
+                <div className="flex h-64 w-full items-center justify-center bg-slate-50 text-sm text-slate-500">
+                  Cargando mapa…
+                </div>
+              )}
               <a
                 href="https://maps.google.com/?q=Centro+San+Crist%C3%B3bal+T%C3%A1chira"
                 target="_blank"
