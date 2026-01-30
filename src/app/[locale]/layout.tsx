@@ -46,7 +46,7 @@ export default async function LocaleLayout({
       <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-white to-white text-slate-900">
         <Header currentLocale={locale} />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer currentLocale={locale} />
         <WhatsAppButton />
         <ToasterProvider />
       </div>

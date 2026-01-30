@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { CalendarClock, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { routing } from "@/i18n/routing";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -32,6 +33,12 @@ export function Header({ currentLocale }: { currentLocale: string }) {
   const t = useTranslations();
   const [scrolled, setScrolled] = useState(false);
 
+  const localeBase = currentLocale === routing.defaultLocale ? "" : `/${currentLocale}`;
+  const anchorHref = (hash: string) => {
+    const cleaned = hash.replace("#", "");
+    return `${localeBase}/#${cleaned}`;
+  };
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     handleScroll();
@@ -50,9 +57,16 @@ export function Header({ currentLocale }: { currentLocale: string }) {
           scrolled ? "py-3" : "py-4"
         } transition-all duration-300`}
       >
-        <Link href="#hero" className="flex items-center gap-3 font-semibold text-slate-900">
-          <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
-            <Image src="/images/logo.png" alt="Logo Dra. Kristhy" fill sizes="48px" className="object-contain p-1" />
+        <Link href={anchorHref("#hero")} className="flex items-center gap-3 font-semibold text-slate-900">
+          <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
+            <Image
+              src="/images/logo.png"
+              alt="Logo Dra. Kristhy Moreno"
+              fill
+              sizes="80px"
+              className="object-contain scale-125"
+              priority
+            />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-base">Dra. Kristhy Moreno</span>
@@ -66,7 +80,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
               {navAnchors.map((item) => (
                 <NavigationMenuItem key={item.key}>
                   <NavigationMenuLink
-                    href={item.href}
+                    href={anchorHref(item.href)}
                     className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
                   >
                     {t(item.key)}
@@ -80,7 +94,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
             asChild
             className="shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
           >
-            <Link href="#contact">
+            <Link href={anchorHref("#contact")}>
               <CalendarClock className="mr-2 h-4 w-4" />
               {t("hero.cta_primary")}
             </Link>
@@ -103,14 +117,14 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                 {navAnchors.map((item) => (
                   <Link
                     key={item.key}
-                    href={item.href}
+                    href={anchorHref(item.href)}
                     className="rounded-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
                   >
                     {t(item.key)}
                   </Link>
                 ))}
                 <Button asChild className="mt-2">
-                  <Link href="#contact">{t("hero.cta_primary")}</Link>
+                  <Link href={anchorHref("#contact")}>{t("hero.cta_primary")}</Link>
                 </Button>
               </div>
             </SheetContent>

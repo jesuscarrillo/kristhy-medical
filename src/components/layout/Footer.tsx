@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { routing } from "@/i18n/routing";
 
-export function Footer() {
+export function Footer({ currentLocale }: { currentLocale?: string }) {
   const t = useTranslations("footer");
   const contactT = useTranslations("contact");
   const services = t.raw("services") as string[];
+  const locale = currentLocale ?? routing.defaultLocale;
+  const localeBase = locale === routing.defaultLocale ? "" : `/${locale}`;
+  const anchorHref = (hash: string) => {
+    const cleaned = hash.replace("#", "");
+    return `${localeBase}/#${cleaned}`;
+  };
 
   return (
     <footer className="border-t border-border/70 bg-white">
@@ -40,24 +47,24 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-sm text-slate-600">
               <li>
-                <a href="#hero" className="hover:text-slate-900">
+                <Link href={anchorHref("#hero")} className="hover:text-slate-900">
                   {t("nav.home")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-slate-900">
+                <Link href={anchorHref("#services")} className="hover:text-slate-900">
                   {t("nav.services")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#about" className="hover:text-slate-900">
+                <Link href={anchorHref("#about")} className="hover:text-slate-900">
                   {t("nav.about")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#contact" className="hover:text-slate-900">
+                <Link href={anchorHref("#contact")} className="hover:text-slate-900">
                   {t("nav.contact")}
-                </a>
+                </Link>
               </li>
               <li>
                 <Link href="/privacidad" className="hover:text-slate-900">
@@ -105,13 +112,13 @@ export function Footer() {
           <div className="flex flex-wrap items-center gap-3">
             <span>{t("rights")}</span>
             <span className="h-3 w-px bg-slate-300" aria-hidden />
-            <a href="#privacy" className="hover:text-slate-900">
+            <Link href="/privacidad" className="hover:text-slate-900">
               {t("privacy")}
-            </a>
+            </Link>
             <span className="h-3 w-px bg-slate-300" aria-hidden />
-            <a href="#terms" className="hover:text-slate-900">
+            <Link href="/terminos" className="hover:text-slate-900">
               {t("terms")}
-            </a>
+            </Link>
           </div>
           <span className="text-slate-500">{t("crafted")}</span>
         </div>

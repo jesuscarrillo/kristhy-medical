@@ -25,11 +25,13 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Phone, User, Loader2, Send, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 
 export function ContactForm() {
   const t = useTranslations("contact");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const getFieldId = (name: string) => `contact-${name}-field`;
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     mode: "onBlur",
@@ -46,26 +48,25 @@ export function ContactForm() {
 
   const onSubmit = async (values: ContactFormValues) => {
     setStatus("idle");
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
 
-      if (!res.ok) throw new Error("Request failed");
+    if (res.ok) {
       setStatus("success");
       toast.success(t("toast.success"), {
         description: t("toast.success_detail") ?? "Te contactaremos pronto. Revisa tu email.",
       });
       form.reset({ ...form.getValues(), message: "", privacy: false });
-    } catch (error) {
-      console.error(error);
-      setStatus("error");
-      toast.error(t("toast.error"), {
-        description: t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
-      });
+      return;
     }
+
+    setStatus("error");
+    toast.error(t("toast.error"), {
+      description: t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
+    });
   };
 
   const statusClass = (name: keyof ContactFormValues) => {
@@ -76,27 +77,35 @@ export function ContactForm() {
     return "";
   };
 
-  const renderInput = (
-    field: ControllerRenderProps<ContactFormValues, keyof ContactFormValues>,
+  type TextFieldName = "name" | "email" | "phone";
+
+  const renderInput = <T extends TextFieldName>(
+    field: ControllerRenderProps<ContactFormValues, T>,
     icon: React.ReactNode,
     placeholder: string,
     type = "text",
-    id?: string,
-  ) => (
-    <div className="space-y-1.5">
-      <div className="relative">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>
-        <Input
-          type={type}
-          placeholder={placeholder}
-          className={`pl-10 ${statusClass(field.name)}`}
-          id={id}
-          {...field}
-        />
+  ) => {
+    const controlId = getFieldId(field.name);
+    const autoComplete =
+      field.name === "name" ? "name" : field.name === "email" ? "email" : field.name === "phone" ? "tel" : "off";
+    return (
+      <div className="space-y-1.5">
+        <div className="relative">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>
+          <Input
+            type={type}
+            name={field.name}
+            placeholder={placeholder}
+            className={`pl-10 ${statusClass(field.name)}`}
+            id={controlId}
+            autoComplete={autoComplete}
+            {...field}
+          />
+        </div>
+        <FormMessage />
       </div>
-      <FormMessage />
-    </div>
-  );
+    );
+  };
 
   return (
     <Form {...form}>
@@ -105,10 +114,10 @@ export function ContactForm() {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem id="contact-name">
-              <FormLabel>{t("form.name")}</FormLabel>
+            <FormItem id={getFieldId("name")}>
+              <FormLabel htmlFor={getFieldId("name")}>{t("form.name")}</FormLabel>
               <FormControl>
-                {renderInput(field, <User className="h-4 w-4" />, "María González", "text", "contact-name")}
+                {renderInput(field, <User className="h-4 w-4" />, "María González", "text")}
               </FormControl>
             </FormItem>
           )}
@@ -119,16 +128,10 @@ export function ContactForm() {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem id="contact-email">
-                <FormLabel>{t("form.email")}</FormLabel>
+              <FormItem id={getFieldId("email")}>
+                <FormLabel htmlFor={getFieldId("email")}>{t("form.email")}</FormLabel>
                 <FormControl>
-                  {renderInput(
-                    field,
-                    <Mail className="h-4 w-4" />,
-                    "maria@email.com",
-                    "email",
-                    "contact-email",
-                  )}
+                  {renderInput(field, <Mail className="h-4 w-4" />, "maria@email.com", "email")}
                 </FormControl>
               </FormItem>
             )}
@@ -137,16 +140,10 @@ export function ContactForm() {
             control={form.control}
             name="phone"
             render={({ field }) => (
-              <FormItem id="contact-phone">
-                <FormLabel>{t("form.phone")}</FormLabel>
+              <FormItem id={getFieldId("phone")}>
+                <FormLabel htmlFor={getFieldId("phone")}>{t("form.phone")}</FormLabel>
                 <FormControl>
-                  {renderInput(
-                    field,
-                    <Phone className="h-4 w-4" />,
-                    "+58 424-764-8994",
-                    "text",
-                    "contact-phone",
-                  )}
+                  {renderInput(field, <Phone className="h-4 w-4" />, "+58 424-764-8994", "text")}
                 </FormControl>
               </FormItem>
             )}
@@ -154,14 +151,19 @@ export function ContactForm() {
         </div>
 
         <FormField
-          control={form.control}
-          name="reason"
-          render={({ field }) => (
-            <FormItem id="contact-reason">
-              <FormLabel>{t("form.reason")}</FormLabel>
+            control={form.control}
+            name="reason"
+            render={({ field }) => (
+            <FormItem id={getFieldId("reason")}>
+              <FormLabel htmlFor={getFieldId("reason")}>{t("form.reason")}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className={statusClass("reason")}>
+                  <SelectTrigger
+                    id={getFieldId("reason")}
+                    className={statusClass("reason")}
+                    name={field.name}
+                    autoComplete="off"
+                  >
                     <SelectValue placeholder={t("form.reason")} />
                   </SelectTrigger>
                 </FormControl>
@@ -184,8 +186,8 @@ export function ContactForm() {
           control={form.control}
           name="message"
           render={({ field }) => (
-            <FormItem id="contact-message">
-              <FormLabel>{t("form.message")}</FormLabel>
+            <FormItem id={getFieldId("message")}>
+              <FormLabel htmlFor={getFieldId("message")}>{t("form.message")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <span className="pointer-events-none absolute left-3 top-3 text-slate-400">
@@ -195,6 +197,9 @@ export function ContactForm() {
                     rows={4}
                     placeholder={t("form.messagePlaceholder") ?? "Cuéntame cómo puedo ayudarte..."}
                     className={`pl-10 ${statusClass("message")}`}
+                    id={getFieldId("message")}
+                    name={field.name}
+                    autoComplete="off"
                     {...field}
                   />
                 </div>
@@ -211,14 +216,19 @@ export function ContactForm() {
             <FormItem className="flex flex-col space-y-2 rounded-lg border border-dashed border-border px-3 py-2">
               <div className="flex items-start gap-3">
                 <FormControl>
-                  <Checkbox id="contact-privacy" checked={field.value} onCheckedChange={field.onChange} />
+                  <Checkbox
+                    id={getFieldId("privacy")}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    name={field.name}
+                  />
                 </FormControl>
                 <div className="space-y-1 leading-none text-sm">
-                  <FormLabel htmlFor="contact-privacy" className="flex flex-col gap-1">
+                  <FormLabel htmlFor={getFieldId("privacy")} className="flex flex-col gap-1">
                     {t("form.privacy")}
-                    <a href="#privacy" className="text-sky-600 underline">
+                    <Link href="/privacidad" className="text-sky-600 underline">
                       {t("form.privacy_link") ?? "Política de Privacidad"}
-                    </a>
+                    </Link>
                   </FormLabel>
                 </div>
               </div>
