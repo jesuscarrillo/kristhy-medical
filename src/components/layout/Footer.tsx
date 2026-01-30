@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Twitter } from "lucide-react";
 import { routing } from "@/i18n/routing";
 
 export function Footer({ currentLocale }: { currentLocale?: string }) {
@@ -105,6 +105,37 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
                 <span>{contactT("schedule")}</span>
               </li>
             </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+              {t("social_title")}
+            </h4>
+            <div className="flex items-center gap-3">
+              <Link
+                href="https://www.instagram.com/drakristhymoreno"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram Dra. Kristhy"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-amber-400 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <Instagram className="h-5 w-5" />
+              </Link>
+              <span
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
+                aria-label="Facebook próximamente"
+                title="Próximamente"
+              >
+                <Facebook className="h-5 w-5" />
+              </span>
+              <span
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
+                aria-label="X/Twitter próximamente"
+                title="Próximamente"
+              >
+                <Twitter className="h-5 w-5" />
+              </span>
+            </div>
           </div>
         </div>
 

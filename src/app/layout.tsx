@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "Dra. Kristhy - Obstetricia y Ginecología",
   description:
     "Consultorio especializado en salud integral para la mujer con un enfoque cálido y profesional.",
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
 };
 
 export default function RootLayout({

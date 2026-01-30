@@ -94,7 +94,6 @@ export function ContactForm() {
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>
           <Input
             type={type}
-            name={field.name}
             placeholder={placeholder}
             className={`pl-10 ${statusClass(field.name)}`}
             id={controlId}
@@ -161,8 +160,6 @@ export function ContactForm() {
                   <SelectTrigger
                     id={getFieldId("reason")}
                     className={statusClass("reason")}
-                    name={field.name}
-                    autoComplete="off"
                   >
                     <SelectValue placeholder={t("form.reason")} />
                   </SelectTrigger>
@@ -198,7 +195,6 @@ export function ContactForm() {
                     placeholder={t("form.messagePlaceholder") ?? "Cuéntame cómo puedo ayudarte..."}
                     className={`pl-10 ${statusClass("message")}`}
                     id={getFieldId("message")}
-                    name={field.name}
                     autoComplete="off"
                     {...field}
                   />
