@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String    @default("doctor")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@index([userId])
+}
+
+model Account {
+  id                     String   @id @default(cuid())
+  accountId              String
+  providerId             String
+  userId                 String
+  accessToken            String?
+  refreshToken           String?
+  idToken                String?
+  accessTokenExpiresAt   DateTime?
+  refreshTokenExpiresAt  DateTime?
+  scope                  String?
+  password               String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+  @@index([userId])
+  @@unique([providerId, accountId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+  @@index([identifier])
+}
+
+model Patient {
+  id               String         @id @default(cuid())
+  firstName        String
+  lastName         String
+  cedula           String         @unique
+  dateOfBirth      DateTime
+  gender           String
+  phone            String
+  email            String?
+  address          String
+  city             String         @default("San Cristóbal")
+  state            String         @default("Táchira")
+  bloodType        String?
+  allergies        String?
+  emergencyContact String?
+  profileImageUrl  String?
+  notes            String?        @db.Text
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  appointments     Appointment[]
+  medicalRecords   MedicalRecord[]
+  prescriptions    Prescription[]
+  images           MedicalImage[]
+
+  @@map("patients")
+  @@index([cedula])
+  @@index([lastName])
+}
+
+model MedicalRecord {
+  id                 String   @id @default(cuid())
+  patientId          String
+  consultationType   String
+  date               DateTime @default(now())
+  chiefComplaint     String   @db.Text
+  symptoms           String?  @db.Text
+  diagnosis          String?  @db.Text
+  treatment          String?  @db.Text
+  vitalSigns         String?
+  personalHistory    String?  @db.Text
+  gynecologicHistory String?
+  obstetricalHistory String?
+  physicalExam       String?  @db.Text
+  treatmentPlan      String?  @db.Text
+  followUpDate       DateTime?
+  notes              String?  @db.Text
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  patient            Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("medical_records")
+  @@index([patientId])
+  @@index([date])
+}
+
+model Appointment {
+  id           String   @id @default(cuid())
+  patientId    String
+  date         DateTime
+  duration     Int      @default(30)
+  type         String
+  status       String   @default("scheduled")
+  reason       String?
+  notes        String?  @db.Text
+  reminderSent Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("appointments")
+  @@index([patientId])
+  @@index([date])
+  @@index([status])
+}
+
+model Prescription {
+  id           String   @id @default(cuid())
+  patientId    String
+  date         DateTime @default(now())
+  medications  String   @db.Text
+  instructions String?  @db.Text
+  diagnosis    String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("prescriptions")
+  @@index([patientId])
+}
+
+model MedicalImage {
+  id          String   @id @default(cuid())
+  patientId   String
+  fileName    String
+  fileUrl     String
+  fileType    String
+  fileSize    Int
+  mimeType    String
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("medical_images")
+  @@index([patientId])
+}
