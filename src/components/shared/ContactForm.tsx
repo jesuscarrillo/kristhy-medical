@@ -142,7 +142,7 @@ export function ContactForm() {
               <FormItem id={getFieldId("phone")}>
                 <FormLabel htmlFor={getFieldId("phone")}>{t("form.phone")}</FormLabel>
                 <FormControl>
-                  {renderInput(field, <Phone className="h-4 w-4" />, "+58 424-764-8994", "text")}
+                  {renderInput(field, <Phone className="h-4 w-4" />, "+58 412-073-5223", "text")}
                 </FormControl>
               </FormItem>
             )}

@@ -24,7 +24,11 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
           tu información.
         </p>
         <p>
-          Si tienes dudas sobre esta política, contáctanos en <a className="text-sky-600 underline" href="mailto:contacto@drakristhy.com">contacto@drakristhy.com</a>.
+          Si tienes dudas sobre esta política, contáctanos en{" "}
+          <a className="text-sky-600 underline" href="mailto:drakristhymoreno@gmail.com">
+            drakristhymoreno@gmail.com
+          </a>
+          .
         </p>
       </div>
     </main>

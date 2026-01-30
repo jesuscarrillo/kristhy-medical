@@ -24,8 +24,8 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
         </p>
         <p>
           Si tienes preguntas sobre estos términos, escríbenos a{" "}
-          <a className="text-sky-600 underline" href="mailto:contacto@drakristhy.com">
-            contacto@drakristhy.com
+          <a className="text-sky-600 underline" href="mailto:drakristhymoreno@gmail.com">
+            drakristhymoreno@gmail.com
           </a>
           .
         </p>

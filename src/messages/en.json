@@ -117,10 +117,10 @@
   "contact": {
     "title": "Contact me",
     "subtitle": "Schedule your visit or ask any questions",
-    "address": "Av. España, Res. Orquimaira Tower B 3-A, Pueblo Nuevo, San Cristóbal, Táchira",
+    "address": "Centro, San Cristóbal, Táchira",
     "schedule": "Mon - Fri: 8:00 AM - 5:00 PM",
-    "phone": "+58 424-764-8994",
-    "email": "contact@drakristhy.com",
+    "phone": "+58 412-073-5223",
+    "email": "drakristhymoreno@gmail.com",
     "map_label": "View location on Google Maps",
     "form": {
       "name": "Full name",
@@ -154,7 +154,6 @@
     "rights": "© 2026 Dr. Kristhy Moreno. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms and Conditions",
-    "crafted": "Designed to inspire trust and care.",
     "nav": {
       "home": "Home",
       "services": "Services",
@@ -168,10 +167,6 @@
       "Gynecologic Surgery",
       "Obstetric Ultrasound"
     ],
-    "badges": {
-      "cmt": "CMT: 6687",
-      "mpps": "MPPS: 154436"
-    },
     "mini_bio": "Personalized obstetrics and gynecology care with a human, evidence-based approach.",
     "social_title": "Follow me"
   }

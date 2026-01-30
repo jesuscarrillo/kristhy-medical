@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Twitter } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Camera, ThumbsUp, Send } from "lucide-react";
 import { routing } from "@/i18n/routing";
 
 export function Footer({ currentLocale }: { currentLocale?: string }) {
@@ -21,10 +21,6 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-slate-900">Dra. Kristhy Moreno</h3>
             <p className="text-sm text-slate-600">Obstetricia &amp; Ginecología</p>
-            <div className="flex flex-wrap gap-2 text-xs font-semibold text-slate-700">
-              <span className="rounded-full bg-sky-50 px-3 py-1">{t("badges.cmt")}</span>
-              <span className="rounded-full bg-emerald-50 px-3 py-1">{t("badges.mpps")}</span>
-            </div>
             <p className="text-sm text-slate-600">{t("mini_bio")}</p>
           </div>
 
@@ -90,13 +86,13 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-sky-600" />
-                <a href="tel:+584247648994" className="hover:text-slate-900">
+                <a href="tel:+584120735223" className="hover:text-slate-900">
                   {contactT("phone")}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-sky-600" />
-                <a href="mailto:contacto@drakristhy.com" className="hover:text-slate-900">
+                <a href="mailto:drakristhymoreno@gmail.com" className="hover:text-slate-900">
                   {contactT("email")}
                 </a>
               </li>
@@ -117,23 +113,23 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram Dra. Kristhy"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-amber-400 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-pink-500 to-amber-400 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
-                <Instagram className="h-5 w-5" />
+                <Camera className="h-5 w-5" />
               </Link>
               <span
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
                 aria-label="Facebook próximamente"
                 title="Próximamente"
               >
-                <Facebook className="h-5 w-5" />
+                <ThumbsUp className="h-5 w-5" />
               </span>
               <span
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
                 aria-label="X/Twitter próximamente"
                 title="Próximamente"
               >
-                <Twitter className="h-5 w-5" />
+                <Send className="h-5 w-5" />
               </span>
             </div>
           </div>
@@ -151,7 +147,6 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
               {t("terms")}
             </Link>
           </div>
-          <span className="text-slate-500">{t("crafted")}</span>
         </div>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ArrowRight, HeartPulse, ShieldCheck, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[80vh] overflow-hidden bg-gradient-to-br from-sky-50 via-white to-emerald-50 pb-16 pt-10 sm:pb-20 sm:pt-16"
+      className="relative min-h-[80vh] overflow-hidden bg-linear-to-br from-sky-50 via-white to-emerald-50 pb-16 pt-10 sm:pb-20 sm:pt-16"
     >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -left-20 top-10 h-40 w-40 rounded-full bg-sky-100 blur-3xl" />
@@ -39,10 +40,10 @@ export function Hero() {
                 asChild
                 className="shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:scale-[1.02]"
               >
-                <a href="#contact">
+                <Link href="/#contact">
                   <CalendarClock className="mr-2 h-4 w-4" />
                   {t("cta_primary")}
-                </a>
+                </Link>
               </Button>
               <Button
                 size="lg"
@@ -50,10 +51,10 @@ export function Hero() {
                 asChild
                 className="border-sky-200 text-slate-700 transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50"
               >
-                <a href="#about">
+                <Link href="/#about">
                   {t("cta_secondary")}
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
+                </Link>
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-4 rounded-2xl border border-white bg-white/70 p-4 shadow-lg sm:max-w-lg">
@@ -81,17 +82,18 @@ export function Hero() {
           <div className="relative">
             <div className="relative mx-auto w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-slate-100">
               <Image
-                src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=75"
+                src="/images/hero-consultorio.jpg"
                 alt="Dra. Kristhy en consulta"
                 width={1200}
-                height={800}
+                height={1600}
                 className="h-full w-full object-cover"
                 priority
-                quality={75}
+                quality={80}
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN0d3f0HwAFWAKvVr1TngAAAABJRU5ErkJggg=="
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAIAAAAAD/wAARCAAgABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
+              <div className="absolute inset-0 bg-linear-to-r from-transparent to-background/20" />
               <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-white/85 p-3 shadow-lg backdrop-blur">
                 <p className="text-sm font-semibold text-slate-900">{t("title")}</p>
                 <p className="text-xs text-slate-600">{t("tagline")}</p>

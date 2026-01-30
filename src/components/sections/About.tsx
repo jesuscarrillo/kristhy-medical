@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { GraduationCap, Stethoscope, Sparkles, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,20 +20,20 @@ export function About() {
           <div className="relative">
             <div className="absolute -left-6 -top-6 h-24 w-24 rounded-full bg-emerald-100 blur-3xl" />
             <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-sky-100 blur-3xl" />
-            <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-3xl border border-white shadow-xl ring-1 ring-slate-100 sm:mb-0">
+            <div className="relative mb-6 aspect-3/4 overflow-hidden rounded-3xl border border-white shadow-xl ring-1 ring-slate-100 sm:mb-0">
               <Image
-                src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=75"
+                src="/images/about-dra.jpg"
                 alt="Dra. Kristhy en consultorio"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 540px"
-                quality={75}
+                quality={80}
                 placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN0d3f0HwAFWAKvVr1TngAAAABJRU5ErkJggg=="
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEqADAAQAAAABAAAAGAAAAAD/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
                 loading="lazy"
               />
-              <div className="absolute -bottom-6 -right-6 rounded-xl bg-white p-5 shadow-lg">
-                <p className="text-4xl font-bold text-primary">12+</p>
+              <div className="absolute inset-x-4 bottom-4 mx-auto max-w-xs rounded-2xl bg-white/85 p-3 text-center shadow-lg backdrop-blur">
+                <p className="text-4xl font-bold text-primary leading-tight">12+</p>
                 <p className="text-sm text-muted-foreground">{heroT("experience")}</p>
               </div>
             </div>
@@ -86,7 +87,7 @@ export function About() {
               </div>
             </div>
             <Button size="lg" asChild className="shadow-md hover:-translate-y-0.5 transition">
-              <a href="#contact">{t("cta")}</a>
+              <Link href="/#contact">{t("cta")}</Link>
             </Button>
           </div>
         </div>
