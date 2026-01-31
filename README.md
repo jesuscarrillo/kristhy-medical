@@ -109,7 +109,8 @@ src/
 | Modelo | Descripción |
 |--------|-------------|
 | **User/Session/Account** | Better Auth (autenticación) |
-| **Patient** | Datos del paciente (campos sensibles encriptados) |
+| **Patient** | Datos del paciente (medicalRecordNumber, weight, height, campos encriptados) |
+| **GynecologicalProfile** | Antecedentes gineco-obstétricos (1:1 con Patient) |
 | **Appointment** | Citas médicas |
 | **MedicalRecord** | Historiales clínicos |
 | **Prescription** | Recetas médicas |
@@ -292,3 +293,55 @@ El sistema está completo. Posibles mejoras futuras:
 - La landing multi-idioma está en `src/app/[locale]/`
 - El sistema privado está en `/dashboard/*`
 - Prisma 7 requiere `prisma.config.ts` para migraciones
+
+## Cambios Recientes (v1.1.0 - Enero 31, 2026)
+
+### Nuevas Funcionalidades
+
+#### 1. Número de Historia Médica
+- Campo único `medicalRecordNumber` para identificar pacientes
+- Formato: HM-000001, HM-000002, etc.
+- Generación automática para pacientes existentes
+- Visible en vista de detalle y formulario
+
+#### 2. Datos Antropométricos
+- **Peso** (kg): Rango 20-300kg
+- **Talla** (cm): Rango 100-250cm
+- Campos opcionales en formulario de paciente
+
+#### 3. Antecedentes Gineco-Obstétricos
+Nuevo módulo especializado para pacientes femeninos:
+
+**Antecedentes Obstétricos:**
+- Gestas, Partos, Cesáreas
+- Abortos, Ectópicos, Molas
+- Fórmula obstétrica (parity)
+
+**Ciclos Menstruales:**
+- Días del ciclo (21-45 días)
+- Duración del sangrado (1-10 días)
+- Nivel de dolor (ninguno, leve, moderado, severo)
+- Fecha de última menstruación (FUM)
+- Estado de menopausia y edad
+
+**Información Adicional:**
+- Método anticonceptivo actual
+- Sexualmente activa (sí/no)
+- Notas adicionales
+
+**Características:**
+- Sección expandible en formulario de paciente
+- Solo visible para pacientes femeninos
+- Guardado automático con upsert
+- Validación completa de campos
+
+### Mejoras Técnicas
+- Nuevo modelo `GynecologicalProfile` con relación 1:1 a `Patient`
+- Schema Zod combinado `patientWithGynProfileSchema`
+- Componente modular `GynecologicalProfileFields`
+- Migraciones aplicadas con generación automática de HM
+
+### Migraciones
+- `20260131125019_add_medical_record_number` - Número de historia
+- `20260131163602_add_gynecological_profile_and_patient_metrics` - Peso, talla y perfil ginecológico
+

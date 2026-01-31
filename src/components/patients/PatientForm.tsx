@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { patientSchema } from "@/lib/validators/patient";
+import { patientWithGynProfileSchema } from "@/lib/validators/patient";
 import { createPatient, updatePatient } from "@/server/actions/patient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { GynecologicalProfileFields } from "./GynecologicalProfileFields";
 
-type PatientFormValues = z.input<typeof patientSchema>;
+type PatientFormValues = z.input<typeof patientWithGynProfileSchema>;
 
 const formatDateInput = (value?: string | Date | null) => {
   if (!value) return "";
@@ -24,6 +25,7 @@ const formatDateInput = (value?: string | Date | null) => {
 type PatientFormProps = {
   patientId?: string;
   initialData?: {
+    medicalRecordNumber?: string;
     firstName?: string;
     lastName?: string;
     cedula?: string;
@@ -35,19 +37,24 @@ type PatientFormProps = {
     city?: string;
     state?: string;
     bloodType?: string | null;
+    weight?: number | null;
+    height?: number | null;
     allergies?: string | null;
     emergencyContact?: string | null;
     notes?: string | null;
+    gynecologicalProfile?: any; // TODO: type this properly
   };
 };
 
 export function PatientForm({ patientId, initialData }: PatientFormProps) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showGynProfile, setShowGynProfile] = useState(false);
   const form = useForm<PatientFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(patientSchema) as any,
+    resolver: zodResolver(patientWithGynProfileSchema) as any,
     defaultValues: {
+      medicalRecordNumber: initialData?.medicalRecordNumber ?? "",
       firstName: initialData?.firstName ?? "",
       lastName: initialData?.lastName ?? "",
       cedula: initialData?.cedula ?? "",
@@ -59,9 +66,28 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
       city: initialData?.city ?? "San Cristóbal",
       state: initialData?.state ?? "Táchira",
       bloodType: initialData?.bloodType ?? "",
+      weight: initialData?.weight ?? "",
+      height: initialData?.height ?? "",
       allergies: initialData?.allergies ?? "",
       emergencyContact: initialData?.emergencyContact ?? "",
       notes: initialData?.notes ?? "",
+      // Gynecological Profile fields
+      gestas: initialData?.gynecologicalProfile?.gestas ?? "",
+      partos: initialData?.gynecologicalProfile?.partos ?? "",
+      cesareas: initialData?.gynecologicalProfile?.cesareas ?? "",
+      abortos: initialData?.gynecologicalProfile?.abortos ?? "",
+      ectopicos: initialData?.gynecologicalProfile?.ectopicos ?? "",
+      molas: initialData?.gynecologicalProfile?.molas ?? "",
+      parity: initialData?.gynecologicalProfile?.parity ?? "",
+      menstrualCycleDays: initialData?.gynecologicalProfile?.menstrualCycleDays ?? "",
+      menstrualDuration: initialData?.gynecologicalProfile?.menstrualDuration ?? "",
+      menstrualPain: initialData?.gynecologicalProfile?.menstrualPain ?? "",
+      lastMenstrualPeriod: formatDateInput(initialData?.gynecologicalProfile?.lastMenstrualPeriod),
+      menopause: initialData?.gynecologicalProfile?.menopause ?? false,
+      menopauseAge: initialData?.gynecologicalProfile?.menopauseAge ?? "",
+      contraceptiveMethod: initialData?.gynecologicalProfile?.contraceptiveMethod ?? "",
+      sexuallyActive: initialData?.gynecologicalProfile?.sexuallyActive ?? "",
+      gynProfileNotes: initialData?.gynecologicalProfile?.notes ?? "",
     },
   });
 
@@ -102,6 +128,17 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="medicalRecordNumber">Número de Historia Médica</Label>
+          <Input
+            id="medicalRecordNumber"
+            {...form.register("medicalRecordNumber")}
+            placeholder="HM-000001"
+          />
+          {errors.medicalRecordNumber ? (
+            <p className="text-xs text-red-600">{errors.medicalRecordNumber.message}</p>
+          ) : null}
+        </div>
         <div className="space-y-2">
           <Label htmlFor="firstName">Nombre</Label>
           <Input id="firstName" {...form.register("firstName")} />
@@ -199,6 +236,36 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
           ) : null}
         </div>
         <div className="space-y-2">
+          <Label htmlFor="weight">Peso (kg)</Label>
+          <Input
+            id="weight"
+            type="number"
+            step="0.1"
+            min="20"
+            max="300"
+            placeholder="65.5"
+            {...form.register("weight")}
+          />
+          {errors.weight ? (
+            <p className="text-xs text-red-600">{errors.weight.message}</p>
+          ) : null}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="height">Talla (cm)</Label>
+          <Input
+            id="height"
+            type="number"
+            step="0.1"
+            min="100"
+            max="250"
+            placeholder="165"
+            {...form.register("height")}
+          />
+          {errors.height ? (
+            <p className="text-xs text-red-600">{errors.height.message}</p>
+          ) : null}
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="allergies">Alergias</Label>
           <Textarea id="allergies" rows={3} {...form.register("allergies")} />
           {errors.allergies ? (
@@ -220,6 +287,28 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
           ) : null}
         </div>
       </div>
+
+      {/* Gynecological Profile Section (only for female patients) */}
+      {(form.watch("gender") === "female" || !form.watch("gender")) && (
+        <div className="space-y-4 rounded-lg border border-slate-200 p-6">
+          <button
+            type="button"
+            onClick={() => setShowGynProfile(!showGynProfile)}
+            className="flex w-full items-center justify-between text-left"
+          >
+            <h2 className="text-lg font-semibold">
+              Antecedentes Gineco-Obstétricos
+              <span className="ml-2 text-sm font-normal text-slate-500">(Opcional)</span>
+            </h2>
+            <span className="text-slate-400">
+              {showGynProfile ? "▼" : "▶"}
+            </span>
+          </button>
+          {showGynProfile && (
+            <GynecologicalProfileFields register={form.register} errors={errors} />
+          )}
+        </div>
+      )}
 
       {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
 

@@ -5,6 +5,7 @@ import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/utils/encryption";
 import { patientSchema } from "@/lib/validators/patient";
+import { gynecologicalProfileSchema } from "@/lib/validators/gynecologicalProfile";
 import { logAudit } from "./audit";
 import { CACHE_TAGS } from "@/lib/cache";
 
@@ -51,13 +52,48 @@ export async function createPatient(formData: FormData) {
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
-    const validatedData = patientSchema.parse(rawData);
+
+    // Separate patient data from gynecological profile data
+    const {
+      gestas, cesareas, ectopicos, partos, abortos, molas,
+      menstrualCycleDays, menstrualDuration, menstrualPain,
+      lastMenstrualPeriod, menopause, menopauseAge,
+      contraceptiveMethod, sexuallyActive, parity,
+      gynProfileNotes,
+      ...patientData
+    } = rawData;
+
+    const validatedPatientData = patientSchema.parse(patientData);
 
     const patient = await prisma.patient.create({
       data: {
-        ...encryptPatientFields(validatedData),
+        ...encryptPatientFields(validatedPatientData),
       },
     });
+
+    // Create gynecological profile if any field is provided and patient is female
+    const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
+      menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
+      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes;
+
+    if (hasGynData && validatedPatientData.gender === "female") {
+      const gynData = {
+        gestas, cesareas, ectopicos, partos, abortos, molas,
+        menstrualCycleDays, menstrualDuration, menstrualPain,
+        lastMenstrualPeriod, menopause, menopauseAge,
+        contraceptiveMethod, sexuallyActive, parity,
+        notes: gynProfileNotes,
+      };
+
+      const validatedGynData = gynecologicalProfileSchema.parse(gynData);
+
+      await prisma.gynecologicalProfile.create({
+        data: {
+          patientId: patient.id,
+          ...validatedGynData,
+        },
+      });
+    }
 
     await logAudit({
       userId: session.user.id,
@@ -65,7 +101,7 @@ export async function createPatient(formData: FormData) {
       action: "create",
       entity: "patient",
       entityId: patient.id,
-      details: `Paciente: ${validatedData.firstName} ${validatedData.lastName}`,
+      details: `Paciente: ${validatedPatientData.firstName} ${validatedPatientData.lastName}`,
     });
 
     revalidatePath("/dashboard/pacientes");
@@ -137,6 +173,7 @@ export async function getPatient(id: string) {
       images: {
         orderBy: { date: "desc" },
       },
+      gynecologicalProfile: true,
     },
   });
 
@@ -166,14 +203,54 @@ export async function updatePatient(id: string, formData: FormData) {
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
-    const validatedData = patientSchema.partial().parse(rawData);
 
-    await prisma.patient.update({
+    // Separate patient data from gynecological profile data
+    const {
+      gestas, cesareas, ectopicos, partos, abortos, molas,
+      menstrualCycleDays, menstrualDuration, menstrualPain,
+      lastMenstrualPeriod, menopause, menopauseAge,
+      contraceptiveMethod, sexuallyActive, parity,
+      gynProfileNotes,
+      ...patientData
+    } = rawData;
+
+    const validatedPatientData = patientSchema.partial().parse(patientData);
+
+    const patient = await prisma.patient.update({
       where: { id },
       data: {
-        ...encryptPatientFields(validatedData),
+        ...encryptPatientFields(validatedPatientData),
+      },
+      include: {
+        gynecologicalProfile: true,
       },
     });
+
+    // Update or create gynecological profile if any field is provided and patient is female
+    const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
+      menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
+      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes;
+
+    if (hasGynData && patient.gender === "female") {
+      const gynData = {
+        gestas, cesareas, ectopicos, partos, abortos, molas,
+        menstrualCycleDays, menstrualDuration, menstrualPain,
+        lastMenstrualPeriod, menopause, menopauseAge,
+        contraceptiveMethod, sexuallyActive, parity,
+        notes: gynProfileNotes,
+      };
+
+      const validatedGynData = gynecologicalProfileSchema.partial().parse(gynData);
+
+      await prisma.gynecologicalProfile.upsert({
+        where: { patientId: id },
+        create: {
+          patientId: id,
+          ...validatedGynData,
+        },
+        update: validatedGynData,
+      });
+    }
 
     await logAudit({
       userId: session.user.id,

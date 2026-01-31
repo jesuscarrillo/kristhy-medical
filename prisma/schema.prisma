@@ -71,33 +71,68 @@ model Verification {
 }
 
 model Patient {
-  id               String         @id @default(cuid())
-  firstName        String
-  lastName         String
-  cedula           String         @unique
-  dateOfBirth      DateTime
-  gender           String
-  phone            String
-  email            String?
-  address          String
-  city             String         @default("San Cristóbal")
-  state            String         @default("Táchira")
-  bloodType        String?
-  allergies        String?
-  emergencyContact String?
-  profileImageUrl  String?
-  notes            String?        @db.Text
-  isActive         Boolean        @default(true)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  appointments     Appointment[]
-  medicalRecords   MedicalRecord[]
-  prescriptions    Prescription[]
-  images           MedicalImage[]
+  id                   String                 @id @default(cuid())
+  medicalRecordNumber  String                 @unique // Número de historia médica
+  firstName            String
+  lastName             String
+  cedula               String                 @unique
+  dateOfBirth          DateTime
+  gender               String
+  phone                String
+  email                String?
+  address              String
+  city                 String                 @default("San Cristóbal")
+  state                String                 @default("Táchira")
+  bloodType            String?
+  weight               Float?                 // Peso en kg
+  height               Float?                 // Talla en cm
+  allergies            String?
+  emergencyContact     String?
+  profileImageUrl      String?
+  notes                String?                @db.Text
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  appointments         Appointment[]
+  medicalRecords       MedicalRecord[]
+  prescriptions        Prescription[]
+  images               MedicalImage[]
+  gynecologicalProfile GynecologicalProfile?
 
   @@map("patients")
   @@index([cedula])
   @@index([lastName])
+  @@index([medicalRecordNumber])
+}
+
+model GynecologicalProfile {
+  id                    String   @id @default(cuid())
+  patientId             String   @unique
+  // Antecedentes Obstétricos
+  gestas                Int?     // Número total de embarazos
+  cesareas              Int?     // Número de cesáreas
+  ectopicos             Int?     // Número de embarazos ectópicos
+  partos                Int?     // Número de partos
+  abortos               Int?     // Número de abortos
+  molas                 Int?     // Número de molas
+  // Ciclos Menstruales (encriptado)
+  menstrualCycleDays    Int?     // Cada cuántos días (ej: 28)
+  menstrualDuration     Int?     // Cuántos días dura (ej: 5)
+  menstrualPain         String?  // Nivel de dolor: none, mild, moderate, severe
+  lastMenstrualPeriod   DateTime? // Fecha de última menstruación (FUM)
+  menopause             Boolean  @default(false)
+  menopauseAge          Int?     // Edad de menopausia si aplica
+  // Información adicional (encriptado)
+  contraceptiveMethod   String?  @db.Text // Método anticonceptivo actual
+  sexuallyActive        Boolean? // ¿Sexualmente activa?
+  parity                String?  // Fórmula obstétrica (ej: "G3P2A1")
+  notes                 String?  @db.Text // Notas adicionales
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  patient               Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("gynecological_profiles")
+  @@index([patientId])
 }
 
 model MedicalRecord {

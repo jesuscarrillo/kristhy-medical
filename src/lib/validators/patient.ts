@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { gynecologicalProfileSchema } from "./gynecologicalProfile";
 
 const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
 
 export const patientSchema = z.object({
+  medicalRecordNumber: z.string().min(3, "Número muy corto").max(20, "Número muy largo").trim(),
   firstName: z.string().min(2, "Nombre muy corto").max(50, "Nombre muy largo").trim(),
   lastName: z.string().min(2, "Apellido muy corto").max(50, "Apellido muy largo").trim(),
   cedula: z
@@ -22,6 +24,14 @@ export const patientSchema = z.object({
     emptyToUndefined,
     z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]).optional()
   ),
+  weight: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().min(20, "Peso mínimo 20kg").max(300, "Peso máximo 300kg").optional()
+  ),
+  height: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().min(100, "Talla mínima 100cm").max(250, "Talla máxima 250cm").optional()
+  ),
   allergies: z.preprocess(emptyToUndefined, z.string().trim().max(500).optional()),
   emergencyContact: z.preprocess(
     emptyToUndefined,
@@ -30,4 +40,12 @@ export const patientSchema = z.object({
   notes: z.preprocess(emptyToUndefined, z.string().trim().max(2000).optional()),
 });
 
+// Combined schema for forms that include gynecological profile
+export const patientWithGynProfileSchema = patientSchema.merge(
+  gynecologicalProfileSchema.partial().extend({
+    gynProfileNotes: z.preprocess(emptyToUndefined, z.string().trim().max(2000).optional()),
+  })
+);
+
 export type PatientInput = z.infer<typeof patientSchema>;
+export type PatientWithGynProfileInput = z.infer<typeof patientWithGynProfileSchema>;

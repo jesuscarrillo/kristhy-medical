@@ -26,7 +26,9 @@ export default async function PatientDetailPage({ params }: PatientDetailPagePro
           <h1 className="text-2xl font-semibold">
             {patient.firstName} {patient.lastName}
           </h1>
-          <p className="text-sm text-slate-600">Cédula: {patient.cedula}</p>
+          <p className="text-sm text-slate-600">
+            Historia: {patient.medicalRecordNumber} • Cédula: {patient.cedula}
+          </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">

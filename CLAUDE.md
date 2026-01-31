@@ -68,11 +68,13 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 ## Modelos de Base de Datos
 
 - **User/Session/Account:** Better Auth (autenticación)
-- **Patient:** Datos del paciente
+- **Patient:** Datos del paciente (incluye medicalRecordNumber, weight, height)
+- **GynecologicalProfile:** Antecedentes gineco-obstétricos (1:1 con Patient)
 - **Appointment:** Citas médicas
 - **MedicalRecord:** Historiales clínicos
-- **Prescription:** Recetas (modelo existe, sin UI)
+- **Prescription:** Recetas médicas
 - **MedicalImage:** Referencias a imágenes en Supabase Storage
+- **AuditLog:** Registro de auditoría de accesos
 
 ---
 
@@ -307,3 +309,54 @@ BETTER_AUTH_URL
 - [ ] Ejecutar `pnpm build` localmente para verificar errores
 - [ ] Revisar políticas RLS en Supabase
 - [ ] Configurar dominio en Better Auth URL
+
+---
+
+## Cambios Recientes (Enero 31, 2026)
+
+### 1. Agregado Número de Historia Médica
+- ✅ Campo `medicalRecordNumber` (String, unique) en modelo `Patient`
+- ✅ Generación automática para pacientes existentes (formato: HM-000001)
+- ✅ Validación Zod en formularios
+- ✅ Visible en vista de detalle y formulario de paciente
+- ✅ Migración: `20260131125019_add_medical_record_number`
+
+### 2. Agregados Peso y Talla del Paciente
+- ✅ Campo `weight` (Float, kg) en modelo `Patient`
+- ✅ Campo `height` (Float, cm) en modelo `Patient`
+- ✅ Validación: peso 20-300kg, talla 100-250cm
+- ✅ Campos agregados al formulario de paciente
+
+### 3. Antecedentes Gineco-Obstétricos
+- ✅ Nuevo modelo `GynecologicalProfile` (relación 1:1 con Patient)
+- ✅ **Antecedentes obstétricos:** gestas, partos, cesáreas, abortos, ectópicos, molas, parity
+- ✅ **Ciclos menstruales:** días de ciclo, duración, dolor, FUM, menopausia
+- ✅ **Info adicional:** método anticonceptivo, sexualmente activa, notas
+- ✅ Componente `GynecologicalProfileFields` con sección expandible
+- ✅ Solo visible para pacientes femeninos
+- ✅ Validación completa con schema Zod
+- ✅ Server actions con upsert automático
+- ✅ Migración: `20260131163602_add_gynecological_profile_and_patient_metrics`
+
+### 4. Correcciones y Mejoras
+- ✅ Corregido encoding UTF-8 en componentes ("Obstétricos")
+- ✅ Schema combinado `patientWithGynProfileSchema` para formularios
+- ✅ Regenerado cliente Prisma con nuevos modelos
+- ✅ Documentación actualizada (CLAUDE.md, README.md)
+
+### Archivos Creados/Modificados
+**Nuevos archivos:**
+- `src/lib/validators/gynecologicalProfile.ts` - Validación antecedentes
+- `src/components/patients/GynecologicalProfileFields.tsx` - Campos UI
+- `prisma/migrations/20260131125019_add_medical_record_number/` - Migración HM
+- `prisma/migrations/20260131163602_add_gynecological_profile_and_patient_metrics/` - Migración perfil
+
+**Archivos modificados:**
+- `prisma/schema.prisma` - Modelos Patient y GynecologicalProfile
+- `src/lib/validators/patient.ts` - Validación con peso, talla, HM
+- `src/components/patients/PatientForm.tsx` - Campos nuevos + sección expandible
+- `src/server/actions/patient.ts` - CRUD con perfil ginecológico
+- `src/app/(dashboard)/dashboard/pacientes/[id]/page.tsx` - Muestra HM
+- `CLAUDE.md` - Documentación actualizada
+- `README.md` - Documentación actualizada
+
