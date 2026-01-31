@@ -1,17 +1,39 @@
 import Link from "next/link";
 import { getAppointments } from "@/server/actions/appointment";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
-export default async function AppointmentsPage() {
-  const appointments = await getAppointments();
+type AppointmentsPageProps = {
+  searchParams?: Promise<{
+    status?: string;
+    page?: string;
+  }>;
+};
+
+export default async function AppointmentsPage({ searchParams }: AppointmentsPageProps) {
+  const resolvedParams = await searchParams;
+  const status = resolvedParams?.status;
+  const page = parseInt(resolvedParams?.page || "1");
+  const { appointments, total, totalPages } = await getAppointments({ status, page });
+
+  const buildUrl = (newStatus?: string, newPage?: number) => {
+    const params = new URLSearchParams();
+    const s = newStatus ?? status;
+    const p = newPage ?? page;
+    if (s) params.set("status", s);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `?${qs}` : "/dashboard/citas";
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-10">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Citas</h1>
-          <p className="text-sm text-slate-600">Agenda y controla las citas médicas.</p>
+          <p className="text-sm text-slate-600">
+            {total} cita{total !== 1 ? "s" : ""} en total
+          </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
@@ -26,10 +48,42 @@ export default async function AppointmentsPage() {
         </div>
       </div>
 
+      {/* Status filters */}
+      <div className="mt-6 flex flex-wrap gap-2">
+        <Button
+          asChild
+          variant={!status ? "default" : "outline"}
+          size="sm"
+        >
+          <Link href={buildUrl(undefined, 1)}>Todas</Link>
+        </Button>
+        <Button
+          asChild
+          variant={status === "scheduled" ? "default" : "outline"}
+          size="sm"
+        >
+          <Link href={buildUrl("scheduled", 1)}>Programadas</Link>
+        </Button>
+        <Button
+          asChild
+          variant={status === "completed" ? "default" : "outline"}
+          size="sm"
+        >
+          <Link href={buildUrl("completed", 1)}>Completadas</Link>
+        </Button>
+        <Button
+          asChild
+          variant={status === "cancelled" ? "default" : "outline"}
+          size="sm"
+        >
+          <Link href={buildUrl("cancelled", 1)}>Canceladas</Link>
+        </Button>
+      </div>
+
       <div className="mt-6 grid gap-4">
         {appointments.length === 0 ? (
           <div className="rounded-lg border border-dashed border-slate-200 p-6 text-sm text-slate-500">
-            No hay citas programadas.
+            No hay citas {status ? `con estado "${formatAppointmentStatus(status)}"` : "programadas"}.
           </div>
         ) : (
           appointments.map((appointment) => (
@@ -52,13 +106,51 @@ export default async function AppointmentsPage() {
                 </div>
                 <div className="text-sm text-slate-500">
                   {formatAppointmentType(appointment.type)} ·{" "}
-                  {formatAppointmentStatus(appointment.status)}
+                  <span className={getStatusColor(appointment.status)}>
+                    {formatAppointmentStatus(appointment.status)}
+                  </span>
                 </div>
               </div>
             </Link>
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+          >
+            <Link
+              href={buildUrl(status, page - 1)}
+              className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Link>
+          </Button>
+          <span className="text-sm text-slate-600">
+            Página {page} de {totalPages}
+          </span>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+          >
+            <Link
+              href={buildUrl(status, page + 1)}
+              className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+            >
+              Siguiente
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -90,5 +182,20 @@ function formatAppointmentStatus(status: string) {
       return "No asistió";
     default:
       return status;
+  }
+}
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "scheduled":
+      return "text-blue-600";
+    case "completed":
+      return "text-green-600";
+    case "cancelled":
+      return "text-red-600";
+    case "noshow":
+      return "text-orange-600";
+    default:
+      return "";
   }
 }

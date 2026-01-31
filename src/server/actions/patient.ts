@@ -71,24 +71,45 @@ export async function createPatient(formData: FormData) {
   return { success: true, patientId: patient.id };
 }
 
-export async function getPatients(search?: string) {
+export async function getPatients(search?: string, page = 1, limit = 20) {
   await requireDoctor();
 
-  const patients = await prisma.patient.findMany({
-    where: search
-      ? {
-          isActive: true,
-          OR: [
-            { firstName: { contains: search, mode: "insensitive" } },
-            { lastName: { contains: search, mode: "insensitive" } },
-          ],
-        }
-      : { isActive: true },
-    orderBy: { lastName: "asc" },
-    take: 100,
-  });
+  const where = search
+    ? {
+        isActive: true,
+        OR: [
+          { firstName: { contains: search, mode: "insensitive" as const } },
+          { lastName: { contains: search, mode: "insensitive" as const } },
+        ],
+      }
+    : { isActive: true };
 
-  return patients.map((patient) => decryptPatientFields(patient));
+  const [patients, total] = await Promise.all([
+    prisma.patient.findMany({
+      where,
+      orderBy: { lastName: "asc" },
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        cedula: true,
+        phone: true,
+        gender: true,
+        dateOfBirth: true,
+        city: true,
+      },
+    }),
+    prisma.patient.count({ where }),
+  ]);
+
+  return {
+    patients: patients.map((patient) => decryptPatientFields(patient)),
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 export async function getPatient(id: string) {

@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { deleteAppointment, getAppointment } from "@/server/actions/appointment";
+import { notFound } from "next/navigation";
+import { getAppointment } from "@/server/actions/appointment";
 import { Button } from "@/components/ui/button";
+import { DeleteAppointmentButton } from "./DeleteAppointmentButton";
 
 type AppointmentDetailPageProps = {
   params: Promise<{
@@ -41,17 +42,10 @@ export default async function AppointmentDetailPage({
           <Button asChild>
             <Link href={`/dashboard/citas/${resolvedParams.id}/editar`}>Editar</Link>
           </Button>
-          <form
-            action={async () => {
-              "use server";
-              await deleteAppointment(resolvedParams.id);
-              redirect("/dashboard/citas");
-            }}
-          >
-            <Button type="submit" variant="destructive">
-              Cancelar
-            </Button>
-          </form>
+          <DeleteAppointmentButton
+            appointmentId={resolvedParams.id}
+            patientName={`${appointment.patient.firstName} ${appointment.patient.lastName}`}
+          />
         </div>
       </div>
 

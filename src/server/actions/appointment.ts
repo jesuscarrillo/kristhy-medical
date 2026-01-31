@@ -19,16 +19,44 @@ export async function createAppointment(formData: FormData) {
   return { success: true, appointmentId: appointment.id };
 }
 
-export async function getAppointments() {
+interface GetAppointmentsOptions {
+  status?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function getAppointments(options: GetAppointmentsOptions = {}) {
   await requireDoctor();
 
-  return prisma.appointment.findMany({
-    include: {
-      patient: true,
-    },
-    orderBy: { date: "asc" },
-    take: 200,
-  });
+  const { status, page = 1, limit = 20 } = options;
+
+  const where = status ? { status } : {};
+
+  const [appointments, total] = await Promise.all([
+    prisma.appointment.findMany({
+      where,
+      include: {
+        patient: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: { date: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.appointment.count({ where }),
+  ]);
+
+  return {
+    appointments,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 export async function getAppointmentsByDateRange(

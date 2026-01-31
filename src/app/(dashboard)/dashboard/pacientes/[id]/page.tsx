@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { deletePatient, getPatient } from "@/server/actions/patient";
+import { notFound } from "next/navigation";
+import { getPatient } from "@/server/actions/patient";
 import { Button } from "@/components/ui/button";
+import { DeletePatientButton } from "./DeletePatientButton";
 
 type PatientDetailPageProps = {
   params: Promise<{
@@ -49,17 +50,10 @@ export default async function PatientDetailPage({ params }: PatientDetailPagePro
           <Button asChild>
             <Link href={`/dashboard/pacientes/${resolvedParams.id}/editar`}>Editar</Link>
           </Button>
-          <form
-            action={async () => {
-              "use server";
-              await deletePatient(resolvedParams.id);
-              redirect("/dashboard/pacientes");
-            }}
-          >
-            <Button type="submit" variant="destructive">
-              Desactivar
-            </Button>
-          </form>
+          <DeletePatientButton
+            patientId={resolvedParams.id}
+            patientName={`${patient.firstName} ${patient.lastName}`}
+          />
         </div>
       </div>
 

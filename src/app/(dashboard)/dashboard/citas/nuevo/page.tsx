@@ -12,7 +12,7 @@ type NewAppointmentPageProps = {
 export default async function NewAppointmentPage({
   searchParams,
 }: NewAppointmentPageProps) {
-  const patients = await getPatients();
+  const { patients } = await getPatients(undefined, 1, 500);
   const { date } = await searchParams;
 
   // Parse date from searchParams (format: YYYY-MM-DD)

@@ -243,19 +243,40 @@ CRON_SECRET="secreto_para_proteger_endpoint"
 
 ---
 
-## Fase 6: Optimizaciones y UX (Prioridad Baja)
+## Fase 6: Optimizaciones y UX (Prioridad Baja) - COMPLETADO
 
-### 6.1 Performance
-- [ ] Implementar cache de sesiones en desarrollo
-- [ ] Reducir logs de Prisma en dev
-- [ ] Optimizar queries con `select` específicos
-- [ ] Agregar paginación a listas largas
+### 6.1 Performance - COMPLETADO
+**Archivos modificados:**
+- `src/lib/prisma.ts` - Reducir logs en desarrollo
+- `src/server/actions/patient.ts` - Paginación y select optimizado
+- `src/server/actions/appointment.ts` - Paginación y filtros
 
-### 6.2 UX Improvements
-- [ ] Agregar estados de carga (skeletons)
-- [ ] Mejorar mensajes de error
-- [ ] Agregar confirmaciones en acciones destructivas
-- [ ] Implementar búsqueda avanzada de pacientes
+**Tareas completadas:**
+- [x] Reducir logs de Prisma en dev (solo warn/error)
+- [x] Optimizar queries con `select` específicos en getPatients
+- [x] Agregar paginación a lista de pacientes (20 por página)
+- [x] Agregar paginación a lista de citas (20 por página)
+- [x] Agregar filtros por estado en citas
+
+### 6.2 UX Improvements - COMPLETADO
+**Archivos creados:**
+- `src/components/ui/skeleton.tsx` - Componente skeleton (shadcn)
+- `src/components/ui/alert-dialog.tsx` - Componente de diálogo (shadcn)
+- `src/components/ui/confirm-dialog.tsx` - Diálogo de confirmación reutilizable
+- `src/components/skeletons/PatientListSkeleton.tsx` - Skeleton para pacientes
+- `src/components/skeletons/AppointmentListSkeleton.tsx` - Skeleton para citas
+- `src/app/(dashboard)/dashboard/pacientes/loading.tsx` - Loading state
+- `src/app/(dashboard)/dashboard/citas/loading.tsx` - Loading state
+- `src/app/(dashboard)/dashboard/pacientes/[id]/DeletePatientButton.tsx` - Botón con confirmación
+- `src/app/(dashboard)/dashboard/citas/[id]/DeleteAppointmentButton.tsx` - Botón con confirmación
+
+**Tareas completadas:**
+- [x] Agregar estados de carga (skeletons) para pacientes y citas
+- [x] Mejorar mensajes cuando no hay resultados
+- [x] Agregar confirmaciones en acciones destructivas (desactivar paciente, cancelar cita)
+- [x] Mejorar búsqueda de pacientes con botón limpiar
+- [x] Agregar filtros por estado en lista de citas
+- [x] Mostrar total de registros en encabezados
 
 ---
 

@@ -2,17 +2,28 @@ import Link from "next/link";
 import { getPatients } from "@/server/actions/patient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type PatientsPageProps = {
   searchParams?: Promise<{
     q?: string;
+    page?: string;
   }>;
 };
 
 export default async function PatientsPage({ searchParams }: PatientsPageProps) {
   const resolvedParams = await searchParams;
   const query = typeof resolvedParams?.q === "string" ? resolvedParams.q : undefined;
-  const patients = await getPatients(query);
+  const page = parseInt(resolvedParams?.page || "1");
+  const { patients, total, totalPages } = await getPatients(query, page);
+
+  const buildUrl = (newPage: number) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (newPage > 1) params.set("page", String(newPage));
+    const qs = params.toString();
+    return qs ? `?${qs}` : "";
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-10">
@@ -20,7 +31,7 @@ export default async function PatientsPage({ searchParams }: PatientsPageProps) 
         <div>
           <h1 className="text-2xl font-semibold">Pacientes</h1>
           <p className="text-sm text-slate-600">
-            Administra la lista de pacientes y sus datos clínicos.
+            {total} paciente{total !== 1 ? "s" : ""} registrado{total !== 1 ? "s" : ""}
           </p>
         </div>
         <Button asChild>
@@ -37,12 +48,19 @@ export default async function PatientsPage({ searchParams }: PatientsPageProps) 
         <Button type="submit" variant="outline">
           Buscar
         </Button>
+        {query && (
+          <Button asChild variant="ghost">
+            <Link href="/dashboard/pacientes">Limpiar</Link>
+          </Button>
+        )}
       </form>
 
       <div className="mt-6 grid gap-4">
         {patients.length === 0 ? (
           <div className="rounded-lg border border-dashed border-slate-200 p-6 text-sm text-slate-500">
-            No hay pacientes registrados. Crea el primero para empezar.
+            {query
+              ? `No se encontraron pacientes con "${query}"`
+              : "No hay pacientes registrados. Crea el primero para empezar."}
           </div>
         ) : (
           patients.map((patient) => (
@@ -66,6 +84,42 @@ export default async function PatientsPage({ searchParams }: PatientsPageProps) 
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+          >
+            <Link
+              href={buildUrl(page - 1)}
+              className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Link>
+          </Button>
+          <span className="text-sm text-slate-600">
+            Página {page} de {totalPages}
+          </span>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+          >
+            <Link
+              href={buildUrl(page + 1)}
+              className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+            >
+              Siguiente
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
