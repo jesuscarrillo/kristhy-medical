@@ -1,11 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/utils/encryption";
 import { patientSchema } from "@/lib/validators/patient";
 import { logAudit } from "./audit";
+import { CACHE_TAGS } from "@/lib/cache";
 
 function encryptPatientFields<T extends Record<string, unknown>>(data: T) {
   return {
@@ -67,6 +68,8 @@ export async function createPatient(formData: FormData) {
   });
 
   revalidatePath("/dashboard/pacientes");
+  revalidateTag(CACHE_TAGS.patients, "default");
+  revalidateTag(CACHE_TAGS.dashboard, "default");
 
   return { success: true, patientId: patient.id };
 }
@@ -175,6 +178,8 @@ export async function updatePatient(id: string, formData: FormData) {
   });
 
   revalidatePath(`/dashboard/pacientes/${id}`);
+  revalidateTag(CACHE_TAGS.patients, "default");
+  revalidateTag(CACHE_TAGS.dashboard, "default");
 
   return { success: true };
 }
@@ -196,6 +201,8 @@ export async function deletePatient(id: string) {
   });
 
   revalidatePath("/dashboard/pacientes");
+  revalidateTag(CACHE_TAGS.patients, "default");
+  revalidateTag(CACHE_TAGS.dashboard, "default");
 
   return { success: true };
 }

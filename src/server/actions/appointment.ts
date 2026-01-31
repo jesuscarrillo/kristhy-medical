@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { appointmentSchema } from "@/lib/validators/appointment";
+import { CACHE_TAGS } from "@/lib/cache";
 
 export async function createAppointment(formData: FormData) {
   await requireDoctor();
@@ -16,6 +17,9 @@ export async function createAppointment(formData: FormData) {
   });
 
   revalidatePath("/dashboard/citas");
+  revalidateTag(CACHE_TAGS.appointments, "default");
+  revalidateTag(CACHE_TAGS.dashboard, "default");
+
   return { success: true, appointmentId: appointment.id };
 }
 
@@ -118,6 +122,9 @@ export async function updateAppointment(id: string, formData: FormData) {
 
   revalidatePath(`/dashboard/citas/${id}`);
   revalidatePath("/dashboard/citas");
+  revalidateTag(CACHE_TAGS.appointments, "default");
+  revalidateTag(CACHE_TAGS.dashboard, "default");
+
   return { success: true };
 }
 
@@ -130,5 +137,8 @@ export async function deleteAppointment(id: string) {
   });
 
   revalidatePath("/dashboard/citas");
+  revalidateTag(CACHE_TAGS.appointments, "default");
+  revalidateTag(CACHE_TAGS.dashboard, "default");
+
   return { success: true };
 }
