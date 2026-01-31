@@ -40,7 +40,15 @@ export default async function EditAppointmentPage({
         <AppointmentForm
           appointmentId={resolvedParams.id}
           patients={patients}
-          initialData={appointment}
+          initialData={{
+            patientId: appointment.patientId,
+            date: appointment.date,
+            type: appointment.type as "prenatal" | "gynecology" | "ultrasound" | "followup",
+            reason: appointment.reason ?? undefined,
+            notes: appointment.notes ?? undefined,
+            duration: appointment.duration,
+            status: appointment.status as "scheduled" | "completed" | "cancelled" | "noshow",
+          }}
         />
       </div>
     </div>

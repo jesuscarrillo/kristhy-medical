@@ -48,7 +48,8 @@ export function MedicalRecordForm({
   const isEditing = Boolean(recordId);
 
   const form = useForm<MedicalRecordFormValues>({
-    resolver: zodResolver(medicalRecordSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(medicalRecordSchema) as any,
     defaultValues: {
       patientId,
       consultationType: initialData?.consultationType ?? "prenatal",

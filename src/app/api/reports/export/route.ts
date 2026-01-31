@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { getExportData, type ReportFilters } from "@/server/actions/reports";
+import { logAudit } from "@/server/actions/audit";
 
 function escapeCSV(value: string | null | undefined): string {
   if (value === null || value === undefined) return "";
@@ -21,6 +24,14 @@ function generateCSV(
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     const filters: ReportFilters = {
@@ -113,6 +124,14 @@ export async function GET(request: NextRequest) {
     // Add BOM for Excel UTF-8 compatibility
     const bom = "\uFEFF";
     const csvWithBom = bom + csv;
+
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "export",
+      entity: "report",
+      details: `Tipo: ${exportType}, Registros: ${exportType === "patients" ? data.patients.length : data.appointments.length}`,
+    });
 
     return new NextResponse(csvWithBom, {
       headers: {

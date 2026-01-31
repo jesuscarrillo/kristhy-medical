@@ -71,7 +71,8 @@ src/
 │   │   └── dashboard/
 │   │       ├── pacientes/        # CRUD pacientes + historial + imágenes
 │   │       ├── citas/            # CRUD citas + calendario
-│   │       └── reportes/         # Reportes y estadísticas
+│   │       ├── reportes/         # Reportes y estadísticas
+│   │       └── auditoria/        # Logs de auditoría
 │   ├── [locale]/                 # Landing pública (es/en)
 │   ├── api/
 │   │   ├── auth/                 # Better Auth endpoint
@@ -97,7 +98,9 @@ src/
     │   ├── medicalRecord.ts
     │   ├── prescription.ts
     │   ├── images.ts
-    │   └── reports.ts
+    │   ├── reports.ts
+    │   ├── notifications.ts
+    │   └── audit.ts
     └── middleware/auth.ts        # Guards de autenticación
 ```
 
@@ -111,6 +114,7 @@ src/
 | **MedicalRecord** | Historiales clínicos |
 | **Prescription** | Recetas médicas |
 | **MedicalImage** | Referencias a imágenes en Supabase Storage |
+| **AuditLog** | Registro de auditoría de accesos |
 
 ## Módulos Implementados
 
@@ -220,8 +224,25 @@ src/
 - **Roles:** `doctor` (default)
 
 ### Row Level Security (Supabase)
-- Políticas RLS aplicadas en migración `20260130152300_rls_lockdown`
-- Bloquea acceso `anon`/`authenticated` en tablas de negocio
+- Políticas RLS aplicadas en migraciones:
+  - `20260130152300_rls_lockdown` - Todas las tablas de negocio
+  - `20260131144000_audit_log_rls` - Tabla de auditoría
+- Bloquea acceso `anon`/`authenticated` en todas las tablas
+- Acceso solo vía service role (Server Actions)
+
+### 8. Auditoría de Accesos
+- **Modelo:** `AuditLog` en `prisma/schema.prisma`
+- **Actions:** `src/server/actions/audit.ts`
+  - `logAudit` - Registrar evento de auditoría
+  - `getAuditLogs` - Consultar logs con filtros y paginación
+  - `getAuditStats` - Estadísticas de auditoría
+- **Ruta:** `/dashboard/auditoria`
+- **Funcionalidades:**
+  - Registro automático de acciones críticas (ver, crear, editar, eliminar, exportar)
+  - Captura de IP y User-Agent
+  - Filtros por entidad y acción
+  - Paginación
+  - Cards de estadísticas (total, hoy, semana)
 
 ## Scripts Disponibles
 
@@ -254,12 +275,12 @@ pnpm db:studio    # Abrir Prisma Studio
 - [x] Notificaciones por email (Resend)
 - [x] Recordatorios automáticos de citas (Vercel Cron)
 - [x] Encriptación de datos sensibles
-- [x] RLS básico en Supabase
+- [x] RLS completo en Supabase
+- [x] Auditoría de accesos (logging)
 
 ### Próximos Pasos
-1. RLS completo en Supabase y políticas de Storage
-2. Auditoría de accesos (logging)
-3. Optimizaciones de performance
+1. Optimizaciones de performance
+2. Mejoras de UX (skeletons, confirmaciones)
 
 ## Notas
 

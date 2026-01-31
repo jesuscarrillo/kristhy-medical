@@ -32,7 +32,25 @@ export default async function EditPatientPage({ params }: EditPatientPageProps) 
       </div>
 
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <PatientForm patientId={resolvedParams.id} initialData={patient} />
+        <PatientForm
+          patientId={resolvedParams.id}
+          initialData={{
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            cedula: patient.cedula,
+            dateOfBirth: patient.dateOfBirth,
+            gender: patient.gender as "female" | "male" | "other",
+            phone: patient.phone,
+            email: patient.email,
+            address: patient.address,
+            city: patient.city,
+            state: patient.state,
+            bloodType: patient.bloodType,
+            allergies: patient.allergies,
+            emergencyContact: patient.emergencyContact,
+            notes: patient.notes,
+          }}
+        />
       </div>
     </div>
   );

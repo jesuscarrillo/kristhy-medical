@@ -4,15 +4,24 @@ import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { prescriptionSchema } from "@/lib/validators/prescription";
+import { logAudit } from "./audit";
 
 export async function createPrescription(formData: FormData) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const rawData = Object.fromEntries(formData);
   const validatedData = prescriptionSchema.parse(rawData);
 
   const prescription = await prisma.prescription.create({
     data: validatedData,
+  });
+
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "create",
+    entity: "prescription",
+    entityId: prescription.id,
   });
 
   revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/prescripciones`);
@@ -30,7 +39,7 @@ export async function getPrescriptions(patientId: string) {
 }
 
 export async function getPrescription(id: string) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const prescription = await prisma.prescription.findUnique({
     where: { id },
@@ -52,11 +61,20 @@ export async function getPrescription(id: string) {
     throw new Error("Prescription not found");
   }
 
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "view",
+    entity: "prescription",
+    entityId: id,
+    details: `Paciente: ${prescription.patient.firstName} ${prescription.patient.lastName}`,
+  });
+
   return prescription;
 }
 
 export async function updatePrescription(id: string, formData: FormData) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const rawData = Object.fromEntries(formData);
   const validatedData = prescriptionSchema.partial().parse(rawData);
@@ -66,17 +84,33 @@ export async function updatePrescription(id: string, formData: FormData) {
     data: validatedData,
   });
 
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "update",
+    entity: "prescription",
+    entityId: id,
+  });
+
   revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
   revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones/${id}`);
   return { success: true };
 }
 
 export async function deletePrescription(id: string) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const prescription = await prisma.prescription.update({
     where: { id },
     data: { isActive: false },
+  });
+
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "delete",
+    entity: "prescription",
+    entityId: id,
   });
 
   revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);

@@ -12,7 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-type AppointmentFormValues = z.input<typeof appointmentSchema>;
+type AppointmentFormValues = {
+  patientId: string;
+  date: string | Date;
+  duration: number;
+  type: "prenatal" | "gynecology" | "ultrasound" | "followup";
+  status: "scheduled" | "completed" | "cancelled" | "noshow";
+  reason?: string;
+  notes?: string;
+};
 
 const formatDateTimeInput = (value?: string | Date | null) => {
   if (!value) return "";
@@ -45,7 +53,8 @@ export function AppointmentForm({
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm<AppointmentFormValues>({
-    resolver: zodResolver(appointmentSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(appointmentSchema) as any,
     defaultValues: {
       patientId: initialData?.patientId ?? "",
       date: formatDateTimeInput(initialData?.date),

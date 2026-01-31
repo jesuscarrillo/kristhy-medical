@@ -26,6 +26,7 @@ export default async function DashboardLayout({
             <Link href="/dashboard/pacientes">Pacientes</Link>
             <Link href="/dashboard/citas">Citas</Link>
             <Link href="/dashboard/reportes">Reportes</Link>
+            <Link href="/dashboard/auditoria">Auditoría</Link>
           </nav>
           <UserMenu name={session?.user?.name} email={session?.user?.email} />
         </div>

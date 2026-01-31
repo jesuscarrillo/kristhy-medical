@@ -210,25 +210,36 @@ CRON_SECRET="secreto_para_proteger_endpoint"
 
 ---
 
-## Fase 5: Seguridad y Auditoría (Prioridad Alta para Producción)
+## Fase 5: Seguridad y Auditoría (Prioridad Alta para Producción) - COMPLETADO
 
-### 5.1 RLS Completo en Supabase
-**Tareas:**
-- [ ] Revisar y completar políticas RLS para todas las tablas
-- [ ] Configurar políticas de Storage para `medical-images`
-- [ ] Documentar políticas aplicadas
+### 5.1 RLS Completo en Supabase - COMPLETADO
+**Implementación:**
+- Migración `20260130152300_rls_lockdown` - RLS en todas las tablas
+- Migración `20260131144000_audit_log_rls` - RLS en audit_logs
+- Políticas de denegación para roles `anon` y `authenticated`
+- Acceso solo vía service role (Server Actions)
 
-### 5.2 Auditoría de Accesos
-**Archivos a crear:**
-- `prisma/schema.prisma` - Agregar modelo `AuditLog`
-- `src/server/actions/audit.ts` - Registrar accesos
+**Tareas completadas:**
+- [x] Habilitar RLS en todas las tablas
+- [x] Crear políticas de denegación para anon/authenticated
+- [x] Storage usa service role (bypasa políticas)
+- [x] Documentar políticas aplicadas
+
+### 5.2 Auditoría de Accesos - COMPLETADO
+**Archivos creados:**
+- `prisma/schema.prisma` - Modelo `AuditLog`
+- `prisma/migrations/20260131143726_audit_log/migration.sql` - Migración
+- `src/server/actions/audit.ts` - Actions de logging y consulta
 - `src/app/(dashboard)/dashboard/auditoria/page.tsx` - Vista de logs
+- `src/app/(dashboard)/dashboard/auditoria/AuditFilters.tsx` - Filtros
 
-**Tareas:**
-- [ ] Crear modelo AuditLog (userId, action, entity, entityId, timestamp, ip)
-- [ ] Crear migración
-- [ ] Agregar logging en actions críticos (ver paciente, ver historial)
-- [ ] Crear UI para ver logs de auditoría
+**Tareas completadas:**
+- [x] Crear modelo AuditLog (userId, userEmail, action, entity, entityId, details, ipAddress, userAgent, createdAt)
+- [x] Crear migración y aplicar RLS
+- [x] Agregar logging en acciones críticas (pacientes, historiales, prescripciones, imágenes, exportaciones)
+- [x] Crear UI para ver logs con filtros y paginación
+- [x] Agregar estadísticas de auditoría
+- [x] Agregar enlace en navegación del dashboard
 
 ---
 

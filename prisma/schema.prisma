@@ -179,3 +179,21 @@ model MedicalImage {
   @@map("medical_images")
   @@index([patientId])
 }
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  userEmail  String
+  action     String
+  entity     String
+  entityId   String?
+  details    String?  @db.Text
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@map("audit_logs")
+  @@index([userId])
+  @@index([entity])
+  @@index([createdAt])
+}

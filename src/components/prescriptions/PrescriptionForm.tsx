@@ -45,7 +45,8 @@ export function PrescriptionForm({
   const isEditing = Boolean(prescriptionId);
 
   const form = useForm<PrescriptionFormValues>({
-    resolver: zodResolver(prescriptionSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(prescriptionSchema) as any,
     defaultValues: {
       patientId,
       date: formatDateTimeInput(initialData?.date ?? new Date()),

@@ -5,8 +5,9 @@ import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/utils/encryption";
 import { patientSchema } from "@/lib/validators/patient";
+import { logAudit } from "./audit";
 
-function encryptPatientFields(data: Record<string, unknown>) {
+function encryptPatientFields<T extends Record<string, unknown>>(data: T) {
   return {
     ...data,
     cedula: data.cedula ? encrypt(String(data.cedula)) : undefined,
@@ -17,7 +18,7 @@ function encryptPatientFields(data: Record<string, unknown>) {
       ? encrypt(String(data.emergencyContact))
       : undefined,
     allergies: data.allergies ? encrypt(String(data.allergies)) : undefined,
-  };
+  } as T;
 }
 
 function decryptPatientFields<T extends Record<string, unknown>>(patient: T) {
@@ -45,7 +46,7 @@ function decryptMedicalRecordFields<T extends Record<string, unknown>>(record: T
 }
 
 export async function createPatient(formData: FormData) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const rawData = Object.fromEntries(formData);
   const validatedData = patientSchema.parse(rawData);
@@ -54,6 +55,15 @@ export async function createPatient(formData: FormData) {
     data: {
       ...encryptPatientFields(validatedData),
     },
+  });
+
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "create",
+    entity: "patient",
+    entityId: patient.id,
+    details: `Paciente: ${validatedData.firstName} ${validatedData.lastName}`,
   });
 
   revalidatePath("/dashboard/pacientes");
@@ -82,7 +92,7 @@ export async function getPatients(search?: string) {
 }
 
 export async function getPatient(id: string) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const patient = await prisma.patient.findUnique({
     where: { id },
@@ -105,6 +115,15 @@ export async function getPatient(id: string) {
     throw new Error("Patient not found");
   }
 
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "view",
+    entity: "patient",
+    entityId: id,
+    details: `Paciente: ${patient.firstName} ${patient.lastName}`,
+  });
+
   return {
     ...decryptPatientFields(patient),
     medicalRecords: patient.medicalRecords.map((record) =>
@@ -114,7 +133,7 @@ export async function getPatient(id: string) {
 }
 
 export async function updatePatient(id: string, formData: FormData) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const rawData = Object.fromEntries(formData);
   const validatedData = patientSchema.partial().parse(rawData);
@@ -126,17 +145,33 @@ export async function updatePatient(id: string, formData: FormData) {
     },
   });
 
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "update",
+    entity: "patient",
+    entityId: id,
+  });
+
   revalidatePath(`/dashboard/pacientes/${id}`);
 
   return { success: true };
 }
 
 export async function deletePatient(id: string) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   await prisma.patient.update({
     where: { id },
     data: { isActive: false },
+  });
+
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "delete",
+    entity: "patient",
+    entityId: id,
   });
 
   revalidatePath("/dashboard/pacientes");

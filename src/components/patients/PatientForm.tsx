@@ -23,14 +23,30 @@ const formatDateInput = (value?: string | Date | null) => {
 
 type PatientFormProps = {
   patientId?: string;
-  initialData?: Partial<PatientFormValues>;
+  initialData?: {
+    firstName?: string;
+    lastName?: string;
+    cedula?: string;
+    dateOfBirth?: string | Date | null;
+    gender?: "female" | "male" | "other";
+    phone?: string;
+    email?: string | null;
+    address?: string;
+    city?: string;
+    state?: string;
+    bloodType?: string | null;
+    allergies?: string | null;
+    emergencyContact?: string | null;
+    notes?: string | null;
+  };
 };
 
 export function PatientForm({ patientId, initialData }: PatientFormProps) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm<PatientFormValues>({
-    resolver: zodResolver(patientSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(patientSchema) as any,
     defaultValues: {
       firstName: initialData?.firstName ?? "",
       lastName: initialData?.lastName ?? "",

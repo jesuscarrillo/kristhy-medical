@@ -4,9 +4,10 @@ import { requireDoctor } from "@/server/middleware/auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
 import { nanoid } from "nanoid";
+import { logAudit } from "./audit";
 
 export async function uploadMedicalImage(formData: FormData) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const file = formData.get("file");
   const patientId = formData.get("patientId");
@@ -44,7 +45,7 @@ export async function uploadMedicalImage(formData: FormData) {
     throw new Error("Error creating signed URL");
   }
 
-  await prisma.medicalImage.create({
+  const image = await prisma.medicalImage.create({
     data: {
       patientId,
       fileName: file.name,
@@ -53,6 +54,15 @@ export async function uploadMedicalImage(formData: FormData) {
       fileSize: file.size,
       mimeType: file.type,
     },
+  });
+
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "create",
+    entity: "medical_image",
+    entityId: image.id,
+    details: `Archivo: ${file.name}, Tipo: ${fileType}`,
   });
 
   return { success: true };

@@ -27,6 +27,7 @@ async function main() {
         email,
         password,
         name,
+        role: "doctor",
       },
     });
     console.log("Doctor user created.");
@@ -41,5 +42,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    const { prisma } = await import("../src/lib/prisma");
     await prisma.$disconnect();
   });
