@@ -4,6 +4,7 @@ import { getPrescription } from "@/server/actions/prescription";
 import { decrypt } from "@/lib/utils/encryption";
 import { Button } from "@/components/ui/button";
 import { DeletePrescriptionButton } from "./DeletePrescriptionButton";
+import { PrintButton } from "./PrintButton";
 
 type PrescriptionDetailPageProps = {
   params: Promise<{
@@ -70,18 +71,9 @@ export default async function PrescriptionDetailPage({
               Editar
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            onClick={() => window.print()}
-          >
-            <Link
-              href={`/dashboard/pacientes/${patientId}/prescripciones/${prescriptionId}/imprimir`}
-              target="_blank"
-            >
-              Imprimir
-            </Link>
-          </Button>
+          <PrintButton
+            href={`/dashboard/pacientes/${patientId}/prescripciones/${prescriptionId}/imprimir`}
+          />
           <DeletePrescriptionButton
             prescriptionId={prescriptionId}
             patientId={patientId}

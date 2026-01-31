@@ -74,18 +74,26 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
 
     try {
       if (patientId) {
-        await updatePatient(patientId, formData);
+        const result = await updatePatient(patientId, formData);
+        if (result?.success) {
+          router.push(`/dashboard/pacientes/${patientId}`);
+          router.refresh();
+        } else {
+          setSubmitError("Error al actualizar paciente. Intenta de nuevo.");
+        }
       } else {
         const result = await createPatient(formData);
-        if (result?.patientId) {
+        if (result?.success && result.patientId) {
           router.push(`/dashboard/pacientes/${result.patientId}`);
-          return;
+          router.refresh();
+        } else {
+          setSubmitError("Error al crear paciente. Verifica los datos e intenta de nuevo.");
         }
       }
-      router.refresh();
     } catch (error) {
       console.error("Patient save failed:", error);
-      setSubmitError("No se pudo guardar el paciente. Intenta de nuevo.");
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      setSubmitError(`No se pudo guardar el paciente: ${errorMessage}`);
     }
   };
 

@@ -47,31 +47,36 @@ function decryptMedicalRecordFields<T extends Record<string, unknown>>(record: T
 }
 
 export async function createPatient(formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = patientSchema.parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = patientSchema.parse(rawData);
 
-  const patient = await prisma.patient.create({
-    data: {
-      ...encryptPatientFields(validatedData),
-    },
-  });
+    const patient = await prisma.patient.create({
+      data: {
+        ...encryptPatientFields(validatedData),
+      },
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "create",
-    entity: "patient",
-    entityId: patient.id,
-    details: `Paciente: ${validatedData.firstName} ${validatedData.lastName}`,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "create",
+      entity: "patient",
+      entityId: patient.id,
+      details: `Paciente: ${validatedData.firstName} ${validatedData.lastName}`,
+    });
 
-  revalidatePath("/dashboard/pacientes");
-  revalidateTag(CACHE_TAGS.patients, "default");
-  revalidateTag(CACHE_TAGS.dashboard, "default");
+    revalidatePath("/dashboard/pacientes");
+    revalidateTag(CACHE_TAGS.patients, "default");
+    revalidateTag(CACHE_TAGS.dashboard, "default");
 
-  return { success: true, patientId: patient.id };
+    return { success: true, patientId: patient.id };
+  } catch (error) {
+    console.error("[createPatient] Error:", error);
+    throw error;
+  }
 }
 
 export async function getPatients(search?: string, page = 1, limit = 20) {
@@ -157,31 +162,36 @@ export async function getPatient(id: string) {
 }
 
 export async function updatePatient(id: string, formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = patientSchema.partial().parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = patientSchema.partial().parse(rawData);
 
-  await prisma.patient.update({
-    where: { id },
-    data: {
-      ...encryptPatientFields(validatedData),
-    },
-  });
+    await prisma.patient.update({
+      where: { id },
+      data: {
+        ...encryptPatientFields(validatedData),
+      },
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "update",
-    entity: "patient",
-    entityId: id,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "update",
+      entity: "patient",
+      entityId: id,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${id}`);
-  revalidateTag(CACHE_TAGS.patients, "default");
-  revalidateTag(CACHE_TAGS.dashboard, "default");
+    revalidatePath(`/dashboard/pacientes/${id}`);
+    revalidateTag(CACHE_TAGS.patients, "default");
+    revalidateTag(CACHE_TAGS.dashboard, "default");
 
-  return { success: true };
+    return { success: true };
+  } catch (error) {
+    console.error("[updatePatient] Error:", error);
+    throw error;
+  }
 }
 
 export async function deletePatient(id: string) {
