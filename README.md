@@ -55,6 +55,11 @@ BETTER_AUTH_URL="http://localhost:3000"
 SEED_DOCTOR_EMAIL="dra@example.com"
 SEED_DOCTOR_PASSWORD="password_seguro"
 SEED_DOCTOR_NAME="Dra. Kristhy"
+
+# Email (Resend) - para notificaciones
+RESEND_API_KEY="re_xxxxxxxx"
+EMAIL_FROM="Dra. Kristhy <noreply@tudominio.com>"
+CRON_SECRET="tu_secreto_para_cron"
 ```
 
 ## Estructura del Proyecto
@@ -187,6 +192,17 @@ src/
   - `/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/editar` - Editar
   - `/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/imprimir` - Vista impresión
 
+### 7. Notificaciones (Recordatorios de Citas)
+- **Servicio:** Resend (email)
+- **Cliente:** `src/lib/email.ts`
+- **Plantillas:** `src/lib/email-templates/appointment-reminder.tsx`
+- **Actions:** `src/server/actions/notifications.ts`
+  - `sendAppointmentReminders` - Enviar recordatorios automáticos (24h antes)
+  - `sendManualReminder` - Enviar recordatorio manual de una cita
+  - `getAppointmentsForReminder` - Listar citas próximas
+- **API Cron:** `/api/cron/reminders` - Endpoint para Vercel Cron
+- **Configuración Vercel:** `vercel.json` - Cron diario a las 8:00 AM
+
 ## Seguridad
 
 ### Encriptación de Datos Sensibles
@@ -235,14 +251,15 @@ pnpm db:studio    # Abrir Prisma Studio
 - [x] Exportación a CSV
 - [x] CRUD completo de prescripciones
 - [x] Vista de impresión para prescripciones
+- [x] Notificaciones por email (Resend)
+- [x] Recordatorios automáticos de citas (Vercel Cron)
 - [x] Encriptación de datos sensibles
 - [x] RLS básico en Supabase
 
 ### Próximos Pasos
-1. Notificaciones (recordatorios de citas)
-2. RLS completo en Supabase y políticas de Storage
-3. Auditoría de accesos (logging)
-4. Optimizaciones de performance
+1. RLS completo en Supabase y políticas de Storage
+2. Auditoría de accesos (logging)
+3. Optimizaciones de performance
 
 ## Notas
 

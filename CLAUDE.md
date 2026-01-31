@@ -179,22 +179,34 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 
 ---
 
-## Fase 4: Notificaciones (Prioridad Media-Baja)
+## Fase 4: Notificaciones (Prioridad Media-Baja) - COMPLETADO
 
-### 4.1 Recordatorios de Citas
-**Requiere:** Configurar servicio de email (Resend) o SMS
+### 4.1 Recordatorios de Citas - COMPLETADO
+**Servicio:** Resend + React Email
 
-**Archivos a crear:**
+**Archivos creados:**
 - `src/lib/email.ts` - Cliente de Resend
-- `src/server/actions/notifications.ts` - Envío de notificaciones
-- `src/app/api/cron/reminders/route.ts` - Cron job para recordatorios
+- `src/lib/email-templates/appointment-reminder.tsx` - Plantilla React Email
+- `src/server/actions/notifications.ts` - Actions de envío
+- `src/app/api/cron/reminders/route.ts` - Endpoint para cron
+- `vercel.json` - Configuración de Vercel Cron
 
-**Tareas:**
-- [ ] Configurar Resend API
-- [ ] Crear plantillas de email
-- [ ] Implementar envío de recordatorio 24h antes
-- [ ] Marcar citas como `reminderSent`
-- [ ] Configurar cron job (Vercel Cron o similar)
+**Tareas completadas:**
+- [x] Instalar Resend y @react-email/components
+- [x] Configurar cliente Resend
+- [x] Crear plantilla de email con React Email
+- [x] Implementar envío automático de recordatorio 24h antes
+- [x] Implementar envío manual de recordatorio individual
+- [x] Marcar citas como `reminderSent`
+- [x] Crear endpoint cron con autenticación
+- [x] Configurar Vercel Cron (diario 8:00 AM)
+
+**Variables de entorno requeridas:**
+```
+RESEND_API_KEY="re_xxxxxxxx"
+EMAIL_FROM="Dra. Kristhy <noreply@tudominio.com>"
+CRON_SECRET="secreto_para_proteger_endpoint"
+```
 
 ---
 
