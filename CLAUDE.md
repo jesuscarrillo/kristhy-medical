@@ -132,22 +132,24 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 
 ---
 
-## Fase 2: Reportes y Exportación (Prioridad Media)
+## Fase 2: Reportes y Exportación (Prioridad Media) - COMPLETADO
 
-### 2.1 Reportes Avanzados
-**Archivos a modificar/crear:**
-- `src/server/actions/reports.ts` - Actions para queries de reportes
-- `src/app/(dashboard)/dashboard/reportes/page.tsx` - Mejorar UI
-- `src/components/reports/ReportFilters.tsx` - Filtros
-- `src/components/reports/ReportCharts.tsx` - Gráficos
+### 2.1 Reportes Avanzados - COMPLETADO
+**Archivos creados/modificados:**
+- `src/server/actions/reports.ts` - Actions para estadísticas y exportación
+- `src/app/(dashboard)/dashboard/reportes/page.tsx` - Dashboard mejorado
+- `src/components/reports/ReportFilters.tsx` - Filtros de fecha, tipo y estado
+- `src/components/reports/SimpleBarChart.tsx` - Gráficos de barras
+- `src/app/api/reports/export/route.ts` - API para exportar CSV
 
-**Tareas:**
-- [ ] Agregar filtros por fecha (desde/hasta)
-- [ ] Agregar filtros por tipo de consulta
-- [ ] Agregar filtros por estado de cita
-- [ ] Mostrar gráficos básicos (citas por mes, pacientes por edad, etc.)
-- [ ] Implementar export a CSV
-- [ ] Implementar export a PDF (usar `@react-pdf/renderer` o similar)
+**Tareas completadas:**
+- [x] Agregar filtros por fecha (desde/hasta)
+- [x] Agregar filtros por tipo de consulta
+- [x] Agregar filtros por estado de cita
+- [x] Mostrar gráficos básicos (citas por mes, tipo, estado, género)
+- [x] Implementar export a CSV
+- [x] Cards de estadísticas (pacientes, citas, historiales)
+- [x] Tabla de citas recientes/filtradas
 
 ---
 

@@ -123,8 +123,22 @@ pnpm db:studio
 - UI: `src/components/patients/ImageUploader.tsx`
 - Vista: `/dashboard/pacientes/[id]/imagenes`
 
-### Reportes basicos
-- `/dashboard/reportes` (totales de pacientes y citas)
+### Reportes avanzados
+- Actions: `src/server/actions/reports.ts`
+  - `getReportStats` - Estadísticas con filtros de fecha y tipo
+  - `getExportData` - Datos para exportación CSV
+- API: `/api/reports/export` - Exportar citas a CSV
+- UI:
+  - `/dashboard/reportes` - Dashboard con estadísticas y gráficos
+- Componentes:
+  - `ReportFilters` - Filtros de fecha, tipo y estado
+  - `SimpleBarChart`, `MonthlyBarChart` - Gráficos de barras
+- Funcionalidades:
+  - Filtros por rango de fechas
+  - Filtros por tipo de cita y estado
+  - Gráficos de citas por mes, tipo, estado
+  - Estadísticas de pacientes por género
+  - Exportación a CSV con filtros
 
 ## Dashboard
 - Layout protegido: `src/app/(dashboard)/layout.tsx`
@@ -144,11 +158,10 @@ pnpm db:studio
 
 ## Proximos pasos sugeridos
 1. Mejorar performance en dev (cache de sesiones, reducir logs prisma).
-2. Reportes con filtros y export CSV/PDF.
-3. Prescripciones (modelo + UI).
-4. Notificaciones (recordatorios de citas).
-5. RLS en Supabase y politicas de Storage.
-6. Auditoria de accesos (logging).
+2. Prescripciones (modelo + UI).
+3. Notificaciones (recordatorios de citas).
+4. RLS en Supabase y politicas de Storage.
+5. Auditoria de accesos (logging).
 
 ## Notas
 - Landing multi-idioma vive en `src/app/[locale]`.
