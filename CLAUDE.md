@@ -153,24 +153,29 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 
 ---
 
-## Fase 3: Prescripciones (Prioridad Media)
+## Fase 3: Prescripciones (Prioridad Media) - COMPLETADO
 
-### 3.1 Módulo de Prescripciones
-**Archivos a crear:**
-- `src/lib/validators/prescription.ts` - Schema de validación
-- `src/server/actions/prescription.ts` - CRUD actions
-- `src/components/prescriptions/PrescriptionForm.tsx` - Formulario
+### 3.1 Módulo de Prescripciones - COMPLETADO
+**Archivos creados:**
+- `src/lib/validators/prescription.ts` - Schema de validación Zod
+- `src/server/actions/prescription.ts` - CRUD actions completo
+- `src/components/prescriptions/PrescriptionForm.tsx` - Formulario crear/editar
 - `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/page.tsx` - Lista
 - `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/nuevo/page.tsx` - Crear
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/page.tsx` - Ver/Imprimir
+- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/page.tsx` - Ver detalle
+- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/editar/page.tsx` - Editar
+- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/imprimir/page.tsx` - Vista impresión
+- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/DeletePrescriptionButton.tsx` - Botón eliminar
 
-**Tareas:**
-- [ ] Crear schema de validación Zod
-- [ ] Crear server actions CRUD
-- [ ] Crear formulario de prescripción
-- [ ] Crear vista de lista de prescripciones por paciente
-- [ ] Crear vista de detalle con opción de imprimir
-- [ ] Agregar generación de PDF para prescripción
+**Tareas completadas:**
+- [x] Crear schema de validación Zod
+- [x] Crear server actions CRUD (create, get, getAll, update, delete)
+- [x] Crear formulario de prescripción (modo crear y editar)
+- [x] Crear vista de lista de prescripciones por paciente
+- [x] Crear vista de detalle con información del paciente
+- [x] Crear página de edición
+- [x] Agregar vista optimizada para impresión (auto-print)
+- [x] Agregar botón de prescripciones en página de detalle del paciente
 
 ---
 

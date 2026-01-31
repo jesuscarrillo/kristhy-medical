@@ -41,6 +41,11 @@ export default async function PatientDetailPage({ params }: PatientDetailPagePro
               Imágenes
             </Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href={`/dashboard/pacientes/${resolvedParams.id}/prescripciones`}>
+              Prescripciones
+            </Link>
+          </Button>
           <Button asChild>
             <Link href={`/dashboard/pacientes/${resolvedParams.id}/editar`}>Editar</Link>
           </Button>

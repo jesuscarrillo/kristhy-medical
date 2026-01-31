@@ -76,6 +76,7 @@ src/
 │   ├── ui/                       # shadcn/ui components
 │   ├── patients/                 # PatientForm, MedicalRecordForm, ImageUploader
 │   ├── appointments/             # AppointmentForm, CalendarView
+│   ├── prescriptions/            # PrescriptionForm
 │   ├── reports/                  # ReportFilters, SimpleBarChart
 │   └── layout/                   # Header, Footer, etc.
 ├── lib/
@@ -89,6 +90,7 @@ src/
     │   ├── patient.ts
     │   ├── appointment.ts
     │   ├── medicalRecord.ts
+    │   ├── prescription.ts
     │   ├── images.ts
     │   └── reports.ts
     └── middleware/auth.ts        # Guards de autenticación
@@ -102,7 +104,7 @@ src/
 | **Patient** | Datos del paciente (campos sensibles encriptados) |
 | **Appointment** | Citas médicas |
 | **MedicalRecord** | Historiales clínicos |
-| **Prescription** | Recetas médicas (modelo existe, UI pendiente) |
+| **Prescription** | Recetas médicas |
 | **MedicalImage** | Referencias a imágenes en Supabase Storage |
 
 ## Módulos Implementados
@@ -169,6 +171,22 @@ src/
   - Cards de estadísticas (pacientes, citas, historiales)
   - Exportación a CSV
 
+### 6. Prescripciones (CRUD Completo)
+- **Actions:** `src/server/actions/prescription.ts`
+  - `createPrescription` - Crear prescripción
+  - `getPrescriptions` - Listar prescripciones de un paciente
+  - `getPrescription` - Obtener prescripción individual
+  - `updatePrescription` - Actualizar prescripción
+  - `deletePrescription` - Eliminar prescripción (soft delete)
+- **Validación:** `src/lib/validators/prescription.ts`
+- **Componente:** `src/components/prescriptions/PrescriptionForm.tsx`
+- **Rutas:**
+  - `/dashboard/pacientes/[id]/prescripciones` - Lista
+  - `/dashboard/pacientes/[id]/prescripciones/nuevo` - Crear
+  - `/dashboard/pacientes/[id]/prescripciones/[prescriptionId]` - Ver detalle
+  - `/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/editar` - Editar
+  - `/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/imprimir` - Vista impresión
+
 ## Seguridad
 
 ### Encriptación de Datos Sensibles
@@ -215,15 +233,16 @@ pnpm db:studio    # Abrir Prisma Studio
 - [x] Upload de imágenes médicas
 - [x] Reportes con filtros y gráficos
 - [x] Exportación a CSV
+- [x] CRUD completo de prescripciones
+- [x] Vista de impresión para prescripciones
 - [x] Encriptación de datos sensibles
 - [x] RLS básico en Supabase
 
 ### Próximos Pasos
-1. Prescripciones (modelo existe, falta UI)
-2. Notificaciones (recordatorios de citas)
-3. RLS completo en Supabase y políticas de Storage
-4. Auditoría de accesos (logging)
-5. Optimizaciones de performance
+1. Notificaciones (recordatorios de citas)
+2. RLS completo en Supabase y políticas de Storage
+3. Auditoría de accesos (logging)
+4. Optimizaciones de performance
 
 ## Notas
 
