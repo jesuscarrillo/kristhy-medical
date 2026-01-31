@@ -1,0 +1,88 @@
+"use server";
+
+import { requireDoctor } from "@/server/middleware/auth";
+import { prisma } from "@/lib/prisma";
+import { decrypt } from "@/lib/utils/encryption";
+
+export async function getDashboardStats() {
+  await requireDoctor();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+  const [
+    totalPatients,
+    totalAppointments,
+    todayAppointments,
+    monthAppointments,
+    pendingAppointments,
+    recentPatients,
+    upcomingAppointments,
+  ] = await Promise.all([
+    prisma.patient.count({ where: { isActive: true } }),
+    prisma.appointment.count(),
+    prisma.appointment.count({
+      where: {
+        date: { gte: today, lt: tomorrow },
+        status: { not: "cancelled" },
+      },
+    }),
+    prisma.appointment.count({
+      where: {
+        date: { gte: startOfMonth, lte: endOfMonth },
+        status: "completed",
+      },
+    }),
+    prisma.appointment.count({
+      where: { status: "scheduled" },
+    }),
+    prisma.patient.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        cedula: true,
+        createdAt: true,
+      },
+    }),
+    prisma.appointment.findMany({
+      where: {
+        date: { gte: today },
+        status: "scheduled",
+      },
+      orderBy: { date: "asc" },
+      take: 5,
+      include: {
+        patient: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    totalPatients,
+    totalAppointments,
+    todayAppointments,
+    monthAppointments,
+    pendingAppointments,
+    recentPatients: recentPatients.map((p) => ({
+      ...p,
+      cedula: p.cedula ? decrypt(p.cedula) : null,
+    })),
+    upcomingAppointments,
+  };
+}

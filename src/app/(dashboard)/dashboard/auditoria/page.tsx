@@ -69,12 +69,12 @@ export default async function AuditPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-6xl px-6 py-10 space-y-6">
       <div className="flex items-center gap-3">
-        <Shield className="h-8 w-8 text-primary" />
+        <Shield className="h-8 w-8 text-slate-700" />
         <div>
-          <h1 className="text-3xl font-bold">Auditoría</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-semibold">Auditoría</h1>
+          <p className="text-sm text-slate-600">
             Registro de actividades del sistema
           </p>
         </div>

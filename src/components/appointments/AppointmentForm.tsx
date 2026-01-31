@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PatientCombobox } from "@/components/patients/PatientCombobox";
 
 type AppointmentFormValues = {
   patientId: string;
@@ -96,19 +97,13 @@ export function AppointmentForm({
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="patientId">Paciente</Label>
-          <select
-            id="patientId"
-            {...form.register("patientId")}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-          >
-            <option value="">Selecciona un paciente</option>
-            {patients.map((patient) => (
-              <option key={patient.id} value={patient.id}>
-                {patient.firstName} {patient.lastName} • {patient.cedula}
-              </option>
-            ))}
-          </select>
+          <Label>Paciente</Label>
+          <PatientCombobox
+            patients={patients}
+            value={form.watch("patientId")}
+            onChange={(value) => form.setValue("patientId", value)}
+            disabled={!!appointmentId}
+          />
           {errors.patientId ? (
             <p className="text-xs text-red-600">{errors.patientId.message}</p>
           ) : null}
