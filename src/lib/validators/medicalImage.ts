@@ -1,7 +1,14 @@
 import { z } from "zod";
 
-const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
-const emptyToNull = (value: unknown) => (value === "" ? null : value);
+const emptyToUndefined = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return undefined;
+  return value;
+};
+
+const emptyToNull = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return null;
+  return value;
+};
 
 // Document type values
 export const documentTypeValues = [

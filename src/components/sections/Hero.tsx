@@ -11,7 +11,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[80vh] overflow-hidden bg-linear-to-br from-sky-50 via-white to-emerald-50 pb-16 pt-10 sm:pb-20 sm:pt-16"
+      className="relative min-h-[85vh] overflow-hidden bg-gradient-to-br from-sky-50 via-white to-emerald-50 pb-16 pt-10 sm:pb-20 sm:pt-24"
     >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -left-20 top-10 h-40 w-40 rounded-full bg-sky-100 blur-3xl" />

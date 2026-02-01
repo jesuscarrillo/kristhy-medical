@@ -70,9 +70,9 @@ export function Contact() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-5 w-5 text-sky-500" />
-                <a href="mailto:drakristhymoreno@gmail.com" className="hover:text-slate-900">
-                  {t("email")}
-                </a>
+                  <a href="mailto:drakristhymoreno@gmail.com" className="hover:text-slate-900">
+                    {t("email")}
+                  </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-sky-500" />
@@ -87,7 +87,7 @@ export function Contact() {
                   title={t("map_label")}
                   className="h-64 w-full"
                   loading="lazy"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.3721640000994!2d-72.228!3d7.769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e66459a83329507%3A0x4c02561b00000000!2sCentro%20de%20San%20Crist%C3%B3bal%2C%20San%20Crist%C3%B3bal%207500%2C%20T%C3%A1chira%2C%20Venezuela!5e0!3m2!1sen!2sve!4v1700000000002!5m2!1sen!2sve"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15809.61057777098!2d-72.2223847!3d7.7686526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e66459a83329507%3A0x4c02561b00000000!2sSan%20Crist%C3%B3bal%2C%20T%C3%A1chira!5e0!3m2!1sen!2sve!4v1707073286435!5m2!1sen!2sve"
                 />
               ) : (
                 <div className="flex h-64 w-full items-center justify-center bg-slate-50 text-sm text-slate-500">

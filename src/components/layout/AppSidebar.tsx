@@ -21,11 +21,13 @@ import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
+import Image from "next/image"; // Add import at top
+
 const sidebarLinks = [
     { title: "Panel Principal", href: "/dashboard", icon: LayoutDashboard },
     { title: "Pacientes", href: "/dashboard/pacientes", icon: Users },
     { title: "Citas", href: "/dashboard/citas", icon: Calendar },
-    { title: "Consultas", href: "/dashboard/consultas", icon: Stethoscope, hidden: true },
+    { title: "Consultas", href: "/dashboard/consultas", icon: Stethoscope }, // Unhidden
     { title: "Reportes", href: "/dashboard/reportes", icon: BarChart3 },
     { title: "Auditoría", href: "/dashboard/auditoria", icon: ClipboardList },
 ];
@@ -43,8 +45,13 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
         <div className="flex h-full flex-col justify-between py-6">
             <div className="space-y-6">
                 <div className="flex items-center gap-3 px-6">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white shadow-lg shadow-primary/20">
-                        <Activity className="h-6 w-6" />
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white shadow-md ring-1 ring-slate-100/50">
+                        <Image
+                            src="/images/header-logo.png"
+                            alt="Logo Dra. Kristhy"
+                            fill
+                            className="object-contain scale-110"
+                        />
                     </div>
                     <div>
                         <span className="block text-lg font-bold leading-none text-slate-800 dark:text-slate-100">
@@ -57,7 +64,7 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
                 </div>
 
                 <nav className="space-y-1.5 px-3">
-                    {sidebarLinks.filter(l => !l.hidden).map((link) => {
+                    {sidebarLinks.map((link) => { // Removed filter
                         const isActive = link.href === "/dashboard"
                             ? pathname === "/dashboard"
                             : pathname.startsWith(link.href);
@@ -111,9 +118,14 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
 
             {/* Mobile Header / Trigger */}
             <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/20 bg-white/80 px-6 backdrop-blur-md dark:bg-slate-900/80 lg:hidden">
-                <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-white">
-                        <Activity className="h-5 w-5" />
+                <div className="flex items-center gap-3">
+                    <div className="relative h-8 w-8 overflow-hidden rounded-full bg-white shadow-sm">
+                        <Image
+                            src="/images/header-logo.png"
+                            alt="Logo Dra. Kristhy mobile"
+                            fill
+                            className="object-contain"
+                        />
                     </div>
                     <span className="font-bold text-slate-800 dark:text-slate-100">Dra. Kristhy</span>
                 </div>

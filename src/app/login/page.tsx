@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
 
@@ -19,9 +20,16 @@ export default async function LoginPage() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?q=80&w=2982&auto=format&fit=crop')] bg-cover bg-center opacity-40"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 to-zinc-900/40"></div>
 
-        <div className="relative z-10 flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-secondary/20 border border-secondary/50"></div>
-          <span className="text-lg font-bold">Kristhy Medical</span>
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white/10 shadow-sm ring-1 ring-white/20 backdrop-blur-md">
+            <Image
+              src="/images/header-logo.png"
+              alt="Logo Dra. Kristhy"
+              fill
+              className="object-contain p-1"
+            />
+          </div>
+          <span className="text-xl font-bold tracking-tight">Dra. Kristhy</span>
         </div>
 
         <div className="relative z-10">

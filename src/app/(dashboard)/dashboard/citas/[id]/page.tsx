@@ -39,6 +39,9 @@ export default async function AppointmentDetailPage({
           <Button asChild variant="outline">
             <Link href="/dashboard/citas">Volver</Link>
           </Button>
+          <Button asChild variant="secondary">
+            <Link href={`/dashboard/pacientes/${appointment.patientId}`}>Ver Paciente</Link>
+          </Button>
           <Button asChild>
             <Link href={`/dashboard/citas/${resolvedParams.id}/editar`}>Editar</Link>
           </Button>
