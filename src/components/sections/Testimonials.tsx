@@ -40,23 +40,26 @@ export function Testimonials() {
           <CarouselContent className="-ml-4">
             {items.map((item, index) => (
               <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                <Card className="h-full border border-emerald-50 bg-gradient-to-br from-white to-emerald-50/40">
-                  <CardHeader className="space-y-1">
-                    <div className="flex items-center gap-2 text-amber-500">{renderStars(item.rating)}</div>
-                    <CardTitle className="text-lg text-slate-900">{item.name}</CardTitle>
-                    <p className="text-sm text-slate-600">{item.role}</p>
+                <Card className="h-full border border-slate-100 bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl">
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-teal-400 via-rose-300 to-teal-400 opacity-80" />
+                  <CardHeader className="space-y-3 pt-6">
+                    <div className="flex items-center gap-1 text-amber-400 drop-shadow-sm">{renderStars(item.rating)}</div>
+                    <div>
+                      <CardTitle className="text-lg font-bold text-slate-900">{item.name}</CardTitle>
+                      <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{item.role}</p>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-slate-700">{item.text}</p>
+                    <p className="text-base leading-relaxed text-slate-600 italic">" {item.text} "</p>
                   </CardContent>
                 </Card>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="-left-4" />
-          <CarouselNext className="-right-4" />
+          <CarouselPrevious className="-left-4 border-slate-200 bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200" />
+          <CarouselNext className="-right-4 border-slate-200 bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200" />
         </Carousel>
       </div>
-    </section>
+    </section >
   );
 }

@@ -79,7 +79,7 @@ export default async function ConsultationsPage() {
                                             </Badge>
                                             <span className="text-xs text-slate-500 flex items-center">
                                                 <Calendar className="mr-1 h-3 w-3" />
-                                                {new Date(record.date).toLocaleDateString("es-VE", {
+                                                {new Date(record.date).toLocaleString("es-VE", {
                                                     dateStyle: "medium", timeStyle: "short"
                                                 })}
                                             </span>

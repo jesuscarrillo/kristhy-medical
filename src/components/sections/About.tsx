@@ -20,26 +20,26 @@ export function About() {
           <div className="relative">
             <div className="absolute -left-6 -top-6 h-24 w-24 rounded-full bg-emerald-100 blur-3xl" />
             <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-sky-100 blur-3xl" />
-            <div className="relative mb-6 aspect-3/4 overflow-hidden rounded-3xl border border-white shadow-xl ring-1 ring-slate-100 sm:mb-0">
+            <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-2xl ring-1 ring-slate-200/50 sm:mb-0 transition-transform duration-500 hover:scale-[1.01]">
               <Image
                 src="/images/about-dra.jpg"
                 alt="Dra. Kristhy en consultorio"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 540px"
-                quality={75}
+                quality={85}
                 placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEqADAAQAAAABAAAAGAAAAAD/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGAAAAAD/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
                 loading="lazy"
               />
-              <div className="absolute inset-x-4 bottom-4 mx-auto max-w-xs rounded-2xl bg-white/85 p-3 text-center shadow-lg backdrop-blur">
-                <p className="text-4xl font-bold text-primary leading-tight">12+</p>
-                <p className="text-sm text-muted-foreground">{heroT("experience")}</p>
+              <div className="absolute inset-x-6 bottom-6 mx-auto max-w-xs rounded-2xl border border-white/40 bg-white/90 p-4 text-center shadow-xl backdrop-blur-md">
+                <p className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-teal-600 to-teal-400">12+</p>
+                <p className="text-sm font-medium text-slate-600 mt-1 tracking-wide uppercase">{heroT("experience")}</p>
               </div>
             </div>
           </div>
-          <div className="space-y-6">
-            <Badge className="w-fit rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm">
+          <div className="space-y-8">
+            <Badge className="w-fit rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-teal-700 shadow-sm">
               {heroT("badge_secondary")}
             </Badge>
             <div className="space-y-2">

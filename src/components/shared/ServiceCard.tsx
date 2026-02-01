@@ -18,19 +18,21 @@ const accentMap = {
 export function ServiceCard({ title, description, icon: Icon, accent = "blue" }: ServiceCardProps) {
   return (
     <Card
-      className={`group h-full transform border ${accentMap[accent]} bg-gradient-to-br shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg`}
+      className={`group h-full transform border bg-gradient-to-br ${accentMap[accent]} shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-slate-200/50 backdrop-blur-sm`}
     >
-      <CardHeader className="flex flex-row items-center gap-3 space-y-0">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner transition group-hover:scale-105">
-          <Icon className="h-6 w-6" />
+      <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md ring-1 ring-slate-100 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+          <Icon className="h-7 w-7" />
         </div>
-        <CardTitle className="text-lg text-slate-900">{title}</CardTitle>
+        <CardTitle className="text-xl font-bold text-slate-800 leading-tight">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm text-slate-600">{description}</p>
-        <Badge variant="secondary" className="rounded-full bg-white text-xs font-semibold text-slate-600">
-          {title}
-        </Badge>
+      <CardContent className="space-y-4 pt-4">
+        <p className="text-base leading-relaxed text-slate-600">{description}</p>
+        <div className="pt-2">
+          <Badge variant="secondary" className="rounded-md bg-white/80 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition-colors group-hover:bg-white group-hover:text-slate-900">
+            Más información →
+          </Badge>
+        </div>
       </CardContent>
     </Card>
   );
