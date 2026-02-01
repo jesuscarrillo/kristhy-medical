@@ -19,7 +19,10 @@ export type AuditEntity =
   | "appointment"
   | "prescription"
   | "medical_image"
-  | "report";
+  | "report"
+  | "ultrasound"
+  | "ultrasound_image"
+  | "certificate";
 
 interface LogAuditParams {
   userId: string;

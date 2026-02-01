@@ -2,44 +2,79 @@
 
 ## Resumen del Proyecto
 
-Sistema de gestión médica para consultorio de ginecología y obstetricia de la Dra. Kristhy. Combina una landing page pública multilingüe con un dashboard privado para gestión de pacientes, citas, historiales clínicos e imágenes médicas.
+Sistema de gestión médica para consultorio de ginecología y obstetricia de la Dra. Kristhy. Combina una landing page pública multilingüe con un dashboard privado para gestión de pacientes, citas, historiales clínicos, ecografías, certificados médicos e imágenes médicas.
 
 ## Stack Tecnológico
 
 - **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui
 - **Backend:** Server Actions de Next.js, Prisma 7
 - **Base de datos:** Supabase (PostgreSQL)
-- **Storage:** Supabase Storage (imágenes médicas)
+- **Storage:** Supabase Storage (imágenes médicas, ecografías)
 - **Autenticación:** Better Auth (email/password, roles)
 - **Encriptación:** AES-256-GCM para datos sensibles
 - **i18n:** next-intl (español/inglés)
+- **Email:** Resend + React Email (notificaciones)
 
 ## Estructura de Carpetas Clave
 
 ```
 src/
 ├── app/
-│   ├── (dashboard)/          # Rutas protegidas del dashboard
+│   ├── (dashboard)/              # Rutas protegidas del dashboard
 │   │   └── dashboard/
-│   │       ├── pacientes/    # CRUD pacientes
-│   │       ├── citas/        # CRUD citas
-│   │       └── reportes/     # Reportes básicos
-│   ├── [locale]/             # Landing pública (es/en)
-│   ├── api/auth/             # Better Auth endpoint
-│   └── login/                # Página de login
+│   │       ├── pacientes/        # CRUD pacientes
+│   │       │   └── [id]/
+│   │       │       ├── historial/       # Historiales clínicos
+│   │       │       ├── imagenes/        # Imágenes médicas
+│   │       │       ├── prescripciones/  # Recetas médicas
+│   │       │       ├── ecografias/      # Reportes ecográficos
+│   │       │       └── certificados/    # Certificados médicos
+│   │       ├── citas/            # CRUD citas + calendario
+│   │       ├── reportes/         # Reportes y estadísticas
+│   │       └── auditoria/        # Logs de auditoría
+│   ├── [locale]/                 # Landing pública (es/en)
+│   ├── api/
+│   │   ├── auth/                 # Better Auth endpoint
+│   │   ├── reports/              # Exportación CSV
+│   │   └── cron/                 # Recordatorios automáticos
+│   └── login/                    # Página de login
 ├── components/
-│   ├── ui/                   # shadcn/ui components
-│   ├── patients/             # PatientForm, MedicalRecordForm, ImageUploader
-│   ├── appointments/         # AppointmentForm
-│   └── layout/               # Header, Footer, etc.
+│   ├── ui/                       # shadcn/ui components
+│   ├── patients/                 # PatientForm, MedicalRecordForm, ImageUploader
+│   ├── appointments/             # AppointmentForm, CalendarView
+│   ├── prescriptions/            # PrescriptionForm
+│   ├── ultrasound/               # Formularios y vistas de ecografías
+│   ├── certificates/             # Formularios y vistas de certificados
+│   ├── reports/                  # ReportFilters, SimpleBarChart
+│   └── layout/                   # Header, Footer, etc.
 ├── lib/
-│   ├── auth.ts               # Configuración Better Auth
-│   ├── prisma.ts             # Cliente Prisma singleton
-│   ├── supabase.ts           # Clientes Supabase
-│   └── validators/           # Schemas Zod
+│   ├── auth.ts                   # Configuración Better Auth
+│   ├── prisma.ts                 # Cliente Prisma singleton
+│   ├── supabase.ts               # Clientes Supabase
+│   ├── email.ts                  # Cliente Resend
+│   ├── utils/encryption.ts       # AES-256-GCM encrypt/decrypt
+│   └── validators/               # Schemas Zod
+│       ├── patient.ts
+│       ├── gynecologicalProfile.ts
+│       ├── appointment.ts
+│       ├── medicalRecord.ts
+│       ├── prescription.ts
+│       ├── ultrasound.ts         # Ecografías
+│       ├── certificate.ts        # Certificados
+│       └── medicalImage.ts       # Imágenes con metadata
 └── server/
-    ├── actions/              # Server actions (CRUD)
-    └── middleware/auth.ts    # Guards de autenticación
+    ├── actions/                  # Server actions (CRUD)
+    │   ├── patient.ts
+    │   ├── appointment.ts
+    │   ├── medicalRecord.ts
+    │   ├── prescription.ts
+    │   ├── images.ts
+    │   ├── ultrasound.ts         # CRUD ecografías
+    │   ├── certificate.ts        # CRUD certificados
+    │   ├── reports.ts
+    │   ├── notifications.ts
+    │   └── audit.ts
+    └── middleware/auth.ts        # Guards de autenticación
 ```
 
 ## Comandos Frecuentes
@@ -48,6 +83,7 @@ src/
 pnpm dev              # Servidor de desarrollo
 pnpm build            # Build de producción
 pnpm db:migrate       # Ejecutar migraciones
+pnpm db:push          # Push schema sin migración
 pnpm db:seed          # Seed de doctora inicial
 pnpm db:studio        # Prisma Studio (GUI de BD)
 ```
@@ -59,6 +95,7 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 3. **Formularios:** React Hook Form + shadcn/ui Form components
 4. **Rutas protegidas:** Usar `requireDoctor()` de `src/server/middleware/auth.ts`
 5. **Encriptación:** Usar `encrypt()`/`decrypt()` de `src/lib/utils/encryption.ts` para datos PII
+6. **Auditoría:** Llamar `logAudit()` en acciones críticas (create, view, update, delete, export)
 
 ## Campos Encriptados
 
@@ -67,296 +104,370 @@ pnpm db:studio        # Prisma Studio (GUI de BD)
 
 ## Modelos de Base de Datos
 
+### Modelos Core
 - **User/Session/Account:** Better Auth (autenticación)
-- **Patient:** Datos del paciente (incluye medicalRecordNumber, weight, height)
+- **Patient:** Datos del paciente (medicalRecordNumber, weight, height, pregnancyStatus, datos sociodemográficos)
 - **GynecologicalProfile:** Antecedentes gineco-obstétricos (1:1 con Patient)
 - **Appointment:** Citas médicas
 - **MedicalRecord:** Historiales clínicos
 - **Prescription:** Recetas médicas
-- **MedicalImage:** Referencias a imágenes en Supabase Storage
+
+### Modelos v2.0 (Nuevo)
+- **UltrasoundReport:** Reportes ecográficos (3 tipos)
+- **UltrasoundImage:** Imágenes de ecografías
+- **MedicalCertificate:** Certificados médicos (7 tipos)
+- **MedicalImage:** Referencias a imágenes en Supabase Storage (con metadata extendida)
 - **AuditLog:** Registro de auditoría de accesos
 
----
+### Enums
+```prisma
+enum PregnancyStatus {
+  NOT_PREGNANT, FIRST_TRIMESTER, SECOND_TRIMESTER,
+  THIRD_TRIMESTER, POSTPARTUM
+}
 
-# Plan de Trabajo
+enum UltrasoundType {
+  FIRST_TRIMESTER, SECOND_THIRD_TRIMESTER, GYNECOLOGICAL
+}
 
-## Estado Actual (Completado)
+enum CertificateType {
+  REST, MEDICAL_REPORT, MEDICAL_CONSTANCY, FITNESS,
+  DISABILITY, PREGNANCY, OTHER
+}
 
-- [x] Landing page multilingüe (español/inglés)
-- [x] Sistema de autenticación con Better Auth
-- [x] Dashboard protegido con roles
-- [x] CRUD completo de pacientes
-- [x] Crear historiales médicos
-- [x] CRUD completo de citas
-- [x] Upload de imágenes médicas
-- [x] Reportes básicos (totales)
-- [x] Encriptación de datos sensibles
-- [x] RLS básico en Supabase
-
----
-
-## Fase 1: Completar Funcionalidades Core (Prioridad Alta)
-
-### 1.1 CRUD Completo de Historial Médico - COMPLETADO
-**Archivos modificados/creados:**
-- `src/server/actions/medicalRecord.ts` - CRUD completo con encriptación
-- `src/app/(dashboard)/dashboard/pacientes/[id]/historial/[recordId]/page.tsx` - Vista detalle
-- `src/app/(dashboard)/dashboard/pacientes/[id]/historial/[recordId]/editar/page.tsx` - Edición
-- `src/app/(dashboard)/dashboard/pacientes/[id]/historial/[recordId]/DeleteRecordButton.tsx` - Botón eliminar
-- `src/components/patients/MedicalRecordForm.tsx` - Adaptado para crear/editar
-
-**Tareas completadas:**
-- [x] Agregar action `getMedicalRecord(id)` con decrypt
-- [x] Agregar action `getMedicalRecords(patientId)` para listar
-- [x] Agregar action `updateMedicalRecord(id, formData)` con encrypt
-- [x] Agregar action `deleteMedicalRecord(id)` (hard delete)
-- [x] Crear página de detalle del historial
-- [x] Crear página de edición del historial
-- [x] Agregar botones de ver/editar en la lista
-
-### 1.2 Vista de Calendario para Citas - COMPLETADO
-**Archivos creados:**
-- `src/components/appointments/CalendarView.tsx` - Componente calendario custom
-- `src/app/(dashboard)/dashboard/citas/calendario/page.tsx` - Página de calendario
-- `src/server/actions/appointment.ts` - Agregado `getAppointmentsByDateRange`
-
-**Implementación:** Componente custom con Tailwind CSS (sin dependencias externas)
-
-**Tareas completadas:**
-- [x] Crear componente CalendarView custom con Tailwind
-- [x] Crear vista mensual de citas
-- [x] Crear vista semanal de citas
-- [x] Permitir click en día para crear cita (enlace a /nuevo?date=)
-- [x] Mostrar estado de citas con colores por tipo
-- [x] Navegación entre meses/semanas
-- [x] Botón "Hoy" para volver a fecha actual
-- [x] Actualizar página de citas con botón de calendario
-
----
-
-## Fase 2: Reportes y Exportación (Prioridad Media) - COMPLETADO
-
-### 2.1 Reportes Avanzados - COMPLETADO
-**Archivos creados/modificados:**
-- `src/server/actions/reports.ts` - Actions para estadísticas y exportación
-- `src/app/(dashboard)/dashboard/reportes/page.tsx` - Dashboard mejorado
-- `src/components/reports/ReportFilters.tsx` - Filtros de fecha, tipo y estado
-- `src/components/reports/SimpleBarChart.tsx` - Gráficos de barras
-- `src/app/api/reports/export/route.ts` - API para exportar CSV
-
-**Tareas completadas:**
-- [x] Agregar filtros por fecha (desde/hasta)
-- [x] Agregar filtros por tipo de consulta
-- [x] Agregar filtros por estado de cita
-- [x] Mostrar gráficos básicos (citas por mes, tipo, estado, género)
-- [x] Implementar export a CSV
-- [x] Cards de estadísticas (pacientes, citas, historiales)
-- [x] Tabla de citas recientes/filtradas
-
----
-
-## Fase 3: Prescripciones (Prioridad Media) - COMPLETADO
-
-### 3.1 Módulo de Prescripciones - COMPLETADO
-**Archivos creados:**
-- `src/lib/validators/prescription.ts` - Schema de validación Zod
-- `src/server/actions/prescription.ts` - CRUD actions completo
-- `src/components/prescriptions/PrescriptionForm.tsx` - Formulario crear/editar
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/page.tsx` - Lista
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/nuevo/page.tsx` - Crear
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/page.tsx` - Ver detalle
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/editar/page.tsx` - Editar
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/imprimir/page.tsx` - Vista impresión
-- `src/app/(dashboard)/dashboard/pacientes/[id]/prescripciones/[prescriptionId]/DeletePrescriptionButton.tsx` - Botón eliminar
-
-**Tareas completadas:**
-- [x] Crear schema de validación Zod
-- [x] Crear server actions CRUD (create, get, getAll, update, delete)
-- [x] Crear formulario de prescripción (modo crear y editar)
-- [x] Crear vista de lista de prescripciones por paciente
-- [x] Crear vista de detalle con información del paciente
-- [x] Crear página de edición
-- [x] Agregar vista optimizada para impresión (auto-print)
-- [x] Agregar botón de prescripciones en página de detalle del paciente
-
----
-
-## Fase 4: Notificaciones (Prioridad Media-Baja) - COMPLETADO
-
-### 4.1 Recordatorios de Citas - COMPLETADO
-**Servicio:** Resend + React Email
-
-**Archivos creados:**
-- `src/lib/email.ts` - Cliente de Resend
-- `src/lib/email-templates/appointment-reminder.tsx` - Plantilla React Email
-- `src/server/actions/notifications.ts` - Actions de envío
-- `src/app/api/cron/reminders/route.ts` - Endpoint para cron
-- `vercel.json` - Configuración de Vercel Cron
-
-**Tareas completadas:**
-- [x] Instalar Resend y @react-email/components
-- [x] Configurar cliente Resend
-- [x] Crear plantilla de email con React Email
-- [x] Implementar envío automático de recordatorio 24h antes
-- [x] Implementar envío manual de recordatorio individual
-- [x] Marcar citas como `reminderSent`
-- [x] Crear endpoint cron con autenticación
-- [x] Configurar Vercel Cron (diario 8:00 AM)
-
-**Variables de entorno requeridas:**
+enum DocumentType {
+  LAB_RESULT, CYTOLOGY, BIOPSY, ULTRASOUND, XRAY,
+  MRI_CT, EXTERNAL_REPORT, PRESCRIPTION, OTHER
+}
 ```
+
+---
+
+# Módulos del Sistema
+
+## Módulo de Pacientes
+
+### Campos del Paciente
+**Datos básicos:** firstName, lastName, cedula (encriptado), dateOfBirth, gender, phone, email, address
+**Datos médicos:** medicalRecordNumber (HM-000001), weight (kg), height (cm), bloodType, allergies
+**Estado de embarazo:** pregnancyStatus (solo femeninos)
+**Datos sociodemográficos:** maritalStatus, occupation, nationality, educationLevel, religion
+
+### Rutas
+- `/dashboard/pacientes` - Lista con paginación y búsqueda
+- `/dashboard/pacientes/nuevo` - Crear paciente
+- `/dashboard/pacientes/[id]` - Ver detalle
+- `/dashboard/pacientes/[id]/editar` - Editar paciente
+
+### Server Actions (`src/server/actions/patient.ts`)
+```typescript
+createPatient(formData: FormData)
+getPatients(page?: number, limit?: number, search?: string)
+getPatient(id: string)
+updatePatient(id: string, formData: FormData)
+deactivatePatient(id: string)
+```
+
+---
+
+## Módulo de Ecografías (v2.0)
+
+### Tipos de Ecografía
+| Tipo | Descripción | Disponible cuando |
+|------|-------------|-------------------|
+| `FIRST_TRIMESTER` | Eco primer trimestre | pregnancyStatus = FIRST_TRIMESTER |
+| `SECOND_THIRD_TRIMESTER` | Eco 2do/3er trimestre | pregnancyStatus = SECOND o THIRD_TRIMESTER |
+| `GYNECOLOGICAL` | Eco ginecológica | Siempre disponible |
+
+### Validación de Tipo vs Estado de Embarazo
+```typescript
+// src/lib/validators/ultrasound.ts
+const validUltrasoundTypes = {
+  NOT_PREGNANT: ["GYNECOLOGICAL"],
+  FIRST_TRIMESTER: ["FIRST_TRIMESTER", "GYNECOLOGICAL"],
+  SECOND_TRIMESTER: ["SECOND_THIRD_TRIMESTER", "GYNECOLOGICAL"],
+  THIRD_TRIMESTER: ["SECOND_THIRD_TRIMESTER", "GYNECOLOGICAL"],
+  POSTPARTUM: ["GYNECOLOGICAL"],
+};
+```
+
+### Campos por Tipo
+
+**Primer Trimestre:**
+- CRL (mm), saco gestacional (mm), FCF (lpm)
+- Translucencia nucal (mm), hueso nasal (presente/ausente)
+- Número de embriones, corionicidad
+
+**Segundo/Tercer Trimestre:**
+- Biometría: DBP, CC, CA, LF (mm)
+- Peso estimado (g), percentil
+- Líquido amniótico (ILA cm, bolsillo mayor cm)
+- Placenta: ubicación, grado, grosor
+- Cordón umbilical: inserción, vasos
+- Presentación, dorso, actividad cardíaca
+
+**Ginecológica:**
+- Útero: posición, medidas (long, ant-post, transv mm)
+- Endometrio: grosor (mm), aspecto
+- Ovarios: medidas, volumen, folículos
+- Douglas: libre/ocupado
+
+### Rutas
+- `/dashboard/pacientes/[id]/ecografias` - Lista de ecografías
+- `/dashboard/pacientes/[id]/ecografias/nuevo` - Crear ecografía (wizard: seleccionar tipo)
+- `/dashboard/pacientes/[id]/ecografias/[ecoId]` - Ver detalle
+- `/dashboard/pacientes/[id]/ecografias/[ecoId]/editar` - Editar
+- `/dashboard/pacientes/[id]/ecografias/[ecoId]/imprimir` - Vista impresión (3 templates)
+
+### Server Actions (`src/server/actions/ultrasound.ts`)
+```typescript
+createUltrasound(formData: FormData)      // Valida tipo vs pregnancyStatus
+getUltrasounds(patientId: string)         // Lista por paciente
+getUltrasound(id: string)                 // Detalle con imágenes
+updateUltrasound(id: string, formData: FormData)
+deleteUltrasound(id: string)              // Soft delete (isActive = false)
+uploadUltrasoundImage(formData: FormData) // Subir imagen a Supabase
+deleteUltrasoundImage(id: string)         // Eliminar imagen
+```
+
+### Componentes (`src/components/ultrasound/`)
+- `UltrasoundForm.tsx` - Formulario principal (renderiza campos según tipo)
+- `FirstTrimesterFields.tsx` - Campos específicos primer trimestre
+- `SecondThirdTrimesterFields.tsx` - Campos específicos 2do/3er trimestre
+- `GynecologicalFields.tsx` - Campos específicos ginecológica
+- `UltrasoundPrintView.tsx` - 3 templates de impresión
+- `UltrasoundImageUploader.tsx` - Upload de imágenes del eco
+
+---
+
+## Módulo de Certificados Médicos (v2.0)
+
+### Tipos de Certificado
+| Tipo | Etiqueta | Descripción |
+|------|----------|-------------|
+| `REST` | Reposo médico | Requiere días de reposo, calcula fechas automáticamente |
+| `MEDICAL_REPORT` | Informe médico | Informe detallado del estado del paciente |
+| `MEDICAL_CONSTANCY` | Constancia médica | Constancia de asistencia a consulta |
+| `FITNESS` | Apto médico | Certificado de aptitud física/laboral |
+| `DISABILITY` | Incapacidad | Certificado de incapacidad temporal |
+| `PREGNANCY` | Certificado de embarazo | Estado actual del embarazo |
+| `OTHER` | Otro | Certificado genérico |
+
+### Validación Especial para Reposo
+- Si `type === "REST"`, el campo `restDays` es requerido
+- `validUntil` se calcula automáticamente: `validFrom + restDays`
+
+### Campos del Certificado
+```typescript
+{
+  patientId: string;
+  date: DateTime;
+  type: CertificateType;
+  title: string;
+  content: string;          // Texto del certificado
+  restDays?: number;        // Solo para REST
+  validFrom?: DateTime;     // Inicio de validez
+  validUntil?: DateTime;    // Fin de validez (auto-calculado para REST)
+  diagnosis?: string;
+  issuedBy: string;         // Nombre del médico
+  licenseNumber: string;    // MPPS
+}
+```
+
+### Rutas
+- `/dashboard/pacientes/[id]/certificados` - Lista de certificados
+- `/dashboard/pacientes/[id]/certificados/nuevo` - Crear certificado
+- `/dashboard/pacientes/[id]/certificados/[certId]` - Ver detalle
+- `/dashboard/pacientes/[id]/certificados/[certId]/editar` - Editar
+- `/dashboard/pacientes/[id]/certificados/[certId]/imprimir` - Vista impresión
+
+### Server Actions (`src/server/actions/certificate.ts`)
+```typescript
+createCertificate(formData: FormData)
+getCertificates(patientId: string)
+getCertificate(id: string)
+updateCertificate(id: string, formData: FormData)
+deleteCertificate(id: string)  // Soft delete
+```
+
+### Componentes (`src/components/certificates/`)
+- `CertificateForm.tsx` - Formulario con templates por tipo
+- Auto-rellena contenido según tipo seleccionado
+- Calcula automáticamente validUntil para reposos
+
+---
+
+## Módulo de Imágenes/Documentos Médicos (v2.0 Mejorado)
+
+### Tipos de Documento
+```typescript
+const documentTypes = {
+  LAB_RESULT: "Resultado de laboratorio",
+  CYTOLOGY: "Citología",
+  BIOPSY: "Biopsia",
+  ULTRASOUND: "Ecografía externa",
+  XRAY: "Rayos X",
+  MRI_CT: "Resonancia/Tomografía",
+  EXTERNAL_REPORT: "Informe externo",
+  PRESCRIPTION: "Receta/Récipe",
+  OTHER: "Otro",
+};
+```
+
+### Campos Extendidos
+```typescript
+{
+  // Campos existentes
+  patientId, fileName, fileUrl, fileType, fileSize, mimeType, description,
+  // Campos v2.0
+  documentType?: DocumentType;
+  documentDate?: DateTime;
+  laboratory?: string;
+  physician?: string;
+  results?: string;
+  isNormal?: boolean;
+  tags?: string[];
+}
+```
+
+### Server Actions (`src/server/actions/images.ts`)
+```typescript
+uploadMedicalImage(formData: FormData)
+getMedicalImages(patientId: string, filters?: GetImagesFilters, page?: number, limit?: number)
+getMedicalImage(id: string)
+updateMedicalImage(id: string, formData: FormData)
+deleteMedicalImage(id: string)
+```
+
+### Filtros Disponibles
+```typescript
+interface GetImagesFilters {
+  documentType?: DocumentType;
+  isNormal?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+  tags?: string[];
+}
+```
+
+---
+
+## Módulo de Antecedentes Gineco-Obstétricos
+
+### Campos del Perfil Ginecológico (`GynecologicalProfile`)
+**Antecedentes obstétricos:** gestas, partos, cesareas, abortos, ectopicos, mpilas, parity
+**Ciclos menstruales:** cycleDays, bleedingDays, painLevel, lastMenstrualPeriod, isMenopausal, menopauseAge
+**Historial sexual (v2.0):** menarche (edad), sexarche (edad), numberOfPartners
+**Info adicional:** contraceptiveMethod, isSexuallyActive, notes
+
+### Validador (`src/lib/validators/gynecologicalProfile.ts`)
+```typescript
+export const gynecologicalProfileSchema = z.object({
+  // Obstétricos
+  gestas: z.coerce.number().int().min(0).max(20).optional(),
+  // ... etc
+  // Nuevos campos v2.0
+  menarche: z.coerce.number().int().min(8).max(20).optional(),
+  sexarche: z.coerce.number().int().min(10).max(50).optional(),
+  numberOfPartners: z.coerce.number().int().min(0).max(100).optional(),
+});
+```
+
+---
+
+## Otros Módulos
+
+### Historiales Clínicos
+- **Actions:** `src/server/actions/medicalRecord.ts`
+- **Rutas:** `/dashboard/pacientes/[id]/historial/*`
+
+### Prescripciones
+- **Actions:** `src/server/actions/prescription.ts`
+- **Rutas:** `/dashboard/pacientes/[id]/prescripciones/*`
+- **Impresión:** Vista optimizada con auto-print
+
+### Citas + Calendario
+- **Actions:** `src/server/actions/appointment.ts`
+- **Rutas:** `/dashboard/citas/*`, `/dashboard/citas/calendario`
+- **Vista:** Mensual y semanal
+
+### Reportes
+- **Actions:** `src/server/actions/reports.ts`
+- **API:** `/api/reports/export` (CSV)
+- **Rutas:** `/dashboard/reportes`
+
+### Auditoría
+- **Actions:** `src/server/actions/audit.ts`
+- **Entidades:** patient, medical_record, prescription, medical_image, appointment, ultrasound, ultrasound_image, certificate, export
+- **Rutas:** `/dashboard/auditoria`
+
+### Notificaciones
+- **Actions:** `src/server/actions/notifications.ts`
+- **Cron:** `/api/cron/reminders` (Vercel Cron diario 8:00 AM)
+
+---
+
+## Variables de Entorno
+
+```bash
+# Base de datos
+DATABASE_URL="postgresql://...:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://...:5432/postgres"
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="https://xxxxx.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="..."
+SUPABASE_SERVICE_ROLE_KEY="..."
+
+# Seguridad
+ENCRYPTION_KEY="64_hex_chars"
+BETTER_AUTH_SECRET="base64_secret"
+BETTER_AUTH_URL="http://localhost:3000"
+
+# Email (Resend)
 RESEND_API_KEY="re_xxxxxxxx"
 EMAIL_FROM="Dra. Kristhy <noreply@tudominio.com>"
-CRON_SECRET="secreto_para_proteger_endpoint"
+CRON_SECRET="secreto_para_cron"
+
+# Seed (opcional)
+SEED_DOCTOR_EMAIL="dra@example.com"
+SEED_DOCTOR_PASSWORD="password_seguro"
+SEED_DOCTOR_NAME="Dra. Kristhy"
 ```
 
 ---
 
-## Fase 5: Seguridad y Auditoría (Prioridad Alta para Producción) - COMPLETADO
+## Para Testing Local
 
-### 5.1 RLS Completo en Supabase - COMPLETADO
-**Implementación:**
-- Migración `20260130152300_rls_lockdown` - RLS en todas las tablas
-- Migración `20260131144000_audit_log_rls` - RLS en audit_logs
-- Políticas de denegación para roles `anon` y `authenticated`
-- Acceso solo vía service role (Server Actions)
-
-**Tareas completadas:**
-- [x] Habilitar RLS en todas las tablas
-- [x] Crear políticas de denegación para anon/authenticated
-- [x] Storage usa service role (bypasa políticas)
-- [x] Documentar políticas aplicadas
-
-### 5.2 Auditoría de Accesos - COMPLETADO
-**Archivos creados:**
-- `prisma/schema.prisma` - Modelo `AuditLog`
-- `prisma/migrations/20260131143726_audit_log/migration.sql` - Migración
-- `src/server/actions/audit.ts` - Actions de logging y consulta
-- `src/app/(dashboard)/dashboard/auditoria/page.tsx` - Vista de logs
-- `src/app/(dashboard)/dashboard/auditoria/AuditFilters.tsx` - Filtros
-
-**Tareas completadas:**
-- [x] Crear modelo AuditLog (userId, userEmail, action, entity, entityId, details, ipAddress, userAgent, createdAt)
-- [x] Crear migración y aplicar RLS
-- [x] Agregar logging en acciones críticas (pacientes, historiales, prescripciones, imágenes, exportaciones)
-- [x] Crear UI para ver logs con filtros y paginación
-- [x] Agregar estadísticas de auditoría
-- [x] Agregar enlace en navegación del dashboard
-
----
-
-## Fase 6: Optimizaciones y UX (Prioridad Baja) - COMPLETADO
-
-### 6.1 Performance - COMPLETADO
-**Archivos modificados:**
-- `src/lib/prisma.ts` - Reducir logs en desarrollo
-- `src/server/actions/patient.ts` - Paginación y select optimizado
-- `src/server/actions/appointment.ts` - Paginación y filtros
-
-**Tareas completadas:**
-- [x] Reducir logs de Prisma en dev (solo warn/error)
-- [x] Optimizar queries con `select` específicos en getPatients
-- [x] Agregar paginación a lista de pacientes (20 por página)
-- [x] Agregar paginación a lista de citas (20 por página)
-- [x] Agregar filtros por estado en citas
-
-### 6.2 UX Improvements - COMPLETADO
-**Archivos creados:**
-- `src/components/ui/skeleton.tsx` - Componente skeleton (shadcn)
-- `src/components/ui/alert-dialog.tsx` - Componente de diálogo (shadcn)
-- `src/components/ui/confirm-dialog.tsx` - Diálogo de confirmación reutilizable
-- `src/components/skeletons/PatientListSkeleton.tsx` - Skeleton para pacientes
-- `src/components/skeletons/AppointmentListSkeleton.tsx` - Skeleton para citas
-- `src/app/(dashboard)/dashboard/pacientes/loading.tsx` - Loading state
-- `src/app/(dashboard)/dashboard/citas/loading.tsx` - Loading state
-- `src/app/(dashboard)/dashboard/pacientes/[id]/DeletePatientButton.tsx` - Botón con confirmación
-- `src/app/(dashboard)/dashboard/citas/[id]/DeleteAppointmentButton.tsx` - Botón con confirmación
-
-**Tareas completadas:**
-- [x] Agregar estados de carga (skeletons) para pacientes y citas
-- [x] Mejorar mensajes cuando no hay resultados
-- [x] Agregar confirmaciones en acciones destructivas (desactivar paciente, cancelar cita)
-- [x] Mejorar búsqueda de pacientes con botón limpiar
-- [x] Agregar filtros por estado en lista de citas
-- [x] Mostrar total de registros en encabezados
-
----
-
-## Notas para Desarrollo
-
-### Variables de Entorno Requeridas
-```
-DATABASE_URL
-DIRECT_URL
-NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-SUPABASE_SERVICE_ROLE_KEY
-ENCRYPTION_KEY
-BETTER_AUTH_SECRET
-BETTER_AUTH_URL
-```
-
-### Para Testing Local
 1. Clonar el repo
 2. `pnpm install`
 3. Configurar `.env.local` con las variables
-4. `pnpm db:migrate` para aplicar migraciones
+4. `pnpm db:push` para sincronizar schema
 5. `pnpm db:seed` para crear usuario doctora
 6. `pnpm dev`
 
-### Antes de Desplegar
-- [ ] Verificar todas las variables de entorno en producción
-- [ ] Ejecutar `pnpm build` localmente para verificar errores
-- [ ] Revisar políticas RLS en Supabase
-- [ ] Configurar dominio en Better Auth URL
-
 ---
 
-## Cambios Recientes (Enero 31, 2026)
+## Historial de Versiones
 
-### 1. Agregado Número de Historia Médica
-- ✅ Campo `medicalRecordNumber` (String, unique) en modelo `Patient`
-- ✅ Generación automática para pacientes existentes (formato: HM-000001)
-- ✅ Validación Zod en formularios
-- ✅ Visible en vista de detalle y formulario de paciente
-- ✅ Migración: `20260131125019_add_medical_record_number`
+### v2.0.0 (Febrero 2026)
+- Módulo de Ecografías (3 tipos con validación por estado de embarazo)
+- Módulo de Certificados Médicos (7 tipos con templates)
+- Campos sociodemográficos en Patient
+- Campos de historial sexual en GynecologicalProfile
+- Metadata extendida en imágenes médicas (tipo documento, laboratorio, resultados)
+- Vistas de impresión para ecografías y certificados
 
-### 2. Agregados Peso y Talla del Paciente
-- ✅ Campo `weight` (Float, kg) en modelo `Patient`
-- ✅ Campo `height` (Float, cm) en modelo `Patient`
-- ✅ Validación: peso 20-300kg, talla 100-250cm
-- ✅ Campos agregados al formulario de paciente
+### v1.1.0 (Enero 2026)
+- Número de historia médica (medicalRecordNumber)
+- Datos antropométricos (weight, height)
+- Antecedentes gineco-obstétricos (GynecologicalProfile)
 
-### 3. Antecedentes Gineco-Obstétricos
-- ✅ Nuevo modelo `GynecologicalProfile` (relación 1:1 con Patient)
-- ✅ **Antecedentes obstétricos:** gestas, partos, cesáreas, abortos, ectópicos, molas, parity
-- ✅ **Ciclos menstruales:** días de ciclo, duración, dolor, FUM, menopausia
-- ✅ **Info adicional:** método anticonceptivo, sexualmente activa, notas
-- ✅ Componente `GynecologicalProfileFields` con sección expandible
-- ✅ Solo visible para pacientes femeninos
-- ✅ Validación completa con schema Zod
-- ✅ Server actions con upsert automático
-- ✅ Migración: `20260131163602_add_gynecological_profile_and_patient_metrics`
-
-### 4. Correcciones y Mejoras
-- ✅ Corregido encoding UTF-8 en componentes ("Obstétricos")
-- ✅ Schema combinado `patientWithGynProfileSchema` para formularios
-- ✅ Regenerado cliente Prisma con nuevos modelos
-- ✅ Documentación actualizada (CLAUDE.md, README.md)
-
-### Archivos Creados/Modificados
-**Nuevos archivos:**
-- `src/lib/validators/gynecologicalProfile.ts` - Validación antecedentes
-- `src/components/patients/GynecologicalProfileFields.tsx` - Campos UI
-- `prisma/migrations/20260131125019_add_medical_record_number/` - Migración HM
-- `prisma/migrations/20260131163602_add_gynecological_profile_and_patient_metrics/` - Migración perfil
-
-**Archivos modificados:**
-- `prisma/schema.prisma` - Modelos Patient y GynecologicalProfile
-- `src/lib/validators/patient.ts` - Validación con peso, talla, HM
-- `src/components/patients/PatientForm.tsx` - Campos nuevos + sección expandible
-- `src/server/actions/patient.ts` - CRUD con perfil ginecológico
-- `src/app/(dashboard)/dashboard/pacientes/[id]/page.tsx` - Muestra HM
-- `CLAUDE.md` - Documentación actualizada
-- `README.md` - Documentación actualizada
-
+### v1.0.0 (Enero 2026)
+- Sistema base completo
+- CRUD pacientes, citas, historiales, prescripciones
+- Calendario de citas
+- Reportes y exportación CSV
+- Notificaciones por email
+- Auditoría de accesos
+- RLS en Supabase

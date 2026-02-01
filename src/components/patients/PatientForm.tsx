@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { patientWithGynProfileSchema } from "@/lib/validators/patient";
+import {
+  patientWithGynProfileSchema,
+  pregnancyStatusValues,
+  pregnancyStatusLabels,
+  maritalStatusValues,
+  maritalStatusLabels,
+  educationLevelValues,
+  educationLevelLabels,
+} from "@/lib/validators/patient";
 import { createPatient, updatePatient } from "@/server/actions/patient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +50,13 @@ type PatientFormProps = {
     allergies?: string | null;
     emergencyContact?: string | null;
     notes?: string | null;
+    // New v2 fields
+    pregnancyStatus?: string;
+    maritalStatus?: string | null;
+    occupation?: string | null;
+    nationality?: string | null;
+    educationLevel?: string | null;
+    religion?: string | null;
     gynecologicalProfile?: any; // TODO: type this properly
   };
 };
@@ -71,6 +86,13 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
       allergies: initialData?.allergies ?? "",
       emergencyContact: initialData?.emergencyContact ?? "",
       notes: initialData?.notes ?? "",
+      // New v2 fields
+      pregnancyStatus: initialData?.pregnancyStatus ?? "NOT_PREGNANT",
+      maritalStatus: initialData?.maritalStatus ?? "",
+      occupation: initialData?.occupation ?? "",
+      nationality: initialData?.nationality ?? "Venezolana",
+      educationLevel: initialData?.educationLevel ?? "",
+      religion: initialData?.religion ?? "",
       // Gynecological Profile fields
       gestas: initialData?.gynecologicalProfile?.gestas ?? "",
       partos: initialData?.gynecologicalProfile?.partos ?? "",
@@ -88,6 +110,10 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
       contraceptiveMethod: initialData?.gynecologicalProfile?.contraceptiveMethod ?? "",
       sexuallyActive: initialData?.gynecologicalProfile?.sexuallyActive ?? "",
       gynProfileNotes: initialData?.gynecologicalProfile?.notes ?? "",
+      // New v2 gynecological profile fields
+      menarche: initialData?.gynecologicalProfile?.menarche ?? "",
+      sexarche: initialData?.gynecologicalProfile?.sexarche ?? "",
+      numberOfPartners: initialData?.gynecologicalProfile?.numberOfPartners ?? "",
     },
   });
 
@@ -287,6 +313,91 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
           ) : null}
         </div>
       </div>
+
+      {/* Sociodemographic Data Section */}
+      <div className="space-y-4 rounded-lg border border-slate-200 p-6">
+        <h2 className="text-lg font-semibold">Datos Sociodemográficos</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="maritalStatus">Estado civil</Label>
+            <select
+              id="maritalStatus"
+              {...form.register("maritalStatus")}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="">Selecciona</option>
+              {maritalStatusValues.map((status) => (
+                <option key={status} value={status}>
+                  {maritalStatusLabels[status]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="occupation">Ocupación</Label>
+            <Input
+              id="occupation"
+              {...form.register("occupation")}
+              placeholder="Ej: Docente"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="nationality">Nacionalidad</Label>
+            <Input
+              id="nationality"
+              {...form.register("nationality")}
+              placeholder="Venezolana"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="educationLevel">Nivel educativo</Label>
+            <select
+              id="educationLevel"
+              {...form.register("educationLevel")}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="">Selecciona</option>
+              {educationLevelValues.map((level) => (
+                <option key={level} value={level}>
+                  {educationLevelLabels[level]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="religion">Religión</Label>
+            <Input
+              id="religion"
+              {...form.register("religion")}
+              placeholder="Ej: Católica"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Pregnancy Status (only for female patients) */}
+      {form.watch("gender") === "female" && (
+        <div className="space-y-4 rounded-lg border border-purple-200 bg-purple-50 p-6">
+          <h2 className="text-lg font-semibold text-purple-800">Estado de Embarazo</h2>
+          <div className="space-y-2">
+            <Label htmlFor="pregnancyStatus">Estado actual</Label>
+            <select
+              id="pregnancyStatus"
+              {...form.register("pregnancyStatus")}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              {pregnancyStatusValues.map((status) => (
+                <option key={status} value={status}>
+                  {pregnancyStatusLabels[status]}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-purple-600">
+              Este estado determina qué tipos de ecografías están disponibles para la paciente.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Gynecological Profile Section (only for female patients) */}
       {(form.watch("gender") === "female" || !form.watch("gender")) && (

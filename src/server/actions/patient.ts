@@ -60,6 +60,7 @@ export async function createPatient(formData: FormData) {
       lastMenstrualPeriod, menopause, menopauseAge,
       contraceptiveMethod, sexuallyActive, parity,
       gynProfileNotes,
+      menarche, sexarche, numberOfPartners,
       ...patientData
     } = rawData;
 
@@ -74,7 +75,8 @@ export async function createPatient(formData: FormData) {
     // Create gynecological profile if any field is provided and patient is female
     const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
       menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
-      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes;
+      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes ||
+      menarche || sexarche || numberOfPartners;
 
     if (hasGynData && validatedPatientData.gender === "female") {
       const gynData = {
@@ -83,6 +85,7 @@ export async function createPatient(formData: FormData) {
         lastMenstrualPeriod, menopause, menopauseAge,
         contraceptiveMethod, sexuallyActive, parity,
         notes: gynProfileNotes,
+        menarche, sexarche, numberOfPartners,
       };
 
       const validatedGynData = gynecologicalProfileSchema.parse(gynData);
@@ -211,6 +214,7 @@ export async function updatePatient(id: string, formData: FormData) {
       lastMenstrualPeriod, menopause, menopauseAge,
       contraceptiveMethod, sexuallyActive, parity,
       gynProfileNotes,
+      menarche, sexarche, numberOfPartners,
       ...patientData
     } = rawData;
 
@@ -229,7 +233,8 @@ export async function updatePatient(id: string, formData: FormData) {
     // Update or create gynecological profile if any field is provided and patient is female
     const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
       menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
-      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes;
+      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes ||
+      menarche || sexarche || numberOfPartners;
 
     if (hasGynData && patient.gender === "female") {
       const gynData = {
@@ -238,6 +243,7 @@ export async function updatePatient(id: string, formData: FormData) {
         lastMenstrualPeriod, menopause, menopauseAge,
         contraceptiveMethod, sexuallyActive, parity,
         notes: gynProfileNotes,
+        menarche, sexarche, numberOfPartners,
       };
 
       const validatedGynData = gynecologicalProfileSchema.partial().parse(gynData);

@@ -70,6 +70,43 @@ model Verification {
   @@index([identifier])
 }
 
+// Enums for Pregnancy and Ultrasound
+enum PregnancyStatus {
+  NOT_PREGNANT
+  FIRST_TRIMESTER
+  SECOND_TRIMESTER
+  THIRD_TRIMESTER
+  POSTPARTUM
+}
+
+enum UltrasoundType {
+  FIRST_TRIMESTER
+  SECOND_THIRD_TRIMESTER
+  GYNECOLOGICAL
+}
+
+enum CertificateType {
+  REST
+  MEDICAL_REPORT
+  MEDICAL_CONSTANCY
+  FITNESS
+  DISABILITY
+  PREGNANCY
+  OTHER
+}
+
+enum DocumentType {
+  LAB_RESULT
+  CYTOLOGY
+  BIOPSY
+  ULTRASOUND
+  XRAY
+  MRI_CT
+  EXTERNAL_REPORT
+  PRESCRIPTION
+  OTHER
+}
+
 model Patient {
   id                   String                 @id @default(cuid())
   medicalRecordNumber  String                 @unique // Número de historia médica
@@ -93,11 +130,21 @@ model Patient {
   isActive             Boolean                @default(true)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
+  // New fields for v2
+  pregnancyStatus      PregnancyStatus        @default(NOT_PREGNANT)
+  maritalStatus        String?                // Soltero, Casado, Divorciado, Viudo, Unión Libre
+  occupation           String?
+  nationality          String?                @default("Venezolana")
+  educationLevel       String?                // Primaria, Secundaria, Universitaria, Postgrado
+  religion             String?
+  // Relations
   appointments         Appointment[]
   medicalRecords       MedicalRecord[]
   prescriptions        Prescription[]
   images               MedicalImage[]
   gynecologicalProfile GynecologicalProfile?
+  ultrasounds          UltrasoundReport[]
+  certificates         MedicalCertificate[]
 
   @@map("patients")
   @@index([cedula])
@@ -127,6 +174,10 @@ model GynecologicalProfile {
   sexuallyActive        Boolean? // ¿Sexualmente activa?
   parity                String?  // Fórmula obstétrica (ej: "G3P2A1")
   notes                 String?  @db.Text // Notas adicionales
+  // New fields for v2
+  menarche              Int?     // Edad de primera menstruación
+  sexarche              Int?     // Edad de primera relación sexual
+  numberOfPartners      Int?     // Número de parejas sexuales
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   patient               Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
@@ -198,21 +249,30 @@ model Prescription {
 }
 
 model MedicalImage {
-  id          String   @id @default(cuid())
-  patientId   String
-  fileName    String
-  fileUrl     String
-  fileType    String
-  fileSize    Int
-  mimeType    String
-  description String?
-  date        DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  id            String        @id @default(cuid())
+  patientId     String
+  fileName      String
+  fileUrl       String
+  fileType      String
+  fileSize      Int
+  mimeType      String
+  description   String?
+  date          DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  // New fields for v2
+  documentType  DocumentType?
+  documentDate  DateTime?
+  laboratory    String?
+  physician     String?
+  results       String?       @db.Text
+  isNormal      Boolean?
+  tags          String[]
+  patient       Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@map("medical_images")
   @@index([patientId])
+  @@index([documentType])
 }
 
 model AuditLog {
@@ -231,4 +291,73 @@ model AuditLog {
   @@index([userId])
   @@index([entity])
   @@index([createdAt])
+}
+
+model UltrasoundReport {
+  id                  String           @id @default(cuid())
+  patientId           String
+  date                DateTime         @default(now())
+  type                UltrasoundType
+  gestationalAge      String?          // Edad gestacional (ej: "12 semanas 3 días")
+  reasonForStudy      String           @db.Text // Motivo del estudio
+  lastMenstrualPeriod DateTime?        // FUM
+  estimatedDueDate    DateTime?        // FPP
+  weight              Float?           // Peso al momento del eco
+  height              Float?           // Talla al momento del eco
+  bloodPressure       String?          // Presión arterial
+  // JSON fields for type-specific measurements
+  measurements        Json?            // Mediciones específicas según tipo
+  findings            Json?            // Hallazgos específicos según tipo
+  otherFindings       String?          @db.Text // Otros hallazgos
+  diagnoses           String           @db.Text // Diagnósticos/Conclusiones
+  recommendations     String?          @db.Text // Recomendaciones
+  isActive            Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  patient             Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  images              UltrasoundImage[]
+
+  @@map("ultrasound_reports")
+  @@index([patientId])
+  @@index([date])
+  @@index([type])
+}
+
+model UltrasoundImage {
+  id            String           @id @default(cuid())
+  ultrasoundId  String
+  fileName      String
+  fileUrl       String
+  fileSize      Int
+  mimeType      String
+  description   String?
+  createdAt     DateTime         @default(now())
+  ultrasound    UltrasoundReport @relation(fields: [ultrasoundId], references: [id], onDelete: Cascade)
+
+  @@map("ultrasound_images")
+  @@index([ultrasoundId])
+}
+
+model MedicalCertificate {
+  id            String          @id @default(cuid())
+  patientId     String
+  date          DateTime        @default(now())
+  type          CertificateType
+  title         String          // Título del certificado
+  content       String          @db.Text // Contenido principal
+  restDays      Int?            // Días de reposo (solo para REST)
+  validFrom     DateTime?       // Válido desde
+  validUntil    DateTime?       // Válido hasta
+  diagnosis     String?         // Diagnóstico asociado
+  issuedBy      String          // Nombre del médico
+  licenseNumber String          // Número de colegiatura/licencia
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  patient       Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("medical_certificates")
+  @@index([patientId])
+  @@index([type])
+  @@index([date])
 }

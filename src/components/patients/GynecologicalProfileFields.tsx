@@ -202,9 +202,56 @@ export function GynecologicalProfileFields({
         </div>
       </div>
 
-      {/* Información Adicional */}
+      {/* Información Sexual y Reproductiva */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Información Adicional</h3>
+        <h3 className="text-lg font-medium">Información Sexual y Reproductiva</h3>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="menarche">Menarquia (edad)</Label>
+            <Input
+              id="menarche"
+              type="number"
+              min="8"
+              max="20"
+              placeholder="12"
+              {...register("menarche")}
+            />
+            <p className="text-xs text-slate-500">Edad de primera menstruación</p>
+            {errors.menarche ? (
+              <p className="text-xs text-red-600">{String(errors.menarche.message)}</p>
+            ) : null}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sexarche">Sexarquia (edad)</Label>
+            <Input
+              id="sexarche"
+              type="number"
+              min="10"
+              max="50"
+              placeholder="18"
+              {...register("sexarche")}
+            />
+            <p className="text-xs text-slate-500">Edad de primera relación sexual</p>
+            {errors.sexarche ? (
+              <p className="text-xs text-red-600">{String(errors.sexarche.message)}</p>
+            ) : null}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="numberOfPartners">Número de parejas sexuales</Label>
+            <Input
+              id="numberOfPartners"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="1"
+              {...register("numberOfPartners")}
+            />
+            {errors.numberOfPartners ? (
+              <p className="text-xs text-red-600">{String(errors.numberOfPartners.message)}</p>
+            ) : null}
+          </div>
+        </div>
+
         <div className="space-y-2">
           <div className="flex items-center space-x-4">
             <Label>¿Sexualmente activa?</Label>

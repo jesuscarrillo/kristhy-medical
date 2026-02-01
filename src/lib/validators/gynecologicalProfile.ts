@@ -53,6 +53,19 @@ export const gynecologicalProfileSchema = z.object({
     emptyToUndefined,
     z.string().trim().max(2000).optional()
   ),
+  // New fields for v2
+  menarche: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int().min(8).max(20).optional()
+  ),
+  sexarche: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int().min(10).max(50).optional()
+  ),
+  numberOfPartners: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int().min(0).max(100).optional()
+  ),
 });
 
 export type GynecologicalProfileInput = z.infer<typeof gynecologicalProfileSchema>;

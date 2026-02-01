@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getPatient } from "@/server/actions/patient";
 import { Button } from "@/components/ui/button";
 import { DeletePatientButton } from "./DeletePatientButton";
+import { pregnancyStatusLabels } from "@/lib/validators/patient";
 
 type PatientDetailPageProps = {
   params: Promise<{
@@ -47,6 +48,18 @@ export default async function PatientDetailPage({ params }: PatientDetailPagePro
           <Button asChild variant="outline">
             <Link href={`/dashboard/pacientes/${resolvedParams.id}/prescripciones`}>
               Prescripciones
+            </Link>
+          </Button>
+          {patient.gender === "female" && (
+            <Button asChild variant="outline">
+              <Link href={`/dashboard/pacientes/${resolvedParams.id}/ecografias`}>
+                Ecografías
+              </Link>
+            </Button>
+          )}
+          <Button asChild variant="outline">
+            <Link href={`/dashboard/pacientes/${resolvedParams.id}/certificados`}>
+              Certificados
             </Link>
           </Button>
           <Button asChild>
@@ -102,8 +115,29 @@ export default async function PatientDetailPage({ params }: PatientDetailPagePro
               <span className="font-medium">Contacto de emergencia:</span>{" "}
               {patient.emergencyContact || "—"}
             </p>
+            {patient.weight && (
+              <p>
+                <span className="font-medium">Peso:</span> {patient.weight} kg
+              </p>
+            )}
+            {patient.height && (
+              <p>
+                <span className="font-medium">Talla:</span> {patient.height} cm
+              </p>
+            )}
           </div>
         </div>
+
+        {/* Pregnancy Status - only for female patients */}
+        {patient.gender === "female" && (
+          <div className="rounded-xl border border-purple-200 bg-purple-50 p-6 shadow-sm md:col-span-2">
+            <h2 className="text-sm font-semibold text-purple-700">Estado de Embarazo</h2>
+            <p className="mt-2 text-lg font-medium text-purple-900">
+              {pregnancyStatusLabels[patient.pregnancyStatus as keyof typeof pregnancyStatusLabels] || "No especificado"}
+            </p>
+          </div>
+        )}
+
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2">
           <h2 className="text-sm font-semibold text-slate-500">Notas</h2>
           <p className="mt-4 text-sm text-slate-700">
