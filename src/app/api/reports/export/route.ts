@@ -3,6 +3,12 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getExportData, type ReportFilters } from "@/server/actions/reports";
 import { logAudit } from "@/server/actions/audit";
+import {
+  rateLimit,
+  getClientIp,
+  RATE_LIMITS,
+  rateLimitResponse,
+} from "@/lib/rate-limit";
 
 function escapeCSV(value: string | null | undefined): string {
   if (value === null || value === undefined) return "";
@@ -23,6 +29,14 @@ function generateCSV(
 }
 
 export async function GET(request: NextRequest) {
+  // Apply rate limiting
+  const ip = getClientIp(request);
+  const { success, reset } = rateLimit(`export:${ip}`, RATE_LIMITS.export);
+
+  if (!success) {
+    return rateLimitResponse(reset);
+  }
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

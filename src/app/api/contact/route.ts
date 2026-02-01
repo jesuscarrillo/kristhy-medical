@@ -1,7 +1,21 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validations";
+import {
+  rateLimit,
+  getClientIp,
+  RATE_LIMITS,
+  rateLimitResponse,
+} from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+  // Apply rate limiting
+  const ip = getClientIp(request);
+  const { success, reset } = rateLimit(`contact:${ip}`, RATE_LIMITS.contact);
+
+  if (!success) {
+    return rateLimitResponse(reset);
+  }
+
   try {
     const body = await request.json();
     const validated = contactSchema.parse(body);
