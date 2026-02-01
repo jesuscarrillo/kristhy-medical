@@ -48,72 +48,99 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --radius: 0.75rem; /* More rounded for premium feel */
+  
+  /* Premium Light Theme: Soft Porcelain & Deep Teal */
+  --background: #f8fafc; /* Slate 50 */
+  --foreground: #334155; /* Slate 700 - Softer black */
+  
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #334155;
+  
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0ea5e9;
-  --primary-foreground: #f8fafc;
-  --secondary: #10b981;
-  --secondary-foreground: #f8fafc;
-  --muted: #e2e8f0;
-  --muted-foreground: #475569;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --popover-foreground: #334155;
+  
+  /* Primary: Elegant Deep Teal */
+  --primary: #0d9488; /* Teal 600 */
+  --primary-foreground: #f0fdfa;
+  
+  /* Secondary: Soft Rose Gold / Coral */
+  --secondary: #fb7185; /* Rose 400 */
+  --secondary-foreground: #fff1f2;
+  
+  --muted: #f1f5f9; /* Slate 100 */
+  --muted-foreground: #64748b; /* Slate 500 */
+  
+  --accent: #f0fdfa; /* Teal 50 */
+  --accent-foreground: #0f766e; /* Teal 700 */
+  
   --destructive: #ef4444;
+  --destructive-foreground: #fef2f2;
+
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #0ea5e9;
-  --chart-1: #0ea5e9;
-  --chart-2: #10b981;
-  --chart-3: #f472b6;
-  --chart-4: #1e293b;
-  --chart-5: #f59e0b;
-  --sidebar: #f8fafc;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #0ea5e9;
-  --sidebar-primary-foreground: #f8fafc;
-  --sidebar-accent: #e0f2fe;
-  --sidebar-accent-foreground: #0f172a;
+  --ring: #0d9488;
+  
+  --chart-1: #0d9488;
+  --chart-2: #fb7185;
+  --chart-3: #2dd4bf; 
+  --chart-4: #f43f5e;
+  --chart-5: #0f766e;
+  
+  --sidebar: #ffffff;
+  --sidebar-foreground: #334155;
+  --sidebar-primary: #0d9488;
+  --sidebar-primary-foreground: #f0fdfa;
+  --sidebar-accent: #f0fdfa;
+  --sidebar-accent-foreground: #0f766e;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0ea5e9;
+  --sidebar-ring: #0d9488;
 }
 
 .dark {
-  --background: #0b1220;
-  --foreground: #e2e8f0;
-  --card: #111827;
-  --card-foreground: #e2e8f0;
-  --popover: #111827;
-  --popover-foreground: #e2e8f0;
-  --primary: #38bdf8;
-  --primary-foreground: #0b1220;
-  --secondary: #34d399;
-  --secondary-foreground: #0b1220;
-  --muted: #1f2937;
-  --muted-foreground: #cbd5e1;
-  --accent: #334155;
-  --accent-foreground: #f8fafc;
+  /* Premium Dark Theme: Deep Navy & Teal */
+  --background: #0f172a; /* Slate 900 */
+  --foreground: #f1f5f9; /* Slate 100 */
+  
+  --card: #1e293b; /* Slate 800 */
+  --card-foreground: #f1f5f9;
+  
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  
+  --primary: #2dd4bf; /* Teal 400 - Brighter for dark mode */
+  --primary-foreground: #0f172a;
+  
+  --secondary: #f43f5e; /* Rose 500 */
+  --secondary-foreground: #fff1f2;
+  
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+  
+  --accent: #1e293b;
+  --accent-foreground: #2dd4bf;
+  
   --destructive: #f87171;
-  --border: #1f2937;
-  --input: #1f2937;
-  --ring: #38bdf8;
-  --chart-1: #38bdf8;
-  --chart-2: #34d399;
-  --chart-3: #f472b6;
-  --chart-4: #eab308;
-  --chart-5: #a855f7;
-  --sidebar: #0f172a;
-  --sidebar-foreground: #e2e8f0;
-  --sidebar-primary: #38bdf8;
-  --sidebar-primary-foreground: #0b1220;
-  --sidebar-accent: #1f2937;
-  --sidebar-accent-foreground: #e2e8f0;
-  --sidebar-border: #1f2937;
-  --sidebar-ring: #38bdf8;
+  --destructive-foreground: #fef2f2;
+  
+  --border: #334155;
+  --input: #334155;
+  --ring: #2dd4bf;
+  
+  --chart-1: #2dd4bf;
+  --chart-2: #f43f5e;
+  --chart-3: #5eead4;
+  --chart-4: #fb7185;
+  --chart-5: #14b8a6;
+  
+  --sidebar: #020617; /* Slate 950 */
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #2dd4bf;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #2dd4bf;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #2dd4bf;
 }
 
 @layer base {
@@ -125,5 +152,14 @@
   }
   html {
     scroll-behavior: smooth;
+  }
+  
+  /* Glassmorphism Utilities */
+  .glass {
+    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800/50;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg;
   }
 }

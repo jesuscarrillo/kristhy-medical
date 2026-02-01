@@ -12,15 +12,29 @@ type AppointmentsPageProps = {
 
 export default async function AppointmentsPage({ searchParams }: AppointmentsPageProps) {
   const resolvedParams = await searchParams;
-  const status = resolvedParams?.status;
+  const status = resolvedParams?.status; // Default is intentionally undefined unless specified otherwise, but logically we want "scheduled" as initial view if user comes cleanly.
+  // Actually, user wants default view to be "scheduled" but also ability to see "all".
+  // If status is undefined, we usually show all. To show scheduled by default, resolvedParams.status should default to 'scheduled' only if not provided?
+  // But if user clicks 'All', we need a way to represent 'all'.
+  // Let's use 'all' string for all, or empty string.
+
+  // Revised approach:
+  // If no params, default status = 'scheduled'
+  // If params ?status=all, status = undefined (or handle as all)
+
+  const currentStatus = status === "all" ? undefined : (status ?? "scheduled");
   const page = parseInt(resolvedParams?.page || "1");
-  const { appointments, total, totalPages } = await getAppointments({ status, page });
+  const { appointments, total, totalPages } = await getAppointments({ status: currentStatus, page });
 
   const buildUrl = (newStatus?: string, newPage?: number) => {
     const params = new URLSearchParams();
-    const s = newStatus ?? status;
+    // If selecting 'All', we pass 'all' to the URL so that it overrides the default 'scheduled'
+    const s = newStatus ?? (status ?? "scheduled");
     const p = newPage ?? page;
-    if (s) params.set("status", s);
+
+    if (s && s !== "all") params.set("status", s);
+    if (s === "all") params.set("status", "all"); // explicit all
+
     if (p > 1) params.set("page", String(p));
     const qs = params.toString();
     return qs ? `?${qs}` : "/dashboard/citas";
@@ -52,28 +66,28 @@ export default async function AppointmentsPage({ searchParams }: AppointmentsPag
       <div className="mt-6 flex flex-wrap gap-2">
         <Button
           asChild
-          variant={!status ? "default" : "outline"}
+          variant={status === "all" ? "default" : "outline"}
           size="sm"
         >
-          <Link href={buildUrl(undefined, 1)}>Todas</Link>
+          <Link href={buildUrl("all", 1)}>Todas</Link>
         </Button>
         <Button
           asChild
-          variant={status === "scheduled" ? "default" : "outline"}
+          variant={currentStatus === "scheduled" ? "default" : "outline"}
           size="sm"
         >
           <Link href={buildUrl("scheduled", 1)}>Programadas</Link>
         </Button>
         <Button
           asChild
-          variant={status === "completed" ? "default" : "outline"}
+          variant={currentStatus === "completed" ? "default" : "outline"}
           size="sm"
         >
           <Link href={buildUrl("completed", 1)}>Completadas</Link>
         </Button>
         <Button
           asChild
-          variant={status === "cancelled" ? "default" : "outline"}
+          variant={currentStatus === "cancelled" ? "default" : "outline"}
           size="sm"
         >
           <Link href={buildUrl("cancelled", 1)}>Canceladas</Link>

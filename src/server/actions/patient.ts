@@ -123,12 +123,12 @@ export async function getPatients(search?: string, page = 1, limit = 20) {
 
   const where = search
     ? {
-        isActive: true,
-        OR: [
-          { firstName: { contains: search, mode: "insensitive" as const } },
-          { lastName: { contains: search, mode: "insensitive" as const } },
-        ],
-      }
+      isActive: true,
+      OR: [
+        { firstName: { contains: search, mode: "insensitive" as const } },
+        { lastName: { contains: search, mode: "insensitive" as const } },
+      ],
+    }
     : { isActive: true };
 
   const [patients, total] = await Promise.all([
@@ -146,6 +146,7 @@ export async function getPatients(search?: string, page = 1, limit = 20) {
         gender: true,
         dateOfBirth: true,
         city: true,
+        createdAt: true,
       },
     }),
     prisma.patient.count({ where }),

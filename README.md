@@ -532,7 +532,14 @@ pnpm db:studio    # Abrir Prisma Studio
 - `/dashboard/pacientes/[id]/ecografias/*` - CRUD ecografías
 - `/dashboard/pacientes/[id]/certificados/*` - CRUD certificados
 
-### v1.1.0 (Enero 2026)
+### v2.1.0 (Marzo 2026)
+- **Rediseño Premium UI/UX:** Interfaz modernizada con efectos glassmorphism, paleta de colores refinada y tipografía mejorada.
+- **Responsive Design:** Sidebar navegación móvil mejorada y grillas adaptativas en todos los módulos.
+- **Navegación:** Nueva barra de navegación interna en perfiles de paciente.
+- **Consultas Globales:** Nueva vista `/dashboard/consultas` para visualizar el historial reciente de atenciones.
+- **Calendario Mejorado:** Rediseño visual del componente de calendario.
+
+### v2.0.0 (Febrero 2026)
 - Número de historia médica (medicalRecordNumber)
 - Datos antropométricos (weight, height)
 - Antecedentes gineco-obstétricos (GynecologicalProfile)

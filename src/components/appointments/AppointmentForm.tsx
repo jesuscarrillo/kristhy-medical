@@ -77,6 +77,9 @@ export function AppointmentForm({
     try {
       if (appointmentId) {
         await updateAppointment(appointmentId, formData);
+        router.push(`/dashboard/citas/${appointmentId}`); // Correct redirection logic here
+        router.refresh(); // Ensure data is fresh
+        return;
       } else {
         const result = await createAppointment(formData);
         if (result?.appointmentId) {

@@ -68,6 +68,26 @@ export async function getMedicalRecords(patientId: string) {
   return records.map((record) => decryptMedicalRecordFields(record));
 }
 
+export async function getAllMedicalRecords() {
+  await requireDoctor();
+
+  const records = await prisma.medicalRecord.findMany({
+    orderBy: { date: "desc" },
+    take: 50,
+    include: {
+      patient: {
+        select: {
+          firstName: true,
+          lastName: true,
+          id: true,
+        }
+      }
+    }
+  });
+
+  return records.map((record) => decryptMedicalRecordFields(record));
+}
+
 export async function getMedicalRecord(id: string) {
   const session = await requireDoctor();
 

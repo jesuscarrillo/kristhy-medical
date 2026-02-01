@@ -2,7 +2,17 @@ import Link from "next/link";
 import { getPatients } from "@/server/actions/patient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { PatientTable } from "@/components/patients/PatientTable";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Search,
+  User,
+  Phone,
+  FileText
+} from "lucide-react";
 
 type PatientsPageProps = {
   searchParams?: Promise<{
@@ -26,100 +36,84 @@ export default async function PatientsPage({ searchParams }: PatientsPageProps) 
   };
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-10">
+    <div className="mx-auto w-full max-w-7xl px-8 py-10 space-y-8">
+      {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Pacientes</h1>
-          <p className="text-sm text-slate-600">
-            {total} paciente{total !== 1 ? "s" : ""} registrado{total !== 1 ? "s" : ""}
+          <h1 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-white">Pacientes</h1>
+          <p className="mt-1 text-slate-500 dark:text-slate-400">
+            Gestiona los expedientes y datos de tus pacientes.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/pacientes/nuevo">Nuevo paciente</Link>
+        <Button asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+          <Link href="/dashboard/pacientes/nuevo">
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo paciente
+          </Link>
         </Button>
       </div>
 
-      <form className="mt-6 flex gap-2" method="get">
-        <Input
-          name="q"
-          placeholder="Buscar por nombre o apellido"
-          defaultValue={query ?? ""}
-        />
-        <Button type="submit" variant="outline">
-          Buscar
-        </Button>
-        {query && (
-          <Button asChild variant="ghost">
-            <Link href="/dashboard/pacientes">Limpiar</Link>
-          </Button>
-        )}
-      </form>
-
-      <div className="mt-6 grid gap-4">
-        {patients.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-200 p-6 text-sm text-slate-500">
-            {query
-              ? `No se encontraron pacientes con "${query}"`
-              : "No hay pacientes registrados. Crea el primero para empezar."}
+      <Card className="shadow-sm border-0 ring-1 ring-slate-200/50 overflow-hidden">
+        <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <CardTitle className="text-base font-semibold">Listado de Pacientes</CardTitle>
+              <CardDescription>
+                Mostrando {patients.length} de {total} pacientes registrados
+              </CardDescription>
+            </div>
+            <form className="relative w-full max-w-sm" method="get">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+              <Input
+                name="q"
+                placeholder="Buscar por nombre, apellido o cédula..."
+                defaultValue={query ?? ""}
+                className="pl-9 bg-white dark:bg-slate-950 border-slate-200 focus-visible:ring-primary"
+              />
+            </form>
           </div>
-        ) : (
-          patients.map((patient) => (
-            <Link
-              key={patient.id}
-              href={`/dashboard/pacientes/${patient.id}`}
-              className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300"
-            >
-              <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-base font-semibold">
-                    {patient.firstName} {patient.lastName}
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    Cédula: {patient.cedula}
-                  </p>
-                </div>
-                <p className="text-sm text-slate-500">{patient.phone}</p>
-              </div>
-            </Link>
-          ))
+        </CardHeader>
+        <CardContent className="p-0">
+          <PatientTable patients={patients} query={query} />
+        </CardContent>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center border-t border-slate-100 bg-slate-50/30 p-4">
+            <div className="flex items-center gap-2">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                className="h-8 w-8 p-0"
+              >
+                <Link
+                  href={buildUrl(page - 1)}
+                  className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Link>
+              </Button>
+              <span className="text-sm font-medium text-slate-600">
+                Página {page} de {totalPages}
+              </span>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+                className="h-8 w-8 p-0"
+              >
+                <Link
+                  href={buildUrl(page + 1)}
+                  className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
         )}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2">
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-          >
-            <Link
-              href={buildUrl(page - 1)}
-              className={page <= 1 ? "pointer-events-none opacity-50" : ""}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Anterior
-            </Link>
-          </Button>
-          <span className="text-sm text-slate-600">
-            Página {page} de {totalPages}
-          </span>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            disabled={page >= totalPages}
-          >
-            <Link
-              href={buildUrl(page + 1)}
-              className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
-            >
-              Siguiente
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      )}
+      </Card>
     </div>
   );
 }
