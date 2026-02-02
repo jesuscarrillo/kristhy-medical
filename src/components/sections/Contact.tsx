@@ -35,8 +35,8 @@ export function Contact() {
   }, [showMap]);
 
   return (
-    <section id="contact" className="bg-gradient-to-b from-white to-sky-50/70 py-16 scroll-mt-24 sm:py-20">
-      <div className="mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="bg-gradient-to-b from-white to-sky-50/70 py-24 scroll-mt-24 sm:py-32">
+      <div className="container mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
         <div className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-wide text-sky-600">{t("title")}</p>
           <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">{t("subtitle")}</h2>

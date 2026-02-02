@@ -28,11 +28,6 @@ export function ServiceCard({ title, description, icon: Icon, accent = "blue" }:
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         <p className="text-base leading-relaxed text-slate-600">{description}</p>
-        <div className="pt-2">
-          <Badge variant="secondary" className="rounded-md bg-white/80 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition-colors group-hover:bg-white group-hover:text-slate-900">
-            Más información →
-          </Badge>
-        </div>
       </CardContent>
     </Card>
   );

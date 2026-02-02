@@ -41,8 +41,8 @@ export function About() {
                       <GraduationCap className="h-7 w-7" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wider text-teal-600 mb-0.5">Certificada</p>
-                      <p className="text-sm font-bold text-slate-900 leading-tight">Universidad Central de Venezuela</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-teal-600 mb-0.5">{t("highlights.0.title")}</p>
+                      <p className="text-sm font-bold text-slate-900 leading-tight">{t("highlights.0.description")}</p>
                     </div>
                   </div>
                 </div>

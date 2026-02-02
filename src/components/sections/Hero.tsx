@@ -45,12 +45,11 @@ export function Hero() {
               </p>
             </div>
 
-            {/* Call to Actions */}
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Button
                 size="lg"
                 asChild
-                className="h-14 w-full sm:w-auto rounded-full bg-slate-900 px-8 text-white shadow-xl transition-all hover:scale-105 hover:bg-slate-800 hover:shadow-2xl"
+                className="h-14 w-full sm:w-auto rounded-full bg-slate-900 px-8 text-white shadow-xl transition-transform duration-200 hover:scale-105 hover:bg-slate-800"
               >
                 <Link href="/#contact">
                   <CalendarClock className="mr-2 h-5 w-5" />
@@ -61,7 +60,7 @@ export function Hero() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="h-14 w-full sm:w-auto rounded-full border-2 border-slate-200 bg-white/50 px-8 text-slate-600 backdrop-blur-md transition-all hover:border-slate-900 hover:bg-white hover:text-slate-900"
+                className="h-14 w-full sm:w-auto rounded-full border-2 border-slate-200 bg-white/50 px-8 text-slate-600 backdrop-blur-md transition-colors duration-200 hover:border-slate-900 hover:bg-white hover:text-slate-900"
               >
                 <Link href="/#about">
                   <span className="font-medium text-base">{t("cta_secondary")}</span>
@@ -112,8 +111,8 @@ export function Hero() {
                 <div className="rounded-2xl border border-white/40 bg-white/95 p-6 shadow-xl backdrop-blur-md">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-bold uppercase tracking-wider text-rose-500 mb-1">Especialista en</p>
-                      <p className="text-lg font-bold text-slate-900">Obstetricia & Ginecología</p>
+                      <p className="text-sm font-bold uppercase tracking-wider text-rose-500 mb-1">{t("specialist_title")}</p>
+                      <p className="text-lg font-bold text-slate-900">{t("specialist_field")}</p>
                     </div>
                     <div className="h-12 w-12 rounded-full bg-teal-600 flex items-center justify-center text-white">
                       <CalendarClock className="h-6 w-6" />
