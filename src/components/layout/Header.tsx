@@ -38,6 +38,16 @@ export function Header({ currentLocale }: { currentLocale: string }) {
     const cleaned = hash.replace("#", "");
     return `${localeBase}/#${cleaned}`;
   };
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, hash: string) => {
+    const cleaned = hash.replace("#", "");
+    const element = document.getElementById(cleaned);
+    if (element) {
+      e.preventDefault();
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Update URL without reload
+      window.history.pushState(null, '', anchorHref(hash));
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -55,7 +65,11 @@ export function Header({ currentLocale }: { currentLocale: string }) {
         className={`mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 ${scrolled ? "py-3" : "py-4"
           } transition-all duration-300`}
       >
-        <Link href={anchorHref("#hero")} className="flex items-center gap-3 font-semibold text-slate-900">
+        <Link
+          href={anchorHref("#hero")}
+          onClick={(e) => handleScrollTo(e, "#hero")}
+          className="flex items-center gap-3 font-semibold text-slate-900"
+        >
           <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
             <Image
               src="/images/header-logo.png"
@@ -79,7 +93,8 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                 <NavigationMenuItem key={item.key}>
                   <NavigationMenuLink
                     href={anchorHref(item.href)}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+                    onClick={(e) => handleScrollTo(e, item.href)}
+                    className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                   >
                     {t(item.key)}
                   </NavigationMenuLink>
@@ -89,13 +104,11 @@ export function Header({ currentLocale }: { currentLocale: string }) {
           </NavigationMenu>
           <LanguageSwitcher currentLocale={currentLocale} />
           <Button
-            asChild
-            className="shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+            onClick={(e) => handleScrollTo(e, "#contact")}
+            className="shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
           >
-            <Link href={anchorHref("#contact")}>
-              <CalendarClock className="mr-2 h-4 w-4" />
-              {t("hero.cta_primary")}
-            </Link>
+            <CalendarClock className="mr-2 h-4 w-4" />
+            {t("hero.cta_primary")}
           </Button>
         </nav>
 
@@ -116,13 +129,18 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                   <Link
                     key={item.key}
                     href={anchorHref(item.href)}
+                    onClick={(e) => handleScrollTo(e, item.href)}
                     className="rounded-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
                   >
                     {t(item.key)}
                   </Link>
                 ))}
-                <Button asChild className="mt-2">
-                  <Link href={anchorHref("#contact")}>{t("hero.cta_primary")}</Link>
+                <Button
+                  onClick={(e) => handleScrollTo(e, "#contact")}
+                  className="mt-2 cursor-pointer"
+                >
+                  <CalendarClock className="mr-2 h-4 w-4" />
+                  {t("hero.cta_primary")}
                 </Button>
               </div>
             </SheetContent>

@@ -539,6 +539,13 @@ pnpm db:studio    # Abrir Prisma Studio
 - **Consultas Globales:** Nueva vista `/dashboard/consultas` para visualizar el historial reciente de atenciones.
 - **Calendario Mejorado:** Rediseño visual del componente de calendario.
 
+### v2.2.0 (Abril 2026)
+- **Landing Page Polish:** Rediseño de la sección Hero (2 columnas), About y Testimonios con estética premium y authority médica.
+- **Correcciones de Navegación:** Implementación de smooth scroll manual en Header y Hero para resolver problemas de navegación por hash en Next.js.
+- **Localización Completa:** Traducción total de la landing page (ES/EN), eliminando textos hardcodeados y unificando la identidad visual (ULA).
+- **Seguridad & Datos:** Implementación de migración RLS para tablas de ecografías e imágenes, y resolución de errores de CSP para mapas de Google.
+- **Performance:** Optimización de interacciones en botones y carga de imágenes de alta calidad (Q90).
+
 ### v2.0.0 (Febrero 2026)
 - Número de historia médica (medicalRecordNumber)
 - Datos antropométricos (weight, height)
