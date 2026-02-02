@@ -7,6 +7,8 @@
   },
   "hero": {
     "title": "Dra. Kristhy Moreno",
+    "title_top": "Cuidado Integral",
+    "title_bottom": "Mujer & Vida",
     "tagline": "Atención integral y humanizada en cada etapa de tu salud ginecológica.",
     "badge": "12+ años en medicina",
     "badge_secondary": "Especialista certificada ULA",
@@ -15,11 +17,14 @@
     "cta_primary": "Agendar consulta",
     "cta_secondary": "Conocer más",
     "experience": "años de experiencia",
-    "patients": "Pacientes acompañadas"
+    "patients": "Pacientes acompañadas",
+    "years_label": "Años de Experiencia",
+    "patients_label": "Pacientes Felices"
   },
   "services": {
     "title": "Servicios",
     "subtitle": "Atención integral para cada etapa de tu salud ginecológica",
+    "description": "Atención médica de clase mundial diseñada específicamente para las necesidades únicas de la mujer.",
     "items": {
       "prenatal": {
         "title": "Control Prenatal",
@@ -95,6 +100,7 @@
   "testimonials": {
     "title": "Lo que dicen mis pacientes",
     "subtitle": "Historias reales de acompañamiento y confianza",
+    "description": "La confianza de mis pacientes es mi mayor logro profesional.",
     "items": [
       {
         "name": "María G. · San Cristóbal",
@@ -124,6 +130,7 @@
     "phone": "+58 412-073-5223",
     "email": "drakristhymoreno@gmail.com",
     "map_label": "Ver ubicación en Google Maps",
+    "loading_map": "Cargando mapa…",
     "form": {
       "name": "Nombre completo",
       "email": "Correo electrónico",
@@ -170,6 +177,7 @@
       "Ultrasonido Obstétrico"
     ],
     "mini_bio": "Atención personalizada en obstetricia y ginecología con enfoque humano y basado en evidencia.",
-    "social_title": "Sígueme en redes"
+    "social_title": "Sígueme en redes",
+    "coming_soon": "Próximamente"
   }
 }

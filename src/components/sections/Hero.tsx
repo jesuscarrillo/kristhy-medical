@@ -1,5 +1,6 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ArrowRight, HeartPulse, ShieldCheck, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,9 +35,9 @@ export function Hero() {
             {/* Main Title - Big & Bold */}
             <div className="space-y-4">
               <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
-                <span className="block text-slate-800">Cuidado Integral</span>
+                <span className="block text-slate-800">{t("title_top")}</span>
                 <span className="block bg-gradient-to-r from-teal-600 to-rose-500 bg-clip-text text-transparent">
-                  Mujer & Vida
+                  {t("title_bottom")}
                 </span>
               </h1>
 
@@ -48,23 +49,25 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Button
                 size="lg"
-                asChild
-                className="h-14 w-full sm:w-auto rounded-full bg-slate-900 px-8 text-white shadow-xl transition-transform duration-200 hover:scale-105 hover:bg-slate-800"
+                onClick={() => {
+                  const element = document.getElementById('contact');
+                  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className="h-14 w-full sm:w-auto rounded-full bg-slate-900 px-8 text-white shadow-xl transition-transform duration-200 hover:scale-105 hover:bg-slate-800 cursor-pointer"
               >
-                <Link href="/#contact">
-                  <CalendarClock className="mr-2 h-5 w-5" />
-                  <span className="font-semibold text-base">{t("cta_primary")}</span>
-                </Link>
+                <CalendarClock className="mr-2 h-5 w-5" />
+                <span className="font-semibold text-base">{t("cta_primary")}</span>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                asChild
-                className="h-14 w-full sm:w-auto rounded-full border-2 border-slate-200 bg-white/50 px-8 text-slate-600 backdrop-blur-md transition-colors duration-200 hover:border-slate-900 hover:bg-white hover:text-slate-900"
+                onClick={() => {
+                  const element = document.getElementById('about');
+                  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className="h-14 w-full sm:w-auto rounded-full border-2 border-slate-200 bg-white/50 px-8 text-slate-600 backdrop-blur-md transition-colors duration-200 hover:border-slate-900 hover:bg-white hover:text-slate-900 cursor-pointer"
               >
-                <Link href="/#about">
-                  <span className="font-medium text-base">{t("cta_secondary")}</span>
-                </Link>
+                <span className="font-medium text-base">{t("cta_secondary")}</span>
               </Button>
             </div>
 
@@ -76,7 +79,7 @@ export function Hero() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-slate-900">12+</p>
-                  <p className="text-sm text-slate-600">Años de Experiencia</p>
+                  <p className="text-sm text-slate-600">{t("years_label")}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -85,7 +88,7 @@ export function Hero() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-slate-900">1500+</p>
-                  <p className="text-sm text-slate-600">Pacientes Felices</p>
+                  <p className="text-sm text-slate-600">{t("patients_label")}</p>
                 </div>
               </div>
             </div>

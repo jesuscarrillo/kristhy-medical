@@ -7,6 +7,8 @@
   },
   "hero": {
     "title": "Dr. Kristhy Moreno",
+    "title_top": "Comprehensive Care",
+    "title_bottom": "Women & Life",
     "tagline": "Comprehensive, human-centered care for every stage of your gynecological health.",
     "badge": "12+ years in medicine",
     "badge_secondary": "ULA-certified specialist",
@@ -15,11 +17,14 @@
     "cta_primary": "Book an appointment",
     "cta_secondary": "Learn more",
     "experience": "years of experience",
-    "patients": "Patients cared for"
+    "patients": "Patients cared for",
+    "years_label": "Years of Experience",
+    "patients_label": "Happy Patients"
   },
   "services": {
     "title": "Services",
     "subtitle": "Comprehensive care for every stage of your gynecological health",
+    "description": "World-class medical care designed specifically for women's unique needs.",
     "items": {
       "prenatal": {
         "title": "Prenatal Care",
@@ -95,6 +100,7 @@
   "testimonials": {
     "title": "What my patients say",
     "subtitle": "Real stories of support and trust",
+    "description": "My patients' trust is my greatest professional achievement.",
     "items": [
       {
         "name": "Maria G. · San Cristóbal",
@@ -124,6 +130,7 @@
     "phone": "+58 412-073-5223",
     "email": "drakristhymoreno@gmail.com",
     "map_label": "View location on Google Maps",
+    "loading_map": "Loading map...",
     "form": {
       "name": "Full name",
       "email": "Email",
@@ -170,6 +177,7 @@
       "Obstetric Ultrasound"
     ],
     "mini_bio": "Personalized obstetrics and gynecology care with a human, evidence-based approach.",
-    "social_title": "Follow me"
+    "social_title": "Follow me",
+    "coming_soon": "Coming soon"
   }
 }

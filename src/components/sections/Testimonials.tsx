@@ -37,7 +37,7 @@ export function Testimonials() {
             {t("subtitle")}
           </h2>
           <p className="text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-            La confianza de mis pacientes es mi mayor logro profesional.
+            {t("description")}
           </p>
         </div>
 

@@ -29,7 +29,7 @@ export function Services() {
             {t("subtitle")}
           </h2>
           <p className="text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-            Atención médica de clase mundial diseñada específicamente para las necesidades únicas de la mujer.
+            {t("description")}
           </p>
         </div>
 

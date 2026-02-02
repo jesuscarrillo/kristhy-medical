@@ -1,5 +1,6 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { GraduationCap, Stethoscope, Sparkles, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -113,8 +114,15 @@ export function About() {
               </div>
             </div>
 
-            <Button size="lg" asChild className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all">
-              <Link href="/#contact">{t("cta")}</Link>
+            <Button
+              size="lg"
+              onClick={() => {
+                const element = document.getElementById('contact');
+                element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all cursor-pointer"
+            >
+              {t("cta")}
             </Button>
           </div>
         </div>

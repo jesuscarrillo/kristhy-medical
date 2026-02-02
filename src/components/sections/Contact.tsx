@@ -64,7 +64,7 @@ export function Contact() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-5 w-5 text-sky-500" />
-                  <a href="tel:+584247648994" className="hover:text-slate-900">
+                  <a href={`tel:${t("phone").replace(/\s+/g, '')}`} className="hover:text-slate-900">
                     {t("phone")}
                   </a>
                 </div>
@@ -91,7 +91,7 @@ export function Contact() {
                 />
               ) : (
                 <div className="flex h-64 w-full items-center justify-center bg-slate-50 text-sm text-slate-500">
-                  Cargando mapa…
+                  {t("loading_map")}
                 </div>
               )}
               <a

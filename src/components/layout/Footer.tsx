@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 export function Footer({ currentLocale }: { currentLocale?: string }) {
   const t = useTranslations("footer");
   const contactT = useTranslations("contact");
+  const heroT = useTranslations("hero");
   const services = t.raw("services") as string[];
   const locale = currentLocale ?? routing.defaultLocale;
   const localeBase = locale === routing.defaultLocale ? "" : `/${locale}`;
@@ -19,8 +20,8 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-slate-900">Dra. Kristhy Moreno</h3>
-            <p className="text-sm text-slate-600">Obstetricia &amp; Ginecología</p>
+            <h3 className="text-lg font-semibold text-slate-900">{heroT("title")}</h3>
+            <p className="text-sm text-slate-600">{heroT("specialist_field")}</p>
             <p className="text-sm text-slate-600">{t("mini_bio")}</p>
           </div>
 
@@ -86,7 +87,7 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-sky-600" />
-                <a href="tel:+584120735223" className="hover:text-slate-900">
+                <a href={`tel:${contactT("phone").replace(/\s+/g, '')}`} className="hover:text-slate-900">
                   {contactT("phone")}
                 </a>
               </li>
@@ -120,14 +121,14 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
               <span
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
                 aria-label="Facebook próximamente"
-                title="Próximamente"
+                title={t("coming_soon")}
               >
                 <ThumbsUp className="h-5 w-5" />
               </span>
               <span
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
                 aria-label="X/Twitter próximamente"
-                title="Próximamente"
+                title={t("coming_soon")}
               >
                 <Send className="h-5 w-5" />
               </span>

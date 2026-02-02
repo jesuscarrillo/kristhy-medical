@@ -48,20 +48,18 @@ export function Header({ currentLocale }: { currentLocale: string }) {
 
   return (
     <header
-      className={`sticky top-0 z-30 transition-all duration-300 ${
-        scrolled ? "bg-white/80 shadow-md backdrop-blur-lg" : "bg-white/60"
-      }`}
+      className={`sticky top-0 z-30 transition-all duration-300 ${scrolled ? "bg-white/80 shadow-md backdrop-blur-lg" : "bg-white/60"
+        }`}
     >
       <div
-        className={`mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 ${
-          scrolled ? "py-3" : "py-4"
-        } transition-all duration-300`}
+        className={`mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 ${scrolled ? "py-3" : "py-4"
+          } transition-all duration-300`}
       >
         <Link href={anchorHref("#hero")} className="flex items-center gap-3 font-semibold text-slate-900">
           <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
             <Image
               src="/images/header-logo.png"
-              alt="Logo Dra. Kristhy Moreno"
+              alt={`Logo ${t("hero.title")}`}
               fill
               sizes="80px"
               className="object-contain scale-125"
@@ -69,8 +67,8 @@ export function Header({ currentLocale }: { currentLocale: string }) {
             />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-base">Dra. Kristhy Moreno</span>
-            <span className="text-xs text-slate-500">Obstetricia &amp; Ginecología</span>
+            <span className="text-base">{t("hero.title")}</span>
+            <span className="text-xs text-slate-500">{t("hero.specialist_field")}</span>
           </div>
         </Link>
 
