@@ -3,11 +3,13 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
-import { encrypt, decrypt } from "@/lib/utils/encryption";
+import { encrypt, safeDecrypt } from "@/lib/utils/encryption";
 import { patientSchema } from "@/lib/validators/patient";
 import { gynecologicalProfileSchema } from "@/lib/validators/gynecologicalProfile";
 import { logAudit } from "./audit";
 import { CACHE_TAGS } from "@/lib/cache";
+import { z } from "zod";
+import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 function encryptPatientFields<T extends Record<string, unknown>>(data: T) {
   return {
@@ -26,29 +28,30 @@ function encryptPatientFields<T extends Record<string, unknown>>(data: T) {
 function decryptPatientFields<T extends Record<string, unknown>>(patient: T) {
   return {
     ...patient,
-    cedula: patient.cedula ? decrypt(String(patient.cedula)) : null,
-    phone: patient.phone ? decrypt(String(patient.phone)) : null,
-    email: patient.email ? decrypt(String(patient.email)) : null,
-    address: patient.address ? decrypt(String(patient.address)) : null,
-    emergencyContact: patient.emergencyContact
-      ? decrypt(String(patient.emergencyContact))
-      : null,
-    allergies: patient.allergies ? decrypt(String(patient.allergies)) : null,
+    cedula: safeDecrypt(patient.cedula ? String(patient.cedula) : null),
+    phone: safeDecrypt(patient.phone ? String(patient.phone) : null),
+    email: safeDecrypt(patient.email ? String(patient.email) : null),
+    address: safeDecrypt(patient.address ? String(patient.address) : null),
+    emergencyContact: safeDecrypt(
+      patient.emergencyContact ? String(patient.emergencyContact) : null
+    ),
+    allergies: safeDecrypt(patient.allergies ? String(patient.allergies) : null),
   };
 }
 
 function decryptMedicalRecordFields<T extends Record<string, unknown>>(record: T) {
   return {
     ...record,
-    personalHistory: record.personalHistory ? decrypt(String(record.personalHistory)) : null,
-    gynecologicHistory: record.gynecologicHistory
-      ? decrypt(String(record.gynecologicHistory))
-      : null,
+    personalHistory: safeDecrypt(record.personalHistory ? String(record.personalHistory) : null),
+    gynecologicHistory: safeDecrypt(
+      record.gynecologicHistory ? String(record.gynecologicHistory) : null
+    ),
   };
 }
 
 export async function createPatient(formData: FormData) {
   try {
+    await rateLimitAction("createPatient", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
@@ -66,37 +69,41 @@ export async function createPatient(formData: FormData) {
 
     const validatedPatientData = patientSchema.parse(patientData);
 
-    const patient = await prisma.patient.create({
-      data: {
-        ...encryptPatientFields(validatedPatientData),
-      },
-    });
-
-    // Create gynecological profile if any field is provided and patient is female
-    const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
-      menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
-      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes ||
-      menarche || sexarche || numberOfPartners;
-
-    if (hasGynData && validatedPatientData.gender === "female") {
-      const gynData = {
-        gestas, cesareas, ectopicos, partos, abortos, molas,
-        menstrualCycleDays, menstrualDuration, menstrualPain,
-        lastMenstrualPeriod, menopause, menopauseAge,
-        contraceptiveMethod, sexuallyActive, parity,
-        notes: gynProfileNotes,
-        menarche, sexarche, numberOfPartners,
-      };
-
-      const validatedGynData = gynecologicalProfileSchema.parse(gynData);
-
-      await prisma.gynecologicalProfile.create({
+    const patient = await prisma.$transaction(async (tx) => {
+      const created = await tx.patient.create({
         data: {
-          patientId: patient.id,
-          ...validatedGynData,
+          ...encryptPatientFields(validatedPatientData),
         },
       });
-    }
+
+      // Create gynecological profile if any field is provided and patient is female
+      const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
+        menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
+        menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes ||
+        menarche || sexarche || numberOfPartners;
+
+      if (hasGynData && validatedPatientData.gender === "female") {
+        const gynData = {
+          gestas, cesareas, ectopicos, partos, abortos, molas,
+          menstrualCycleDays, menstrualDuration, menstrualPain,
+          lastMenstrualPeriod, menopause, menopauseAge,
+          contraceptiveMethod, sexuallyActive, parity,
+          notes: gynProfileNotes,
+          menarche, sexarche, numberOfPartners,
+        };
+
+        const validatedGynData = gynecologicalProfileSchema.parse(gynData);
+
+        await tx.gynecologicalProfile.create({
+          data: {
+            patientId: created.id,
+            ...validatedGynData,
+          },
+        });
+      }
+
+      return created;
+    });
 
     await logAudit({
       userId: session.user.id,
@@ -114,7 +121,10 @@ export async function createPatient(formData: FormData) {
     return { success: true, patientId: patient.id };
   } catch (error) {
     console.error("[createPatient] Error:", error);
-    throw error;
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos del paciente invalidos");
+    }
+    throw new Error("Error al crear el paciente");
   }
 }
 
@@ -204,6 +214,7 @@ export async function getPatient(id: string) {
 
 export async function updatePatient(id: string, formData: FormData) {
   try {
+    await rateLimitAction("updatePatient", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
@@ -221,43 +232,44 @@ export async function updatePatient(id: string, formData: FormData) {
 
     const validatedPatientData = patientSchema.partial().parse(patientData);
 
-    const patient = await prisma.patient.update({
-      where: { id },
-      data: {
-        ...encryptPatientFields(validatedPatientData),
-      },
-      include: {
-        gynecologicalProfile: true,
-      },
-    });
-
-    // Update or create gynecological profile if any field is provided and patient is female
-    const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
-      menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
-      menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes ||
-      menarche || sexarche || numberOfPartners;
-
-    if (hasGynData && patient.gender === "female") {
-      const gynData = {
-        gestas, cesareas, ectopicos, partos, abortos, molas,
-        menstrualCycleDays, menstrualDuration, menstrualPain,
-        lastMenstrualPeriod, menopause, menopauseAge,
-        contraceptiveMethod, sexuallyActive, parity,
-        notes: gynProfileNotes,
-        menarche, sexarche, numberOfPartners,
-      };
-
-      const validatedGynData = gynecologicalProfileSchema.partial().parse(gynData);
-
-      await prisma.gynecologicalProfile.upsert({
-        where: { patientId: id },
-        create: {
-          patientId: id,
-          ...validatedGynData,
+    const patient = await prisma.$transaction(async (tx) => {
+      const updated = await tx.patient.update({
+        where: { id },
+        data: {
+          ...encryptPatientFields(validatedPatientData),
         },
-        update: validatedGynData,
       });
-    }
+
+      // Update or create gynecological profile if any field is provided and patient is female
+      const hasGynData = gestas || cesareas || ectopicos || partos || abortos || molas ||
+        menstrualCycleDays || menstrualDuration || menstrualPain || lastMenstrualPeriod ||
+        menopause || menopauseAge || contraceptiveMethod || sexuallyActive || parity || gynProfileNotes ||
+        menarche || sexarche || numberOfPartners;
+
+      if (hasGynData && updated.gender === "female") {
+        const gynData = {
+          gestas, cesareas, ectopicos, partos, abortos, molas,
+          menstrualCycleDays, menstrualDuration, menstrualPain,
+          lastMenstrualPeriod, menopause, menopauseAge,
+          contraceptiveMethod, sexuallyActive, parity,
+          notes: gynProfileNotes,
+          menarche, sexarche, numberOfPartners,
+        };
+
+        const validatedGynData = gynecologicalProfileSchema.partial().parse(gynData);
+
+        await tx.gynecologicalProfile.upsert({
+          where: { patientId: id },
+          create: {
+            patientId: id,
+            ...validatedGynData,
+          },
+          update: validatedGynData,
+        });
+      }
+
+      return updated;
+    });
 
     await logAudit({
       userId: session.user.id,
@@ -274,7 +286,10 @@ export async function updatePatient(id: string, formData: FormData) {
     return { success: true };
   } catch (error) {
     console.error("[updatePatient] Error:", error);
-    throw error;
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos del paciente invalidos");
+    }
+    throw new Error("Error al actualizar el paciente");
   }
 }
 

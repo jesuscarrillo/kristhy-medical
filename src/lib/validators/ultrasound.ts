@@ -179,7 +179,7 @@ export const ultrasoundSchema = ultrasoundBaseSchema.extend({
         try {
           return JSON.parse(val);
         } catch {
-          return {};
+          throw new Error("Formato de mediciones invalido (JSON malformado)");
         }
       }
       return val || {};
@@ -192,7 +192,7 @@ export const ultrasoundSchema = ultrasoundBaseSchema.extend({
         try {
           return JSON.parse(val);
         } catch {
-          return {};
+          throw new Error("Formato de hallazgos invalido (JSON malformado)");
         }
       }
       return val || {};

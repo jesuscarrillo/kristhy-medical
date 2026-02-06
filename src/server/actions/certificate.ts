@@ -6,60 +6,73 @@ import { prisma } from "@/lib/prisma";
 import { certificateSchema } from "@/lib/validators/certificate";
 import { logAudit } from "./audit";
 import type { CertificateType } from "@prisma/client";
+import { z } from "zod";
+import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function createCertificate(formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    await rateLimitAction("createCertificate", RATE_LIMITS.mutation);
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = certificateSchema.parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = certificateSchema.parse(rawData);
 
-  // Verify patient exists
-  const patient = await prisma.patient.findUnique({
-    where: { id: validatedData.patientId },
-    select: { id: true, firstName: true, lastName: true },
-  });
+    // Verify patient exists
+    const patient = await prisma.patient.findUnique({
+      where: { id: validatedData.patientId },
+      select: { id: true, firstName: true, lastName: true },
+    });
 
-  if (!patient) {
-    throw new Error("Paciente no encontrado");
+    if (!patient) {
+      throw new Error("Paciente no encontrado");
+    }
+
+    // For REST type, auto-calculate validUntil if not provided
+    let validUntil = validatedData.validUntil;
+    if (validatedData.type === "REST" && validatedData.restDays && !validUntil) {
+      const startDate = validatedData.validFrom || validatedData.date;
+      validUntil = new Date(startDate);
+      validUntil.setDate(validUntil.getDate() + validatedData.restDays);
+    }
+
+    const certificate = await prisma.medicalCertificate.create({
+      data: {
+        patientId: validatedData.patientId,
+        date: validatedData.date,
+        type: validatedData.type as CertificateType,
+        title: validatedData.title,
+        content: validatedData.content,
+        restDays: validatedData.restDays,
+        validFrom: validatedData.validFrom,
+        validUntil: validUntil,
+        diagnosis: validatedData.diagnosis,
+        issuedBy: validatedData.issuedBy,
+        licenseNumber: validatedData.licenseNumber,
+      },
+    });
+
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "create",
+      entity: "certificate",
+      entityId: certificate.id,
+      details: `Certificado ${validatedData.type} - Paciente: ${patient.firstName} ${patient.lastName}`,
+    });
+
+    revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/certificados`);
+    revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
+
+    return { success: true, certificateId: certificate.id };
+  } catch (error) {
+    console.error("[createCertificate] Error:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos del certificado invalidos");
+    }
+    throw new Error(
+      error instanceof Error ? error.message : "Error al crear el certificado"
+    );
   }
-
-  // For REST type, auto-calculate validUntil if not provided
-  let validUntil = validatedData.validUntil;
-  if (validatedData.type === "REST" && validatedData.restDays && !validUntil) {
-    const startDate = validatedData.validFrom || validatedData.date;
-    validUntil = new Date(startDate);
-    validUntil.setDate(validUntil.getDate() + validatedData.restDays);
-  }
-
-  const certificate = await prisma.medicalCertificate.create({
-    data: {
-      patientId: validatedData.patientId,
-      date: validatedData.date,
-      type: validatedData.type as CertificateType,
-      title: validatedData.title,
-      content: validatedData.content,
-      restDays: validatedData.restDays,
-      validFrom: validatedData.validFrom,
-      validUntil: validUntil,
-      diagnosis: validatedData.diagnosis,
-      issuedBy: validatedData.issuedBy,
-      licenseNumber: validatedData.licenseNumber,
-    },
-  });
-
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "create",
-    entity: "certificate",
-    entityId: certificate.id,
-    details: `Certificado ${validatedData.type} - Paciente: ${patient.firstName} ${patient.lastName}`,
-  });
-
-  revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/certificados`);
-  revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
-
-  return { success: true, certificateId: certificate.id };
 }
 
 export async function getCertificates(patientId: string) {
@@ -118,86 +131,101 @@ export async function getCertificate(id: string) {
 }
 
 export async function updateCertificate(id: string, formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = certificateSchema.partial().parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = certificateSchema.partial().parse(rawData);
 
-  const existing = await prisma.medicalCertificate.findUnique({
-    where: { id },
-    include: {
-      patient: {
-        select: { firstName: true, lastName: true },
+    const existing = await prisma.medicalCertificate.findUnique({
+      where: { id },
+      include: {
+        patient: {
+          select: { firstName: true, lastName: true },
+        },
       },
-    },
-  });
+    });
 
-  if (!existing) {
-    throw new Error("Certificado no encontrado");
+    if (!existing) {
+      throw new Error("Certificado no encontrado");
+    }
+
+    // For REST type, auto-calculate validUntil if not provided
+    let validUntil = validatedData.validUntil;
+    if (validatedData.type === "REST" && validatedData.restDays && !validUntil) {
+      const startDate = validatedData.validFrom || validatedData.date || existing.date;
+      validUntil = new Date(startDate);
+      validUntil.setDate(validUntil.getDate() + validatedData.restDays);
+    }
+
+    const certificate = await prisma.medicalCertificate.update({
+      where: { id },
+      data: {
+        date: validatedData.date,
+        type: validatedData.type as CertificateType | undefined,
+        title: validatedData.title,
+        content: validatedData.content,
+        restDays: validatedData.restDays,
+        validFrom: validatedData.validFrom,
+        validUntil: validUntil,
+        diagnosis: validatedData.diagnosis,
+        issuedBy: validatedData.issuedBy,
+        licenseNumber: validatedData.licenseNumber,
+      },
+    });
+
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "update",
+      entity: "certificate",
+      entityId: id,
+      details: `Paciente: ${existing.patient.firstName} ${existing.patient.lastName}`,
+    });
+
+    revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
+    revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados/${id}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[updateCertificate] Error:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos del certificado invalidos");
+    }
+    throw new Error(
+      error instanceof Error ? error.message : "Error al actualizar el certificado"
+    );
   }
-
-  // For REST type, auto-calculate validUntil if not provided
-  let validUntil = validatedData.validUntil;
-  if (validatedData.type === "REST" && validatedData.restDays && !validUntil) {
-    const startDate = validatedData.validFrom || validatedData.date || existing.date;
-    validUntil = new Date(startDate);
-    validUntil.setDate(validUntil.getDate() + validatedData.restDays);
-  }
-
-  const certificate = await prisma.medicalCertificate.update({
-    where: { id },
-    data: {
-      date: validatedData.date,
-      type: validatedData.type as CertificateType | undefined,
-      title: validatedData.title,
-      content: validatedData.content,
-      restDays: validatedData.restDays,
-      validFrom: validatedData.validFrom,
-      validUntil: validUntil,
-      diagnosis: validatedData.diagnosis,
-      issuedBy: validatedData.issuedBy,
-      licenseNumber: validatedData.licenseNumber,
-    },
-  });
-
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "update",
-    entity: "certificate",
-    entityId: id,
-    details: `Paciente: ${existing.patient.firstName} ${existing.patient.lastName}`,
-  });
-
-  revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
-  revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados/${id}`);
-
-  return { success: true };
 }
 
 export async function deleteCertificate(id: string) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const certificate = await prisma.medicalCertificate.update({
-    where: { id },
-    data: { isActive: false },
-    include: {
-      patient: {
-        select: { firstName: true, lastName: true },
+    const certificate = await prisma.medicalCertificate.update({
+      where: { id },
+      data: { isActive: false },
+      include: {
+        patient: {
+          select: { firstName: true, lastName: true },
+        },
       },
-    },
-  });
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "delete",
-    entity: "certificate",
-    entityId: id,
-    details: `Paciente: ${certificate.patient.firstName} ${certificate.patient.lastName}`,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "delete",
+      entity: "certificate",
+      entityId: id,
+      details: `Paciente: ${certificate.patient.firstName} ${certificate.patient.lastName}`,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
+    revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
 
-  return { success: true };
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteCertificate] Error:", error);
+    throw new Error("Error al eliminar el certificado");
+  }
 }

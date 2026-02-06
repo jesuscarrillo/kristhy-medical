@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getDashboardStats } from "@/server/actions/dashboard";
 import { Button } from "@/components/ui/button";
@@ -12,9 +13,7 @@ import {
   TrendingUp
 } from "lucide-react";
 
-export default async function DashboardPage() {
-  const stats = await getDashboardStats();
-
+export default function DashboardPage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-8 py-10 space-y-10">
       {/* Header Section */}
@@ -43,6 +42,19 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* Stats + Content with Suspense */}
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function DashboardContent() {
+  const stats = await getDashboardStats();
+
+  return (
+    <>
       {/* Stats Overview */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
@@ -182,7 +194,46 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i} className="border-0 ring-1 ring-slate-200/50 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
+                  <div className="h-8 w-16 animate-pulse rounded bg-slate-200" />
+                </div>
+                <div className="h-12 w-12 animate-pulse rounded-xl bg-slate-200" />
+              </div>
+              <div className="mt-4 h-3 w-20 animate-pulse rounded bg-slate-100" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        <Card className="xl:col-span-2 shadow-sm border-0 ring-1 ring-slate-200/50">
+          <CardContent className="p-6 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-slate-100" />
+            ))}
+          </CardContent>
+        </Card>
+        <Card className="shadow-sm border-0 ring-1 ring-slate-200/50">
+          <CardContent className="p-6 space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-12 animate-pulse rounded-lg bg-slate-100" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }
 
@@ -231,4 +282,3 @@ function formatAppointmentType(type: string) {
       return type;
   }
 }
-

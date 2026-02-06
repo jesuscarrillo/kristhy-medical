@@ -8,101 +8,125 @@ import { nanoid } from "nanoid";
 import { logAudit } from "./audit";
 import { medicalImageSchema } from "@/lib/validators/medicalImage";
 import type { DocumentType } from "@prisma/client";
+import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function uploadMedicalImage(formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    await rateLimitAction("uploadMedicalImage", RATE_LIMITS.upload);
+    const session = await requireDoctor();
 
-  const file = formData.get("file");
-  const patientId = formData.get("patientId");
-  const fileType = formData.get("fileType");
-  const description = formData.get("description");
-  const documentType = formData.get("documentType");
-  const documentDate = formData.get("documentDate");
-  const laboratory = formData.get("laboratory");
-  const physician = formData.get("physician");
-  const results = formData.get("results");
-  const isNormal = formData.get("isNormal");
-  const tags = formData.get("tags");
+    const file = formData.get("file");
+    const patientId = formData.get("patientId");
+    const fileType = formData.get("fileType");
+    const description = formData.get("description");
+    const documentType = formData.get("documentType");
+    const documentDate = formData.get("documentDate");
+    const laboratory = formData.get("laboratory");
+    const physician = formData.get("physician");
+    const results = formData.get("results");
+    const isNormal = formData.get("isNormal");
+    const tags = formData.get("tags");
 
-  if (!(file instanceof File)) {
-    throw new Error("File is required");
-  }
-  if (typeof patientId !== "string" || patientId.length === 0) {
-    throw new Error("Patient ID is required");
-  }
-  if (typeof fileType !== "string" || fileType.length === 0) {
-    throw new Error("File type is required");
-  }
+    if (!(file instanceof File)) {
+      throw new Error("Archivo requerido");
+    }
+    if (typeof patientId !== "string" || patientId.length === 0) {
+      throw new Error("ID de paciente requerido");
+    }
+    if (typeof fileType !== "string" || fileType.length === 0) {
+      throw new Error("Tipo de archivo requerido");
+    }
 
-  // Validate additional fields
-  const validatedData = medicalImageSchema.parse({
-    patientId,
-    fileType,
-    description,
-    documentType,
-    documentDate,
-    laboratory,
-    physician,
-    results,
-    isNormal,
-    tags,
-  });
+    // Validate file size (max 50MB)
+    const MAX_FILE_SIZE = 50 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error("El archivo excede el tamano maximo de 50MB");
+    }
 
-  const ext = file.name.split(".").pop() || "bin";
-  const storageName = `${patientId}/${nanoid()}.${ext}`;
+    // Validate MIME type
+    const ALLOWED_MIME_TYPES = [
+      "image/jpeg", "image/png", "image/webp", "image/gif",
+      "application/pdf", "image/tiff", "image/bmp",
+    ];
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      throw new Error("Tipo de archivo no permitido");
+    }
 
-  const { error: uploadError } = await supabaseAdmin.storage
-    .from("medical-images")
-    .upload(storageName, file, {
-      contentType: file.type,
-      upsert: false,
+    // Validate additional fields
+    const validatedData = medicalImageSchema.parse({
+      patientId,
+      fileType,
+      description,
+      documentType,
+      documentDate,
+      laboratory,
+      physician,
+      results,
+      isNormal,
+      tags,
     });
 
-  if (uploadError) {
-    console.error("Upload error:", uploadError);
-    throw new Error("Error uploading file");
+    const ext = file.name.split(".").pop() || "bin";
+    const storageName = `${patientId}/${nanoid()}.${ext}`;
+
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("medical-images")
+      .upload(storageName, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      throw new Error("Error al subir el archivo");
+    }
+
+    const { data: urlData, error: urlError } = await supabaseAdmin.storage
+      .from("medical-images")
+      .createSignedUrl(storageName, 60 * 60 * 24 * 30);
+
+    if (urlError || !urlData?.signedUrl) {
+      throw new Error("Error al crear URL del archivo");
+    }
+
+    const image = await prisma.medicalImage.create({
+      data: {
+        patientId,
+        fileName: file.name,
+        fileUrl: urlData.signedUrl,
+        fileType,
+        fileSize: file.size,
+        mimeType: file.type,
+        description: validatedData.description,
+        documentType: validatedData.documentType as DocumentType | undefined,
+        documentDate: validatedData.documentDate,
+        laboratory: validatedData.laboratory,
+        physician: validatedData.physician,
+        results: validatedData.results,
+        isNormal: validatedData.isNormal,
+        tags: validatedData.tags || [],
+      },
+    });
+
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "create",
+      entity: "medical_image",
+      entityId: image.id,
+      details: `Archivo: ${file.name}, Tipo: ${fileType}${validatedData.documentType ? `, Documento: ${validatedData.documentType}` : ""}`,
+    });
+
+    revalidatePath(`/dashboard/pacientes/${patientId}/imagenes`);
+    revalidatePath(`/dashboard/pacientes/${patientId}`);
+
+    return { success: true, imageId: image.id };
+  } catch (error) {
+    console.error("[uploadMedicalImage] Error:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Error al subir la imagen"
+    );
   }
-
-  const { data: urlData, error: urlError } = await supabaseAdmin.storage
-    .from("medical-images")
-    .createSignedUrl(storageName, 60 * 60 * 24 * 365);
-
-  if (urlError || !urlData?.signedUrl) {
-    throw new Error("Error creating signed URL");
-  }
-
-  const image = await prisma.medicalImage.create({
-    data: {
-      patientId,
-      fileName: file.name,
-      fileUrl: urlData.signedUrl,
-      fileType,
-      fileSize: file.size,
-      mimeType: file.type,
-      description: validatedData.description,
-      documentType: validatedData.documentType as DocumentType | undefined,
-      documentDate: validatedData.documentDate,
-      laboratory: validatedData.laboratory,
-      physician: validatedData.physician,
-      results: validatedData.results,
-      isNormal: validatedData.isNormal,
-      tags: validatedData.tags || [],
-    },
-  });
-
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "create",
-    entity: "medical_image",
-    entityId: image.id,
-    details: `Archivo: ${file.name}, Tipo: ${fileType}${validatedData.documentType ? `, Documento: ${validatedData.documentType}` : ""}`,
-  });
-
-  revalidatePath(`/dashboard/pacientes/${patientId}/imagenes`);
-  revalidatePath(`/dashboard/pacientes/${patientId}`);
-
-  return { success: true, imageId: image.id };
 }
 
 export interface GetImagesFilters {
@@ -190,88 +214,100 @@ export async function getMedicalImage(id: string) {
 }
 
 export async function updateMedicalImage(id: string, formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const description = formData.get("description");
-  const documentType = formData.get("documentType");
-  const documentDate = formData.get("documentDate");
-  const laboratory = formData.get("laboratory");
-  const physician = formData.get("physician");
-  const results = formData.get("results");
-  const isNormal = formData.get("isNormal");
-  const tags = formData.get("tags");
+    const description = formData.get("description");
+    const documentType = formData.get("documentType");
+    const documentDate = formData.get("documentDate");
+    const laboratory = formData.get("laboratory");
+    const physician = formData.get("physician");
+    const results = formData.get("results");
+    const isNormal = formData.get("isNormal");
+    const tags = formData.get("tags");
 
-  // Get existing image
-  const existing = await prisma.medicalImage.findUnique({
-    where: { id },
-    select: { patientId: true, fileName: true },
-  });
+    // Get existing image
+    const existing = await prisma.medicalImage.findUnique({
+      where: { id },
+      select: { patientId: true, fileName: true },
+    });
 
-  if (!existing) {
-    throw new Error("Imagen no encontrada");
+    if (!existing) {
+      throw new Error("Imagen no encontrada");
+    }
+
+    // Parse tags
+    let parsedTags: string[] = [];
+    if (typeof tags === "string" && tags.length > 0) {
+      parsedTags = tags.split(",").map(t => t.trim()).filter(Boolean);
+    }
+
+    const image = await prisma.medicalImage.update({
+      where: { id },
+      data: {
+        description: typeof description === "string" ? description || null : undefined,
+        documentType: documentType && typeof documentType === "string" ? documentType as DocumentType : undefined,
+        documentDate: documentDate && typeof documentDate === "string" ? new Date(documentDate) : undefined,
+        laboratory: typeof laboratory === "string" ? laboratory || null : undefined,
+        physician: typeof physician === "string" ? physician || null : undefined,
+        results: typeof results === "string" ? results || null : undefined,
+        isNormal: isNormal === "true" ? true : isNormal === "false" ? false : undefined,
+        tags: parsedTags.length > 0 ? parsedTags : undefined,
+      },
+    });
+
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "update",
+      entity: "medical_image",
+      entityId: id,
+      details: `Archivo: ${existing.fileName}`,
+    });
+
+    revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[updateMedicalImage] Error:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Error al actualizar la imagen"
+    );
   }
-
-  // Parse tags
-  let parsedTags: string[] = [];
-  if (typeof tags === "string" && tags.length > 0) {
-    parsedTags = tags.split(",").map(t => t.trim()).filter(Boolean);
-  }
-
-  const image = await prisma.medicalImage.update({
-    where: { id },
-    data: {
-      description: typeof description === "string" ? description || null : undefined,
-      documentType: documentType && typeof documentType === "string" ? documentType as DocumentType : undefined,
-      documentDate: documentDate && typeof documentDate === "string" ? new Date(documentDate) : undefined,
-      laboratory: typeof laboratory === "string" ? laboratory || null : undefined,
-      physician: typeof physician === "string" ? physician || null : undefined,
-      results: typeof results === "string" ? results || null : undefined,
-      isNormal: isNormal === "true" ? true : isNormal === "false" ? false : undefined,
-      tags: parsedTags.length > 0 ? parsedTags : undefined,
-    },
-  });
-
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "update",
-    entity: "medical_image",
-    entityId: id,
-    details: `Archivo: ${existing.fileName}`,
-  });
-
-  revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
-
-  return { success: true };
 }
 
 export async function deleteMedicalImage(id: string) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const image = await prisma.medicalImage.findUnique({
-    where: { id },
-    select: { patientId: true, fileName: true },
-  });
+    const image = await prisma.medicalImage.findUnique({
+      where: { id },
+      select: { patientId: true, fileName: true },
+    });
 
-  if (!image) {
-    throw new Error("Imagen no encontrada");
+    if (!image) {
+      throw new Error("Imagen no encontrada");
+    }
+
+    // Delete from database (storage cleanup can be done separately)
+    await prisma.medicalImage.delete({
+      where: { id },
+    });
+
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "delete",
+      entity: "medical_image",
+      entityId: id,
+      details: `Archivo: ${image.fileName}`,
+    });
+
+    revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteMedicalImage] Error:", error);
+    throw new Error("Error al eliminar la imagen");
   }
-
-  // Delete from database (storage cleanup can be done separately)
-  await prisma.medicalImage.delete({
-    where: { id },
-  });
-
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "delete",
-    entity: "medical_image",
-    entityId: id,
-    details: `Archivo: ${image.fileName}`,
-  });
-
-  revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
-
-  return { success: true };
 }

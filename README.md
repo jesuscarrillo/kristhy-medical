@@ -1,4 +1,4 @@
-# Sistema de Gestión Médica - Dra. Kristhy v2.0
+# Sistema de Gestión Médica - Dra. Kristhy v2.2
 
 Sistema de gestión médica para consultorio de ginecología y obstetricia. Combina una landing page pública multilingüe con un dashboard privado para gestión de pacientes, citas, historiales clínicos, ecografías, certificados médicos e imágenes médicas.
 
@@ -462,7 +462,23 @@ getAuditStats()
 ### Autenticación (Better Auth)
 - Login con email/password
 - Rol por defecto: `doctor`
-- Middleware: `requireDoctor()`
+- Middleware: `requireDoctor()` en server actions
+- `src/middleware.ts` protege rutas `/dashboard/*`
+
+### Rate Limiting
+- Server actions: `rateLimitAction()` en mutaciones y uploads (20 req/min, 10 req/min uploads)
+- API routes: `rateLimit()` en contact, export, cron
+- In-memory store (producción requiere Redis/Upstash)
+
+### Error Handling
+- Try-catch en todos los server actions con errores sanitizados
+- `error.tsx` y `not-found.tsx` a nivel global y dashboard
+- ZodError → mensaje de validación, otros → mensaje genérico
+
+### Security Headers
+- HSTS, X-Frame-Options: DENY, X-Content-Type-Options: nosniff
+- CSP configurado (sin unsafe-eval)
+- Referrer-Policy, Permissions-Policy
 
 ---
 
@@ -483,7 +499,7 @@ pnpm db:studio    # Abrir Prisma Studio
 
 ## Estado del Proyecto
 
-### Completado (v2.0)
+### Completado (v2.2.1)
 - [x] Landing page multilingüe (español/inglés)
 - [x] Sistema de autenticación con Better Auth
 - [x] Dashboard protegido con roles
@@ -538,6 +554,21 @@ pnpm db:studio    # Abrir Prisma Studio
 - **Navegación:** Nueva barra de navegación interna en perfiles de paciente.
 - **Consultas Globales:** Nueva vista `/dashboard/consultas` para visualizar el historial reciente de atenciones.
 - **Calendario Mejorado:** Rediseño visual del componente de calendario.
+
+### v2.2.1 (Febrero 2026 - Auditoría Integral)
+- **Seguridad:** `safeDecrypt()` en todos los server actions (incluido reports.ts)
+- **Seguridad:** Error handling (try-catch) con errores sanitizados en 20+ funciones
+- **Seguridad:** Rate limiting en 7 server actions críticos (mutaciones + uploads)
+- **Seguridad:** CSP sin unsafe-eval, signed URLs de 30 días, upload validation (MIME + tamaño)
+- **Infra:** `middleware.ts` para protección de rutas + i18n
+- **Infra:** `error.tsx` y `not-found.tsx` (global + dashboard)
+- **Infra:** `.env` → `.env.local` para secrets
+- **DB:** `$transaction` en createPatient y updatePatient
+- **DB:** Pool timeouts configurados (max:10, idle:30s, connect:10s)
+- **SEO:** sitemap.ts, robots.ts, JSON-LD, hreflang, canonical URLs, metadata por página
+- **Performance:** Suspense boundaries con skeletons en 6 páginas del dashboard
+- **Cache:** `revalidateTag` corregido con profile "default" (Next.js 16)
+- **Audit:** Logging en todos los CRUD incluyendo appointments
 
 ### v2.2.0 (Abril 2026)
 - **Landing Page Polish:** Rediseño de la sección Hero (2 columnas), About y Testimonios con estética premium y authority médica.

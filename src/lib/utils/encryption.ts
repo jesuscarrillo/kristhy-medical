@@ -37,3 +37,13 @@ export function decrypt(text: string): string {
   decrypted += decipher.final("utf8");
   return decrypted;
 }
+
+export function safeDecrypt(text: string | null | undefined, fallback = "[DATOS NO DISPONIBLES]"): string {
+  if (!text) return fallback;
+  try {
+    return decrypt(text);
+  } catch {
+    console.error("Failed to decrypt field");
+    return fallback;
+  }
+}

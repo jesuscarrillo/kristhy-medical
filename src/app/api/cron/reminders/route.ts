@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
   if (!CRON_SECRET) {
     console.error("CRON_SECRET is not configured");
     return NextResponse.json(
-      { error: "Server misconfiguration" },
-      { status: 500 }
+      { error: "Unauthorized" },
+      { status: 401 }
     );
   }
 

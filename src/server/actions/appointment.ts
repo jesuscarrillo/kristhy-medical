@@ -4,23 +4,44 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { appointmentSchema } from "@/lib/validators/appointment";
+import { logAudit } from "./audit";
 import { CACHE_TAGS } from "@/lib/cache";
+import { z } from "zod";
+import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function createAppointment(formData: FormData) {
-  await requireDoctor();
+  try {
+    await rateLimitAction("createAppointment", RATE_LIMITS.mutation);
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = appointmentSchema.parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = appointmentSchema.parse(rawData);
 
-  const appointment = await prisma.appointment.create({
-    data: validatedData,
-  });
+    const appointment = await prisma.appointment.create({
+      data: validatedData,
+    });
 
-  revalidatePath("/dashboard/citas");
-  revalidateTag(CACHE_TAGS.appointments, "default");
-  revalidateTag(CACHE_TAGS.dashboard, "default");
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "create",
+      entity: "appointment",
+      entityId: appointment.id,
+      details: `Cita: ${validatedData.type}`,
+    });
 
-  return { success: true, appointmentId: appointment.id };
+    revalidatePath("/dashboard/citas");
+    revalidateTag(CACHE_TAGS.appointments, "default");
+    revalidateTag(CACHE_TAGS.dashboard, "default");
+
+    return { success: true, appointmentId: appointment.id };
+  } catch (error) {
+    console.error("[createAppointment] Error:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos de la cita invalidos");
+    }
+    throw new Error("Error al crear la cita");
+  }
 }
 
 interface GetAppointmentsOptions {
@@ -93,7 +114,7 @@ export async function getAppointmentsByDateRange(
 }
 
 export async function getAppointment(id: string) {
-  await requireDoctor();
+  const session = await requireDoctor();
 
   const appointment = await prisma.appointment.findUnique({
     where: { id },
@@ -103,42 +124,79 @@ export async function getAppointment(id: string) {
   });
 
   if (!appointment) {
-    throw new Error("Appointment not found");
+    throw new Error("Cita no encontrada");
   }
+
+  await logAudit({
+    userId: session.user.id,
+    userEmail: session.user.email,
+    action: "view",
+    entity: "appointment",
+    entityId: id,
+  });
 
   return appointment;
 }
 
 export async function updateAppointment(id: string, formData: FormData) {
-  await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = appointmentSchema.partial().parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = appointmentSchema.partial().parse(rawData);
 
-  await prisma.appointment.update({
-    where: { id },
-    data: validatedData,
-  });
+    await prisma.appointment.update({
+      where: { id },
+      data: validatedData,
+    });
 
-  revalidatePath(`/dashboard/citas/${id}`);
-  revalidatePath("/dashboard/citas");
-  revalidateTag(CACHE_TAGS.appointments, "default");
-  revalidateTag(CACHE_TAGS.dashboard, "default");
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "update",
+      entity: "appointment",
+      entityId: id,
+    });
 
-  return { success: true };
+    revalidatePath(`/dashboard/citas/${id}`);
+    revalidatePath("/dashboard/citas");
+    revalidateTag(CACHE_TAGS.appointments, "default");
+    revalidateTag(CACHE_TAGS.dashboard, "default");
+
+    return { success: true };
+  } catch (error) {
+    console.error("[updateAppointment] Error:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos de la cita invalidos");
+    }
+    throw new Error("Error al actualizar la cita");
+  }
 }
 
 export async function deleteAppointment(id: string) {
-  await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  await prisma.appointment.update({
-    where: { id },
-    data: { status: "cancelled" },
-  });
+    await prisma.appointment.update({
+      where: { id },
+      data: { status: "cancelled" },
+    });
 
-  revalidatePath("/dashboard/citas");
-  revalidateTag(CACHE_TAGS.appointments, "default");
-  revalidateTag(CACHE_TAGS.dashboard, "default");
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "delete",
+      entity: "appointment",
+      entityId: id,
+    });
 
-  return { success: true };
+    revalidatePath("/dashboard/citas");
+    revalidateTag(CACHE_TAGS.appointments, "default");
+    revalidateTag(CACHE_TAGS.dashboard, "default");
+
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteAppointment] Error:", error);
+    throw new Error("Error al cancelar la cita");
+  }
 }

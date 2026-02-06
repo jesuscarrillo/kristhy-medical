@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getAppointments } from "@/server/actions/appointment";
 import { Button } from "@/components/ui/button";
@@ -12,28 +13,17 @@ type AppointmentsPageProps = {
 
 export default async function AppointmentsPage({ searchParams }: AppointmentsPageProps) {
   const resolvedParams = await searchParams;
-  const status = resolvedParams?.status; // Default is intentionally undefined unless specified otherwise, but logically we want "scheduled" as initial view if user comes cleanly.
-  // Actually, user wants default view to be "scheduled" but also ability to see "all".
-  // If status is undefined, we usually show all. To show scheduled by default, resolvedParams.status should default to 'scheduled' only if not provided?
-  // But if user clicks 'All', we need a way to represent 'all'.
-  // Let's use 'all' string for all, or empty string.
-
-  // Revised approach:
-  // If no params, default status = 'scheduled'
-  // If params ?status=all, status = undefined (or handle as all)
-
+  const status = resolvedParams?.status;
   const currentStatus = status === "all" ? undefined : (status ?? "scheduled");
   const page = parseInt(resolvedParams?.page || "1");
-  const { appointments, total, totalPages } = await getAppointments({ status: currentStatus, page });
 
   const buildUrl = (newStatus?: string, newPage?: number) => {
     const params = new URLSearchParams();
-    // If selecting 'All', we pass 'all' to the URL so that it overrides the default 'scheduled'
     const s = newStatus ?? (status ?? "scheduled");
     const p = newPage ?? page;
 
     if (s && s !== "all") params.set("status", s);
-    if (s === "all") params.set("status", "all"); // explicit all
+    if (s === "all") params.set("status", "all");
 
     if (p > 1) params.set("page", String(p));
     const qs = params.toString();
@@ -45,9 +35,6 @@ export default async function AppointmentsPage({ searchParams }: AppointmentsPag
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Citas</h1>
-          <p className="text-sm text-slate-600">
-            {total} cita{total !== 1 ? "s" : ""} en total
-          </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
@@ -94,7 +81,38 @@ export default async function AppointmentsPage({ searchParams }: AppointmentsPag
         </Button>
       </div>
 
-      <div className="mt-6 grid gap-4">
+      <Suspense fallback={<AppointmentsSkeleton />}>
+        <AppointmentsContent
+          currentStatus={currentStatus}
+          status={status}
+          page={page}
+          buildUrl={buildUrl}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+async function AppointmentsContent({
+  currentStatus,
+  status,
+  page,
+  buildUrl,
+}: {
+  currentStatus?: string;
+  status?: string;
+  page: number;
+  buildUrl: (newStatus?: string, newPage?: number) => string;
+}) {
+  const { appointments, total, totalPages } = await getAppointments({ status: currentStatus, page });
+
+  return (
+    <>
+      <p className="mt-2 text-sm text-slate-600">
+        {total} cita{total !== 1 ? "s" : ""} en total
+      </p>
+
+      <div className="mt-4 grid gap-4">
         {appointments.length === 0 ? (
           <div className="rounded-lg border border-dashed border-slate-200 p-6 text-sm text-slate-500">
             No hay citas {status ? `con estado "${formatAppointmentStatus(status)}"` : "programadas"}.
@@ -165,6 +183,17 @@ export default async function AppointmentsPage({ searchParams }: AppointmentsPag
           </Button>
         </div>
       )}
+    </>
+  );
+}
+
+function AppointmentsSkeleton() {
+  return (
+    <div className="mt-4 space-y-4">
+      <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="h-20 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
+      ))}
     </div>
   );
 }

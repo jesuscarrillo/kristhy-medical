@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
-import { encrypt, decrypt } from "@/lib/utils/encryption";
+import { encrypt, safeDecrypt } from "@/lib/utils/encryption";
 import { medicalRecordSchema } from "@/lib/validators/medicalRecord";
 import { logAudit } from "./audit";
+import { z } from "zod";
+import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 function encryptMedicalRecordFields<T extends Record<string, unknown>>(data: T) {
   return {
@@ -24,37 +26,46 @@ function decryptMedicalRecordFields<T extends Record<string, unknown>>(
 ) {
   return {
     ...record,
-    personalHistory: record.personalHistory
-      ? decrypt(String(record.personalHistory))
-      : null,
-    gynecologicHistory: record.gynecologicHistory
-      ? decrypt(String(record.gynecologicHistory))
-      : null,
+    personalHistory: safeDecrypt(
+      record.personalHistory ? String(record.personalHistory) : null
+    ),
+    gynecologicHistory: safeDecrypt(
+      record.gynecologicHistory ? String(record.gynecologicHistory) : null
+    ),
   };
 }
 
 export async function createMedicalRecord(formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    await rateLimitAction("createMedicalRecord", RATE_LIMITS.mutation);
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = medicalRecordSchema.parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = medicalRecordSchema.parse(rawData);
 
-  const record = await prisma.medicalRecord.create({
-    data: encryptMedicalRecordFields(validatedData),
-  });
+    const record = await prisma.medicalRecord.create({
+      data: encryptMedicalRecordFields(validatedData),
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "create",
-    entity: "medical_record",
-    entityId: record.id,
-    details: `Tipo: ${validatedData.consultationType}`,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "create",
+      entity: "medical_record",
+      entityId: record.id,
+      details: `Tipo: ${validatedData.consultationType}`,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/historial`);
-  revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
-  return { success: true, recordId: record.id };
+    revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/historial`);
+    revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
+    return { success: true, recordId: record.id };
+  } catch (error) {
+    console.error("[createMedicalRecord] Error:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos del historial invalidos");
+    }
+    throw new Error("Error al crear el historial medico");
+  }
 }
 
 export async function getMedicalRecords(patientId: string) {
@@ -121,46 +132,59 @@ export async function getMedicalRecord(id: string) {
 }
 
 export async function updateMedicalRecord(id: string, formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = medicalRecordSchema.partial().parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = medicalRecordSchema.partial().parse(rawData);
 
-  const record = await prisma.medicalRecord.update({
-    where: { id },
-    data: encryptMedicalRecordFields(validatedData),
-  });
+    const record = await prisma.medicalRecord.update({
+      where: { id },
+      data: encryptMedicalRecordFields(validatedData),
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "update",
-    entity: "medical_record",
-    entityId: id,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "update",
+      entity: "medical_record",
+      entityId: id,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
-  revalidatePath(`/dashboard/pacientes/${record.patientId}/historial/${id}`);
-  revalidatePath(`/dashboard/pacientes/${record.patientId}`);
-  return { success: true };
+    revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
+    revalidatePath(`/dashboard/pacientes/${record.patientId}/historial/${id}`);
+    revalidatePath(`/dashboard/pacientes/${record.patientId}`);
+    return { success: true };
+  } catch (error) {
+    console.error("[updateMedicalRecord] Error:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos del historial invalidos");
+    }
+    throw new Error("Error al actualizar el historial medico");
+  }
 }
 
 export async function deleteMedicalRecord(id: string) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const record = await prisma.medicalRecord.delete({
-    where: { id },
-  });
+    const record = await prisma.medicalRecord.delete({
+      where: { id },
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "delete",
-    entity: "medical_record",
-    entityId: id,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "delete",
+      entity: "medical_record",
+      entityId: id,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
-  revalidatePath(`/dashboard/pacientes/${record.patientId}`);
-  return { success: true };
+    revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
+    revalidatePath(`/dashboard/pacientes/${record.patientId}`);
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteMedicalRecord] Error:", error);
+    throw new Error("Error al eliminar el historial medico");
+  }
 }

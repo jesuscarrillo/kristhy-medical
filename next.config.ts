@@ -7,7 +7,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const securityHeaders = [
   {
     key: "X-DNS-Prefetch-Control",
-    value: "on",
+    value: "off",
   },
   {
     key: "Strict-Transport-Security",
@@ -37,7 +37,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com",
       "font-src 'self' data:",

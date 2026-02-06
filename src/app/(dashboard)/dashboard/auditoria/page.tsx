@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getAuditLogs, getAuditStats } from "@/server/actions/audit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Shield, Eye, FileText, Calendar, Activity } from "lucide-react";
 import { AuditFilters } from "./AuditFilters";
+import type { AuditLogFilters, AuditEntity, AuditAction } from "@/server/actions/audit";
 
 interface PageProps {
   searchParams: Promise<{
@@ -43,30 +45,10 @@ export default async function AuditPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const page = parseInt(params.page || "1");
 
-  const filters = {
-    entity: params.entity as
-      | "patient"
-      | "medical_record"
-      | "appointment"
-      | "prescription"
-      | "medical_image"
-      | "report"
-      | undefined,
-    action: params.action as
-      | "view"
-      | "create"
-      | "update"
-      | "delete"
-      | "export"
-      | "login"
-      | "logout"
-      | undefined,
+  const filters: AuditLogFilters = {
+    entity: params.entity as AuditEntity | undefined,
+    action: params.action as AuditAction | undefined,
   };
-
-  const [logsData, stats] = await Promise.all([
-    getAuditLogs(filters, page),
-    getAuditStats(),
-  ]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-10 space-y-6">
@@ -80,6 +62,42 @@ export default async function AuditPage({ searchParams }: PageProps) {
         </div>
       </div>
 
+      {/* Filters (always visible) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Filtros</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AuditFilters
+            currentEntity={params.entity}
+            currentAction={params.action}
+          />
+        </CardContent>
+      </Card>
+
+      <Suspense fallback={<AuditSkeleton />}>
+        <AuditContent filters={filters} page={page} params={params} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function AuditContent({
+  filters,
+  page,
+  params,
+}: {
+  filters: AuditLogFilters;
+  page: number;
+  params: { entity?: string; action?: string };
+}) {
+  const [logsData, stats] = await Promise.all([
+    getAuditLogs(filters, page),
+    getAuditStats(),
+  ]);
+
+  return (
+    <>
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
@@ -131,19 +149,6 @@ export default async function AuditPage({ searchParams }: PageProps) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Filtros</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AuditFilters
-            currentEntity={params.entity}
-            currentAction={params.action}
-          />
-        </CardContent>
-      </Card>
 
       {/* Logs Table */}
       <Card>
@@ -236,6 +241,30 @@ export default async function AuditPage({ searchParams }: PageProps) {
           )}
         </CardContent>
       </Card>
-    </div>
+    </>
+  );
+}
+
+function AuditSkeleton() {
+  return (
+    <>
+      <div className="grid gap-4 md:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <div className="h-4 w-24 animate-pulse rounded bg-slate-200 mb-3" />
+              <div className="h-7 w-12 animate-pulse rounded bg-slate-200" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <CardContent className="p-6 space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-10 animate-pulse rounded bg-slate-100" />
+          ))}
+        </CardContent>
+      </Card>
+    </>
   );
 }

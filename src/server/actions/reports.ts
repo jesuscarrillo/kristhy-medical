@@ -2,7 +2,7 @@
 
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
-import { decrypt } from "@/lib/utils/encryption";
+import { safeDecrypt } from "@/lib/utils/encryption";
 
 export type ReportFilters = {
   startDate?: Date;
@@ -267,18 +267,18 @@ export async function getExportData(filters: ReportFilters = {}): Promise<Export
       status: apt.status,
       duration: apt.duration,
       patientName: `${apt.patient.firstName} ${apt.patient.lastName}`,
-      patientCedula: decrypt(apt.patient.cedula),
+      patientCedula: safeDecrypt(apt.patient.cedula),
       reason: apt.reason,
     })),
     patients: patients.map((p) => ({
       id: p.id,
       firstName: p.firstName,
       lastName: p.lastName,
-      cedula: decrypt(p.cedula),
+      cedula: safeDecrypt(p.cedula),
       gender: p.gender,
       dateOfBirth: p.dateOfBirth.toISOString().split("T")[0],
-      phone: decrypt(p.phone),
-      email: p.email ? decrypt(p.email) : null,
+      phone: safeDecrypt(p.phone),
+      email: p.email ? safeDecrypt(p.email) : null,
       city: p.city,
       createdAt: p.createdAt.toISOString().split("T")[0],
     })),

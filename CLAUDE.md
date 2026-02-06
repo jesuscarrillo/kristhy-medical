@@ -164,15 +164,25 @@ enum DocumentType {
 - Solo acceso vía service role
 
 ### Rate Limiting
-- Implementado en rutas críticas
+- `rateLimitAction()` en 7 server actions de mutación/upload
+- `rateLimit()` en API routes (contact, export, cron)
+- In-memory store (producción multi-instancia requiere Redis)
+
+### Middleware (src/middleware.ts)
+- Protección de rutas `/dashboard/*` via cookie de sesión
+- Redirect a `/login` si no hay sesión
+- i18n middleware para rutas públicas
 
 ## Convenciones
 
-1. **Server Actions:** `"use server"` + validación Zod + encriptación
+1. **Server Actions:** `"use server"` + rateLimitAction + validación Zod + try-catch + error sanitizado
 2. **Validadores:** Schemas en `src/lib/validators/`
 3. **Formularios:** React Hook Form + shadcn/ui
 4. **Auth:** `requireDoctor()` en rutas protegidas
 5. **Auditoría:** `logAudit()` en acciones críticas
+6. **Decrypt:** Siempre usar `safeDecrypt()` nunca `decrypt()` directo
+7. **revalidateTag:** Requiere 2do parámetro en Next.js 16: `revalidateTag(tag, "default")`
+8. **Suspense:** Páginas del dashboard usan `<Suspense>` con skeletons para streaming
 
 ## Variables de Entorno
 
@@ -203,6 +213,23 @@ SEED_DOCTOR_NAME="Dra. Kristhy"
 ```
 
 ## Changelog
+
+### v2.2.1 (Febrero 2026 - Auditoría Integral)
+- **Seguridad:** safeDecrypt en todos los server actions (incluido reports.ts)
+- **Seguridad:** Error handling (try-catch) en 20+ funciones de server actions
+- **Seguridad:** Rate limiting en 7 server actions críticos (mutaciones + uploads)
+- **Seguridad:** CSP sin unsafe-eval, signed URLs de 30 días
+- **Seguridad:** Upload validation (MIME + tamaño) en ultrasound.ts e images.ts
+- **Infra:** middleware.ts para protección de rutas + i18n
+- **Infra:** error.tsx y not-found.tsx (global + dashboard)
+- **Infra:** .env → .env.local para secrets
+- **DB:** $transaction en createPatient y updatePatient
+- **DB:** Pool timeouts configurados (max:10, idle:30s, connect:10s)
+- **SEO:** sitemap.ts, robots.ts, JSON-LD, hreflang, canonical URLs
+- **SEO:** Metadata individual por página (contacto, servicios, sobre-mi)
+- **Performance:** Suspense boundaries en 6 páginas del dashboard con skeletons
+- **Cache:** revalidateTag corregido con profile "default" (Next.js 16)
+- **Audit:** Logging en todos los CRUD incluyendo appointments
 
 ### v2.2.0 (Abril 2026)
 - Landing page rediseñada (Hero, About, Testimonios)
@@ -238,7 +265,7 @@ git clone <repo>
 cd kristhy-medical
 pnpm install
 cp .env.example .env.local
-# Configurar .env.local
+# Configurar .env.local con tus credenciales
 pnpm db:push
 pnpm db:seed
 pnpm dev

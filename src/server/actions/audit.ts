@@ -68,6 +68,7 @@ export interface AuditLogFilters {
 }
 
 export async function getAuditLogs(filters?: AuditLogFilters, page = 1, limit = 50) {
+  const safeLimit = Math.min(limit, 100);
   await requireDoctor();
 
   const where: Record<string, unknown> = {};
@@ -92,8 +93,8 @@ export async function getAuditLogs(filters?: AuditLogFilters, page = 1, limit = 
     prisma.auditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * safeLimit,
+      take: safeLimit,
     }),
     prisma.auditLog.count({ where }),
   ]);
@@ -102,7 +103,7 @@ export async function getAuditLogs(filters?: AuditLogFilters, page = 1, limit = 
     logs,
     total,
     page,
-    totalPages: Math.ceil(total / limit),
+    totalPages: Math.ceil(total / safeLimit),
   };
 }
 

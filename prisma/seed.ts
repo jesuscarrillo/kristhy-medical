@@ -1,6 +1,6 @@
 async function main() {
   const { config } = await import("dotenv");
-  config({ path: ".env.local" });
+  config({ path: ".env.local.local" });
   config();
 
   const { prisma } = await import("../src/lib/prisma");

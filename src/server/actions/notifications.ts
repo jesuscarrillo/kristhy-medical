@@ -4,7 +4,7 @@ import { render } from "@react-email/components";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { resend, EMAIL_FROM } from "@/lib/email";
-import { decrypt } from "@/lib/utils/encryption";
+import { safeDecrypt } from "@/lib/utils/encryption";
 import { AppointmentReminderEmail } from "@/lib/email-templates/appointment-reminder";
 
 type SendReminderResult = {
@@ -75,7 +75,13 @@ export async function sendAppointmentReminders(): Promise<SendReminderResult> {
     }
 
     try {
-      const patientEmail = decrypt(appointment.patient.email);
+      const patientEmail = safeDecrypt(appointment.patient.email);
+      if (patientEmail === "[DATOS NO DISPONIBLES]") {
+        results.errors.push(
+          `Could not decrypt email for ${appointment.patient.firstName}`
+        );
+        continue;
+      }
       const appointmentDate = new Date(appointment.date);
 
       const emailHtml = await render(
@@ -159,7 +165,10 @@ export async function sendManualReminder(appointmentId: string) {
   }
 
   try {
-    const patientEmail = decrypt(appointment.patient.email);
+    const patientEmail = safeDecrypt(appointment.patient.email);
+    if (patientEmail === "[DATOS NO DISPONIBLES]") {
+      return { success: false, error: "Could not decrypt patient email" };
+    }
     const appointmentDate = new Date(appointment.date);
 
     const emailHtml = await render(

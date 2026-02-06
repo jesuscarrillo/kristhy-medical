@@ -102,7 +102,29 @@ export const RATE_LIMITS = {
   export: { interval: 60 * 1000, limit: 10 },
   // Auth: 10 attempts per minute
   auth: { interval: 60 * 1000, limit: 10 },
+  // Server action mutations: 20 per minute
+  mutation: { interval: 60 * 1000, limit: 20 },
+  // File uploads: 10 per minute
+  upload: { interval: 60 * 1000, limit: 10 },
 } as const;
+
+// Helper for server actions: get IP from headers() and check rate limit
+export async function rateLimitAction(
+  action: string,
+  config: RateLimitConfig
+): Promise<void> {
+  // Dynamic import to avoid issues in non-server-action contexts
+  const { headers: getHeaders } = await import("next/headers");
+  const headersList = await getHeaders();
+  const forwarded = headersList.get("x-forwarded-for");
+  const realIp = headersList.get("x-real-ip");
+  const ip = forwarded?.split(",")[0].trim() || realIp || "unknown";
+
+  const { success } = rateLimit(`action:${action}:${ip}`, config);
+  if (!success) {
+    throw new Error("Demasiadas solicitudes. Intente de nuevo en un momento.");
+  }
+}
 
 // Helper to create rate limit response
 export function rateLimitResponse(reset: number) {

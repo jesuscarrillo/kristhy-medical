@@ -24,10 +24,21 @@ export const metadata: Metadata = {
     "ginecología Venezuela",
   ],
   metadataBase: new URL("https://drakristhy.com"),
+  alternates: {
+    canonical: "/",
+    languages: {
+      es: "/es",
+      en: "/en",
+      "x-default": "/",
+    },
+  },
   openGraph: {
     title: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
     description: "Atención integral en salud reproductiva con 12+ años de experiencia",
     images: ["/og-image.jpg"],
+    type: "website",
+    locale: "es_VE",
+    alternateLocale: "en_US",
   },
   icons: {
     icon: [
@@ -53,9 +64,35 @@ export default async function LocaleLayout({
   const { locale } = await params;
   const messages = await getMessages();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MedicalBusiness",
+    name: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
+    description: "Consultorio especializado en ginecología y obstetricia",
+    url: "https://drakristhy.com",
+    telephone: "+584247771234",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "San Cristóbal",
+      addressRegion: "Táchira",
+      addressCountry: "VE",
+    },
+    medicalSpecialty: ["Obstetrics", "Gynecology"],
+    physician: {
+      "@type": "Physician",
+      name: "Dra. Kristhy Moreno",
+      medicalSpecialty: "Obstetrics and Gynecology",
+      jobTitle: "Especialista en Obstetricia y Ginecología",
+    },
+  };
+
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-white to-white text-slate-900">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <HeaderClient currentLocale={locale} />
         <main className="flex-1">{children}</main>
         <Footer currentLocale={locale} />
