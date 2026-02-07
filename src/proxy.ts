@@ -34,6 +34,12 @@ export default async function proxy(request: NextRequest) {
 
   const isAuthenticated = !!sessionCookie?.value;
 
+  // Loop prevention: detect if we're in a redirect cycle
+  const referrer = request.headers.get('referer');
+  const isFromLogin = referrer?.includes('/login');
+  const isFromDashboard = referrer?.includes('/dashboard');
+  const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
+
   // Enhanced logging for dashboard routes (helps debug auth issues in production)
   if (pathname.startsWith("/dashboard")) {
     console.log("[Proxy] Dashboard access:", {
@@ -41,6 +47,17 @@ export default async function proxy(request: NextRequest) {
       hasCookie: !!sessionCookie,
       cookieName: sessionCookie?.name,
       cookiePrefix: sessionCookie?.value ? sessionCookie.value.substring(0, 20) + "..." : "none",
+      referrer,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // Logging for login routes
+  if (pathname.startsWith("/login")) {
+    console.log("[Proxy] Login page access:", {
+      hasCookie: !!sessionCookie,
+      callbackUrl,
+      referrer,
       timestamp: new Date().toISOString(),
     });
   }
@@ -65,6 +82,14 @@ export default async function proxy(request: NextRequest) {
 
   // Redirect unauthenticated users from protected routes to login
   if (isProtectedRoute && !isAuthenticated) {
+    // Check if we're in a redirect loop
+    if (isFromLogin && callbackUrl === pathname) {
+      console.error("[Proxy] Detected potential redirect loop, allowing access to break cycle");
+      // Don't redirect again, let it through to show error page
+      return NextResponse.next();
+    }
+
+    console.log(`[Proxy] Unauthenticated access to ${pathname}, redirecting to login`);
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
@@ -72,6 +97,19 @@ export default async function proxy(request: NextRequest) {
 
   // Redirect authenticated users from auth routes to dashboard
   if (isAuthRoute && isAuthenticated) {
+    // If coming from dashboard, might be a logout scenario, allow it
+    if (isFromDashboard) {
+      console.log("[Proxy] Authenticated user accessing login from dashboard, allowing");
+      return NextResponse.next();
+    }
+
+    console.log("[Proxy] Authenticated user on login page, redirecting to dashboard");
+
+    // Check if there's a callback URL to honor
+    if (callbackUrl && callbackUrl !== '/login') {
+      return NextResponse.redirect(new URL(callbackUrl, request.url));
+    }
+
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

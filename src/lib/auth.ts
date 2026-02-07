@@ -4,8 +4,22 @@ import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.BETTER_AUTH_URL || ""],
+
+  // Enable trustHost for automatic baseURL detection from request headers
+  // This makes the system resilient to environment variable misconfiguration
+  trustHost: true,
+
+  // Keep baseURL as fallback for non-HTTP contexts
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+
+  // Enhance trustedOrigins with multiple sources
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+    "https://kristhy-medical.vercel.app",
+    "http://localhost:3000",
+  ].filter(Boolean) as string[],
+
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
