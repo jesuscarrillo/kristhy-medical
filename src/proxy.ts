@@ -27,10 +27,13 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Check for Better Auth session cookie
-  // Better Auth uses either "session_token" or "{prefix}.session_token"
+  // In production (HTTPS + useSecureCookies), cookie has __SECURE- prefix
+  // In development (HTTP), cookie has no prefix
   const sessionCookie =
-    request.cookies.get("kristhy_auth.session_token") ||
-    request.cookies.get("session_token");
+    request.cookies.get("__SECURE-kristhy_auth.session_token") ||  // Production (HTTPS)
+    request.cookies.get("kristhy_auth.session_token") ||            // Development (HTTP)
+    request.cookies.get("__HOST-kristhy_auth.session_token") ||     // Extra secure (rare)
+    request.cookies.get("session_token");                           // Fallback
 
   const isAuthenticated = !!sessionCookie?.value;
 
@@ -50,6 +53,13 @@ export default async function proxy(request: NextRequest) {
       referrer,
       timestamp: new Date().toISOString(),
     });
+
+    // Debug: Log ALL cookies in production to diagnose issues
+    if (process.env.NODE_ENV === "production") {
+      console.log("[Proxy Debug] All cookies received:",
+        Array.from(request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 10)}...`))
+      );
+    }
   }
 
   // Logging for login routes
