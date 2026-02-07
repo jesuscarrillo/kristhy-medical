@@ -34,6 +34,17 @@ export default async function proxy(request: NextRequest) {
 
   const isAuthenticated = !!sessionCookie?.value;
 
+  // Enhanced logging for dashboard routes (helps debug auth issues in production)
+  if (pathname.startsWith("/dashboard")) {
+    console.log("[Proxy] Dashboard access:", {
+      pathname,
+      hasCookie: !!sessionCookie,
+      cookieName: sessionCookie?.name,
+      cookiePrefix: sessionCookie?.value ? sessionCookie.value.substring(0, 20) + "..." : "none",
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   // Debug logs (only in development)
   if (process.env.NODE_ENV === "development") {
     console.log("[Proxy Debug]", {

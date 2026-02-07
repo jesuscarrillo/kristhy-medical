@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function LoginForm() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,12 +20,24 @@ export function LoginForm() {
     const password = String(formData.get("password") ?? "");
 
     try {
-      await authClient.signIn.email({ email, password });
-      router.push("/dashboard");
+      const result = await authClient.signIn.email({ email, password });
+
+      if (result.error) {
+        setError(result.error.message || "Credenciales inválidas. Intenta de nuevo.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - use window.location.href for full page navigation
+      // This ensures cookie is fully committed before the next request
+      // Small delay ensures the cookie is written to the browser's cookie store
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 100);
+
     } catch (err) {
       console.error("Login failed:", err);
       setError("Credenciales inválidas. Intenta de nuevo.");
-    } finally {
       setIsLoading(false);
     }
   };
