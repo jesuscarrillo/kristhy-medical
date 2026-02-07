@@ -27,8 +27,22 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Check for Better Auth session cookie
-  const sessionCookie = request.cookies.get("kristhy_auth.session_token");
+  // Better Auth uses either "session_token" or "{prefix}.session_token"
+  const sessionCookie =
+    request.cookies.get("kristhy_auth.session_token") ||
+    request.cookies.get("session_token");
+
   const isAuthenticated = !!sessionCookie?.value;
+
+  // Debug logs (only in development)
+  if (process.env.NODE_ENV === "development") {
+    console.log("[Proxy Debug]", {
+      pathname,
+      hasSessionCookie: !!sessionCookie,
+      cookieName: sessionCookie?.name,
+      allCookies: Array.from(request.cookies.getAll().map(c => c.name)),
+    });
+  }
 
   // Check if current path is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
