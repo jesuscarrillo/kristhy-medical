@@ -39,7 +39,7 @@ export function LoginForm() {
       for (let i = 0; i < maxRetries; i++) {
         try {
           // Check if session cookie exists and is valid
-          const sessionCheck = await fetch('/api/auth/get-session', {
+          const sessionCheck = await fetch('/api/auth-check', {
             method: 'GET',
             credentials: 'include', // Important: include cookies
             headers: {
