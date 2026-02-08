@@ -59,6 +59,45 @@ pnpm db:seed          # Crear usuario doctora
 pnpm db:studio        # GUI de BD
 ```
 
+## Docker
+
+El proyecto incluye configuración completa de Docker para desarrollo y producción.
+
+### Desarrollo Local
+
+```bash
+docker-compose up                    # Iniciar con hot-reload
+./scripts/docker-dev.sh             # Script interactivo
+docker-compose exec app pnpm db:seed # Seed dentro del contenedor
+```
+
+### Producción
+
+```bash
+./scripts/docker-build.sh           # Build imagen optimizada
+./scripts/docker-prod.sh            # Iniciar producción
+```
+
+### Archivos
+
+- `Dockerfile` - Producción (multi-stage, Node 20, ~350MB)
+- `Dockerfile.dev` - Desarrollo (hot-reload, ~1.2GB)
+- `docker-compose.yml` - Desarrollo con volúmenes
+- `docker-compose.prod.yml` - Producción optimizada
+- `docs/docker/` - Documentación completa
+- `k8s/` - Manifiestos de Kubernetes
+
+### Características
+
+- Health check en `/api/health`
+- Hot-reload para desarrollo
+- Build args para DATABASE_URL (requerido por Prisma)
+- Non-root user (nextjs:1001)
+- CI/CD con GitHub Actions
+- Compatible con AWS, GCP, DigitalOcean, Railway, Render
+
+**Documentación:** Ver `docs/docker/DOCKER-LOCAL.md` para guía completa.
+
 ## Modelos Principales
 
 ### Core

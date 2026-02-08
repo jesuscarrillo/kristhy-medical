@@ -593,6 +593,49 @@ pnpm db:studio    # Abrir Prisma Studio
 
 ---
 
+## 🐳 Docker
+
+El proyecto incluye soporte completo para Docker tanto para desarrollo como producción.
+
+### Quick Start con Docker
+
+```bash
+# Desarrollo local con hot-reload
+docker-compose up
+
+# La aplicación estará disponible en http://localhost:3000
+```
+
+### Documentación
+
+- 📘 **[Desarrollo Local](./docs/docker/DOCKER-LOCAL.md)** - Guía rápida para desarrollo con Docker
+- 📖 **[Guía Completa](./docs/docker/README-DOCKER.md)** - Documentación exhaustiva (producción, cloud, Kubernetes)
+- ☸️ **[Kubernetes](./k8s/README.md)** - Manifiestos y guía de deployment
+
+### Scripts Disponibles
+
+```bash
+./scripts/docker-dev.sh      # Iniciar desarrollo
+./scripts/docker-build.sh    # Build de producción
+./scripts/docker-prod.sh     # Iniciar producción
+./scripts/docker-stop.sh     # Detener contenedores
+./scripts/docker-migrate.sh  # Ejecutar migraciones
+./scripts/docker-seed.sh     # Seed de base de datos
+```
+
+### Características
+
+- ✅ Hot-reload en desarrollo
+- ✅ Dockerfile multi-stage optimizado para producción
+- ✅ Health check endpoint (`/api/health`)
+- ✅ CI/CD con GitHub Actions
+- ✅ Kubernetes manifests listos
+- ✅ Compatible con AWS, GCP, DigitalOcean, Railway, Render
+
+Ver [docs/docker/](./docs/docker/) para más información.
+
+---
+
 ## Notas
 
 - La landing multi-idioma está en `src/app/[locale]/`

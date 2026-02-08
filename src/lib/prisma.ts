@@ -7,7 +7,15 @@ const globalForPrisma = globalThis as unknown as {
   prismaPool?: Pool;
 };
 
-const connectionString = process.env.DATABASE_URL ?? process.env.DIRECT_URL;
+// During build time (e.g., Docker build), use a dummy connection string
+// This is safe because we don't actually connect to the DB during build
+const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' ||
+                    process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL && !process.env.DIRECT_URL;
+
+const connectionString = process.env.DATABASE_URL ??
+                        process.env.DIRECT_URL ??
+                        (isBuildTime ? 'postgresql://dummy:dummy@localhost:5432/dummy?pgbouncer=true' : '');
+
 if (!connectionString) {
   throw new Error("DATABASE_URL or DIRECT_URL must be set");
 }

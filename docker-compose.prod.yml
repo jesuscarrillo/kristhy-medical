@@ -1,0 +1,113 @@
+# Kristhy Medical - Docker Compose Production
+# Optimized for production deployment with resource limits and monitoring
+# Usage: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  # Next.js Application (Production)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner  # Use optimized runner stage for production
+      args:
+        DATABASE_URL: ${DATABASE_URL}
+    image: kristhy-medical:latest
+    container_name: kristhy-medical-prod
+    ports:
+      - "3000:3000"
+
+    # Production environment variables
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      DIRECT_URL: ${DIRECT_URL}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      NEXT_PUBLIC_BETTER_AUTH_URL: ${NEXT_PUBLIC_BETTER_AUTH_URL}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM}
+      CRON_SECRET: ${CRON_SECRET}
+      UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL:-}
+      UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-}
+      # Seed variables (only for initial setup)
+      SEED_DOCTOR_EMAIL: ${SEED_DOCTOR_EMAIL}
+      SEED_DOCTOR_PASSWORD: ${SEED_DOCTOR_PASSWORD}
+      SEED_DOCTOR_NAME: ${SEED_DOCTOR_NAME}
+
+    # Resource limits (adjust based on your infrastructure)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    # Health check (more aggressive for production)
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s  # Longer start period for migrations
+      retries: 3
+
+    # Restart policy
+    restart: always
+
+    # Logging with rotation
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Network
+    networks:
+      - kristhy-network
+
+# Networks
+networks:
+  kristhy-network:
+    driver: bridge
+
+# Note: Production typically uses external managed databases (Supabase)
+# If you need a local PostgreSQL for production, uncomment below:
+#
+# services:
+#   postgres:
+#     image: postgres:16-alpine
+#     container_name: kristhy-postgres-prod
+#     environment:
+#       POSTGRES_USER: ${POSTGRES_USER}
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#       POSTGRES_DB: ${POSTGRES_DB}
+#       PGDATA: /var/lib/postgresql/data/pgdata
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data_prod:/var/lib/postgresql/data
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#     restart: always
+#     networks:
+#       - kristhy-network
+#     deploy:
+#       resources:
+#         limits:
+#           cpus: '1'
+#           memory: 1G
+#         reservations:
+#           cpus: '0.25'
+#           memory: 256M
+#
+# volumes:
+#   postgres_data_prod:
+#     driver: local
