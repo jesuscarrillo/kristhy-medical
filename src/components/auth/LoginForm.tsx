@@ -28,54 +28,7 @@ export function LoginForm() {
         return;
       }
 
-      // Success - verify session was actually created before redirecting
-      // This prevents redirect loops if session creation failed
-      console.log("[LoginForm] Sign-in successful, verifying session...");
-
-      let sessionValid = false;
-      const maxRetries = 10;
-      const retryDelay = 150; // ms between retries
-
-      for (let i = 0; i < maxRetries; i++) {
-        try {
-          // Check if session cookie exists and is valid
-          const sessionCheck = await fetch('/api/auth-check', {
-            method: 'GET',
-            credentials: 'include', // Important: include cookies
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (sessionCheck.ok) {
-            const sessionData = await sessionCheck.json();
-            if (sessionData && sessionData.session && sessionData.user) {
-              console.log("[LoginForm] Session verified successfully");
-              sessionValid = true;
-              break;
-            }
-          }
-
-          console.log(`[LoginForm] Session not ready, retry ${i + 1}/${maxRetries}...`);
-        } catch (err) {
-          console.warn(`[LoginForm] Session check failed on attempt ${i + 1}:`, err);
-        }
-
-        // Wait before retry (unless this was the last attempt)
-        if (i < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-        }
-      }
-
-      if (!sessionValid) {
-        console.error("[LoginForm] Session verification failed after all retries");
-        setError("La sesión no se pudo establecer. Por favor, intenta de nuevo.");
-        setIsLoading(false);
-        return;
-      }
-
-      // Session verified, safe to redirect
-      console.log("[LoginForm] Redirecting to dashboard...");
+      // signIn.email() resolves after the session cookie is set, safe to redirect
       window.location.href = "/dashboard";
 
     } catch (err) {

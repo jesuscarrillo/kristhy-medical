@@ -1,18 +1,7 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import Image from "next/image";
-import { auth } from "@/lib/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export default async function LoginPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (session) {
-    redirect("/dashboard");
-  }
-
+export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* Visual Side */}
