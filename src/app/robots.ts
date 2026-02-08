@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard/", "/api/", "/login"],
       },
     ],
-    sitemap: "https://drakristhy.com/sitemap.xml",
+    sitemap: "https://drakristhymoreno.com/sitemap.xml",
   };
 }

@@ -6,12 +6,12 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 
 export const metadata: Metadata = {
-  title: "Sobre Mi | Dra. Kristhy Moreno - Ginecologa Obstetra",
+  title: "Sobre Mí | Dra. Kristhy Moreno - Ginecóloga Obstetra",
   description:
-    "Conoce a la Dra. Kristhy Moreno, especialista en ginecologia y obstetricia con 12+ anos de experiencia. Formacion, trayectoria y compromiso con la salud de la mujer.",
+    "Conoce a la Dra. Kristhy Moreno, especialista en ginecología y obstetricia con 12+ años de experiencia. Formación, trayectoria y compromiso con la salud de la mujer.",
   alternates: {
     canonical: "/sobre-mi",
-    languages: { es: "/es/sobre-mi", en: "/en/sobre-mi" },
+    languages: { es: "/sobre-mi", en: "/en/sobre-mi", "x-default": "/sobre-mi" },
   },
 };
 

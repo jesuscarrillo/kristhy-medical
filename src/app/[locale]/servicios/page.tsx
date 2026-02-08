@@ -5,12 +5,12 @@ import { Services } from "@/components/sections/Services";
 import { Contact } from "@/components/sections/Contact";
 
 export const metadata: Metadata = {
-  title: "Servicios | Dra. Kristhy Moreno - Ginecologia y Obstetricia",
+  title: "Servicios | Dra. Kristhy Moreno - Ginecología y Obstetricia",
   description:
-    "Control prenatal, embarazo de alto riesgo, ecografias, planificacion familiar y mas. Atencion integral en ginecologia y obstetricia en San Cristobal, Tachira.",
+    "Control prenatal, embarazo de alto riesgo, ecografías, planificación familiar y más. Atención integral en ginecología y obstetricia en San Cristóbal, Táchira.",
   alternates: {
     canonical: "/servicios",
-    languages: { es: "/es/servicios", en: "/en/servicios" },
+    languages: { es: "/servicios", en: "/en/servicios", "x-default": "/servicios" },
   },
 };
 

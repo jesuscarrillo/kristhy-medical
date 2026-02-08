@@ -14,7 +14,7 @@ export function generateStaticParams() {
 export const metadata: Metadata = {
   title: "Dra. Kristhy Moreno | Obstetricia y Ginecología | San Cristóbal",
   description:
-    "Especialista en Obstetricia y Ginecología con 12+ años de experiencia. Atención personalizada, control prenatal, embarazos de alto riesgo. San Cristóbal, Táchira.",
+    "Obstetra ginecóloga en San Cristóbal, Táchira. Control prenatal, embarazos de alto riesgo y atención integral.",
   keywords: [
     "ginecóloga San Cristóbal",
     "obstetra Táchira",
@@ -23,18 +23,10 @@ export const metadata: Metadata = {
     "Dra Kristhy Moreno",
     "ginecología Venezuela",
   ],
-  metadataBase: new URL("https://drakristhy.com"),
-  alternates: {
-    canonical: "/",
-    languages: {
-      es: "/es",
-      en: "/en",
-      "x-default": "/",
-    },
-  },
+  metadataBase: new URL("https://drakristhymoreno.com"),
   openGraph: {
     title: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
-    description: "Atención integral en salud reproductiva con 12+ años de experiencia",
+    description: "Atención integral en salud reproductiva",
     images: ["/og-image.jpg"],
     type: "website",
     locale: "es_VE",
@@ -68,8 +60,8 @@ export default async function LocaleLayout({
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
     name: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
-    description: "Consultorio especializado en ginecología y obstetricia",
-    url: "https://drakristhy.com",
+    description: "Consultorio especializado en obstetricia y ginecología",
+    url: "https://drakristhymoreno.com",
     telephone: "+584247771234",
     address: {
       "@type": "PostalAddress",
@@ -88,7 +80,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-white to-white text-slate-900">
+      <div className="flex min-h-screen flex-col bg-linear-to-b from-sky-50 via-white to-white text-slate-900">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

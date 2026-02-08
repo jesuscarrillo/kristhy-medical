@@ -6,10 +6,10 @@ import { Contact } from "@/components/sections/Contact";
 export const metadata: Metadata = {
   title: "Contacto | Dra. Kristhy Moreno - Agendar Cita",
   description:
-    "Agenda tu cita con la Dra. Kristhy Moreno. Consultorio en San Cristobal, Tachira. Atencion personalizada en ginecologia y obstetricia.",
+    "Agenda tu cita con la Dra. Kristhy Moreno. Consultorio en San Cristóbal, Táchira. Atención personalizada en ginecología y obstetricia.",
   alternates: {
     canonical: "/contacto",
-    languages: { es: "/es/contacto", en: "/en/contacto" },
+    languages: { es: "/contacto", en: "/en/contacto", "x-default": "/contacto" },
   },
 };
 
