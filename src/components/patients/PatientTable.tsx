@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useCallback } from "react";
 import { User, Phone, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -34,9 +35,9 @@ type PatientTableProps = {
 export function PatientTable({ patients, query }: PatientTableProps) {
     const router = useRouter();
 
-    const handleRowClick = (patientId: string) => {
+    const handleRowClick = useCallback((patientId: string) => {
         router.push(`/dashboard/pacientes/${patientId}`);
-    };
+    }, [router]);
 
     return (
         <Table>

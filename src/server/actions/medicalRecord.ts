@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -68,20 +69,20 @@ export async function createMedicalRecord(formData: FormData) {
   }
 }
 
-export async function getMedicalRecords(patientId: string) {
-  await requireDoctor();
-
+const _fetchMedicalRecords = cache(async (patientId: string) => {
   const records = await prisma.medicalRecord.findMany({
     where: { patientId },
     orderBy: { date: "desc" },
   });
-
   return records.map((record) => decryptMedicalRecordFields(record));
+});
+
+export async function getMedicalRecords(patientId: string) {
+  await requireDoctor();
+  return _fetchMedicalRecords(patientId);
 }
 
-export async function getAllMedicalRecords() {
-  await requireDoctor();
-
+const _fetchAllMedicalRecords = cache(async () => {
   const records = await prisma.medicalRecord.findMany({
     orderBy: { date: "desc" },
     take: 50,
@@ -95,8 +96,12 @@ export async function getAllMedicalRecords() {
       }
     }
   });
-
   return records.map((record) => decryptMedicalRecordFields(record));
+});
+
+export async function getAllMedicalRecords() {
+  await requireDoctor();
+  return _fetchAllMedicalRecords();
 }
 
 export async function getMedicalRecord(id: string) {

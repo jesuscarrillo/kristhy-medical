@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -29,13 +30,16 @@ export async function createPrescription(formData: FormData) {
   return { success: true, prescriptionId: prescription.id };
 }
 
-export async function getPrescriptions(patientId: string) {
-  await requireDoctor();
-
+const _fetchPrescriptions = cache(async (patientId: string) => {
   return prisma.prescription.findMany({
     where: { patientId, isActive: true },
     orderBy: { date: "desc" },
   });
+});
+
+export async function getPrescriptions(patientId: string) {
+  await requireDoctor();
+  return _fetchPrescriptions(patientId);
 }
 
 export async function getPrescription(id: string) {

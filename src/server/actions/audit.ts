@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { requireDoctor } from "@/server/middleware/auth";
@@ -107,9 +108,7 @@ export async function getAuditLogs(filters?: AuditLogFilters, page = 1, limit = 
   };
 }
 
-export async function getAuditStats() {
-  await requireDoctor();
-
+const _fetchAuditStats = cache(async () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -143,4 +142,9 @@ export async function getAuditStats() {
     byEntity: byEntity.map((e) => ({ entity: e.entity, count: e._count.entity })),
     byAction: byAction.map((a) => ({ action: a.action, count: a._count.action })),
   };
+});
+
+export async function getAuditStats() {
+  await requireDoctor();
+  return _fetchAuditStats();
 }

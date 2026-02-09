@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -100,9 +101,7 @@ export async function createUltrasound(formData: FormData) {
   }
 }
 
-export async function getUltrasounds(patientId: string) {
-  await requireDoctor();
-
+const _fetchUltrasounds = cache(async (patientId: string) => {
   return prisma.ultrasoundReport.findMany({
     where: { patientId, isActive: true },
     orderBy: { date: "desc" },
@@ -118,6 +117,11 @@ export async function getUltrasounds(patientId: string) {
       },
     },
   });
+});
+
+export async function getUltrasounds(patientId: string) {
+  await requireDoctor();
+  return _fetchUltrasounds(patientId);
 }
 
 export async function getUltrasound(id: string) {

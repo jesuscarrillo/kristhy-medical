@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { getDashboardStats } from "@/server/actions/dashboard";
 import { Button } from "@/components/ui/button";
@@ -237,14 +237,20 @@ function DashboardSkeleton() {
   );
 }
 
-function StatsCard({ title, value, icon: Icon, color, trend }: any) {
-  const colorStyles = {
-    blue: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
-    emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
-    amber: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
-    rose: "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400",
-  };
+const STATS_COLOR_STYLES: Record<string, string> = {
+  blue: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
+  amber: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
+  rose: "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400",
+};
 
+function StatsCard({ title, value, icon: Icon, color, trend }: {
+  title: string;
+  value: number;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  trend?: string;
+}) {
   return (
     <Card className="border-0 ring-1 ring-slate-200/50 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
       <CardContent className="p-6">
@@ -253,7 +259,7 @@ function StatsCard({ title, value, icon: Icon, color, trend }: any) {
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
             <p className="mt-2 text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">{value}</p>
           </div>
-          <div className={`rounded-xl p-3 ${colorStyles[color as keyof typeof colorStyles] || colorStyles.blue}`}>
+          <div className={`rounded-xl p-3 ${STATS_COLOR_STYLES[color] || STATS_COLOR_STYLES.blue}`}>
             <Icon className="h-6 w-6" />
           </div>
         </div>

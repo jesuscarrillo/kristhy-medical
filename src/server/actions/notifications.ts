@@ -65,23 +65,36 @@ export async function sendAppointmentReminders(): Promise<SendReminderResult> {
     errors: [],
   };
 
+  // Filter appointments with valid emails and pre-process decryption
+  const validAppointments: {
+    appointment: typeof appointments[number];
+    patientEmail: string;
+  }[] = [];
+
   for (const appointment of appointments) {
-    // Skip if patient has no email
     if (!appointment.patient.email) {
       results.errors.push(
         `Patient ${appointment.patient.firstName} ${appointment.patient.lastName} has no email`
       );
+      results.failed++;
       continue;
     }
 
-    try {
-      const patientEmail = safeDecrypt(appointment.patient.email);
-      if (patientEmail === "[DATOS NO DISPONIBLES]") {
-        results.errors.push(
-          `Could not decrypt email for ${appointment.patient.firstName}`
-        );
-        continue;
-      }
+    const patientEmail = safeDecrypt(appointment.patient.email);
+    if (patientEmail === "[DATOS NO DISPONIBLES]") {
+      results.errors.push(
+        `Could not decrypt email for ${appointment.patient.firstName}`
+      );
+      results.failed++;
+      continue;
+    }
+
+    validAppointments.push({ appointment, patientEmail });
+  }
+
+  // Process all valid appointments in parallel
+  const sendResults = await Promise.allSettled(
+    validAppointments.map(async ({ appointment, patientEmail }) => {
       const appointmentDate = new Date(appointment.date);
 
       const emailHtml = await render(
@@ -101,7 +114,7 @@ export async function sendAppointmentReminders(): Promise<SendReminderResult> {
         })
       );
 
-      const { error } = await resend.emails.send({
+      const { error } = await resend!.emails.send({
         from: EMAIL_FROM,
         to: patientEmail,
         subject: `Recordatorio: Cita médica mañana ${appointmentDate.toLocaleDateString("es-VE")}`,
@@ -109,23 +122,24 @@ export async function sendAppointmentReminders(): Promise<SendReminderResult> {
       });
 
       if (error) {
-        results.failed++;
-        results.errors.push(
-          `Failed to send to ${appointment.patient.firstName}: ${error.message}`
-        );
-      } else {
-        // Mark as sent
-        await prisma.appointment.update({
-          where: { id: appointment.id },
-          data: { reminderSent: true },
-        });
-        results.sent++;
+        throw new Error(`Failed to send to ${appointment.patient.firstName}: ${error.message}`);
       }
-    } catch (error) {
+
+      await prisma.appointment.update({
+        where: { id: appointment.id },
+        data: { reminderSent: true },
+      });
+
+      return appointment.patient.firstName;
+    })
+  );
+
+  for (const result of sendResults) {
+    if (result.status === "fulfilled") {
+      results.sent++;
+    } else {
       results.failed++;
-      results.errors.push(
-        `Error sending to ${appointment.patient.firstName}: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+      results.errors.push(result.reason?.message || "Unknown error");
     }
   }
 

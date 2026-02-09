@@ -3,7 +3,7 @@
 import { unstable_cache } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
-import { decrypt } from "@/lib/utils/encryption";
+import { safeDecrypt } from "@/lib/utils/encryption";
 import { CACHE_TAGS } from "@/lib/cache";
 
 async function fetchDashboardStats() {
@@ -82,7 +82,7 @@ async function fetchDashboardStats() {
     pendingAppointments,
     recentPatients: recentPatients.map((p) => ({
       ...p,
-      cedula: p.cedula ? decrypt(p.cedula) : null,
+      cedula: safeDecrypt(p.cedula),
     })),
     upcomingAppointments,
   };

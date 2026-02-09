@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -128,9 +129,8 @@ export async function createPatient(formData: FormData) {
   }
 }
 
-export async function getPatients(search?: string, page = 1, limit = 20) {
-  await requireDoctor();
-
+// Cached per-request deduplication for patient list queries
+const _fetchPatients = cache(async (search: string | undefined, page: number, limit: number) => {
   const where = search
     ? {
       isActive: true,
@@ -168,6 +168,11 @@ export async function getPatients(search?: string, page = 1, limit = 20) {
     page,
     totalPages: Math.ceil(total / limit),
   };
+});
+
+export async function getPatients(search?: string, page = 1, limit = 20) {
+  await requireDoctor();
+  return _fetchPatients(search, page, limit);
 }
 
 export async function getPatient(id: string) {
