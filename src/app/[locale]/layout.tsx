@@ -80,7 +80,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <div className="flex min-h-screen flex-col bg-linear-to-b from-sky-50 via-white to-white text-slate-900">
+      <div className="flex min-h-screen flex-col bg-white text-slate-900">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

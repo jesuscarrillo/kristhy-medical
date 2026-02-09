@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { MapPin, Phone, Mail, Clock, Camera, ThumbsUp, Send } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Camera } from "lucide-react";
 import { routing } from "@/i18n/routing";
 
 export function Footer({ currentLocale }: { currentLocale?: string }) {
@@ -16,135 +16,121 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
   };
 
   return (
-    <footer className="border-t border-border/70 bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-slate-900">{heroT("title")}</h3>
-            <p className="text-sm text-slate-600">{heroT("specialist_field")}</p>
-            <p className="text-sm text-slate-600">{t("mini_bio")}</p>
+    <footer className="border-t border-slate-100 bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          {/* About */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900">{heroT("title")}</h3>
+            <p className="text-xs font-medium uppercase tracking-wider text-teal-600">{heroT("specialist_field")}</p>
+            <p className="text-sm leading-relaxed text-slate-500">{t("mini_bio")}</p>
           </div>
 
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+          {/* Services */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               {t("nav.services")}
             </h4>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2.5 text-sm text-slate-500">
               {services.map((item, idx) => (
-                <li key={idx} className="hover:text-slate-900">
+                <li key={idx} className="transition-colors hover:text-slate-900">
                   {item}
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+          {/* Navigation */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               {t("nav.home")}
             </h4>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2.5 text-sm text-slate-500">
               <li>
-                <Link href={anchorHref("#hero")} className="hover:text-slate-900">
+                <Link href={anchorHref("#hero")} className="transition-colors hover:text-slate-900">
                   {t("nav.home")}
                 </Link>
               </li>
               <li>
-                <Link href={anchorHref("#services")} className="hover:text-slate-900">
+                <Link href={anchorHref("#services")} className="transition-colors hover:text-slate-900">
                   {t("nav.services")}
                 </Link>
               </li>
               <li>
-                <Link href={anchorHref("#about")} className="hover:text-slate-900">
+                <Link href={anchorHref("#about")} className="transition-colors hover:text-slate-900">
                   {t("nav.about")}
                 </Link>
               </li>
               <li>
-                <Link href={anchorHref("#contact")} className="hover:text-slate-900">
+                <Link href={anchorHref("#contact")} className="transition-colors hover:text-slate-900">
                   {t("nav.contact")}
                 </Link>
               </li>
               <li>
-                <Link href="/privacidad" className="hover:text-slate-900">
+                <Link href="/privacidad" className="transition-colors hover:text-slate-900">
                   {t("privacy")}
                 </Link>
               </li>
               <li>
-                <Link href="/terminos" className="hover:text-slate-900">
+                <Link href="/terminos" className="transition-colors hover:text-slate-900">
                   {t("terms")}
                 </Link>
               </li>
             </ul>
           </div>
 
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+          {/* Contact */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               {t("nav.contact")}
             </h4>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-sky-600" />
+            <ul className="space-y-3 text-sm text-slate-500">
+              <li className="flex items-start gap-2.5">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />
                 <span>{contactT("address")}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-sky-600" />
-                <a href={`tel:${contactT("phone").replace(/\s+/g, '')}`} className="hover:text-slate-900">
+              <li className="flex items-center gap-2.5">
+                <Phone className="h-4 w-4 shrink-0 text-teal-500" />
+                <a href={`tel:${contactT("phone").replace(/\s+/g, "")}`} className="transition-colors hover:text-slate-900">
                   {contactT("phone")}
                 </a>
               </li>
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-sky-600" />
-                <a href="mailto:drakristhymoreno@gmail.com" className="hover:text-slate-900">
+              <li className="flex items-center gap-2.5">
+                <Mail className="h-4 w-4 shrink-0 text-teal-500" />
+                <a href="mailto:drakristhymoreno@gmail.com" className="transition-colors hover:text-slate-900">
                   {contactT("email")}
                 </a>
               </li>
-              <li className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-sky-600" />
+              <li className="flex items-center gap-2.5">
+                <Clock className="h-4 w-4 shrink-0 text-teal-500" />
                 <span>{contactT("schedule")}</span>
               </li>
             </ul>
-          </div>
 
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
-              {t("social_title")}
-            </h4>
-            <div className="flex items-center gap-3">
+            {/* Social */}
+            <div className="pt-2">
+              <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-900">{t("social_title")}</p>
               <Link
                 href="https://www.instagram.com/drakristhymoreno"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram Dra. Kristhy"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-pink-500 to-amber-400 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-amber-400 text-white shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md"
               >
-                <Camera className="h-5 w-5" />
+                <Camera className="h-4 w-4" />
               </Link>
-              <span
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
-                aria-label="Facebook próximamente"
-                title={t("coming_soon")}
-              >
-                <ThumbsUp className="h-5 w-5" />
-              </span>
-              <span
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400"
-                aria-label="X/Twitter próximamente"
-                title={t("coming_soon")}
-              >
-                <Send className="h-5 w-5" />
-              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-slate-200 pt-4 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <span>{t("rights")}</span>
-            <span className="h-3 w-px bg-slate-300" aria-hidden />
-            <Link href="/privacidad" className="hover:text-slate-900">
+        {/* Bottom bar */}
+        <div className="mt-10 flex flex-col gap-3 border-t border-slate-100 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <span>{t("rights")}</span>
+          <div className="flex items-center gap-4">
+            <Link href="/privacidad" className="transition-colors hover:text-slate-700">
               {t("privacy")}
             </Link>
-            <span className="h-3 w-px bg-slate-300" aria-hidden />
-            <Link href="/terminos" className="hover:text-slate-900">
+            <Link href="/terminos" className="transition-colors hover:text-slate-700">
               {t("terms")}
             </Link>
           </div>

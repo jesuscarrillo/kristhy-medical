@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { GraduationCap, Stethoscope, Sparkles, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
+const highlightIcons = [GraduationCap, Stethoscope, Sparkles, HeartHandshake];
 
 export function About() {
   const t = useTranslations("about");
@@ -12,17 +13,18 @@ export function About() {
   const bio = t.raw("bio") as string[];
   const philosophy = t.raw("philosophy.content") as string[];
   const highlights = t.raw("highlights") as { title: string; description: string }[];
-  const highlightIcons = [GraduationCap, Stethoscope, Sparkles, HeartHandshake];
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
-    <section id="about" className="relative overflow-hidden bg-white py-24 scroll-mt-24 sm:py-32">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
-          {/* Left Column - Image */}
-          <div className="relative order-2 lg:order-1">
-            <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-teal-100/40 blur-3xl" />
-            <div className="absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-rose-100/40 blur-3xl" />
-            <div className="relative aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-2xl ring-1 ring-slate-200/50 transition-transform duration-500 hover:scale-[1.02]">
+    <section id="about" className="relative bg-[#FDFBF7] py-24 scroll-mt-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid items-start gap-16 lg:grid-cols-2 lg:gap-20">
+          {/* Image Column */}
+          <div className="relative order-2 lg:order-1 lg:sticky lg:top-32">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-slate-100 shadow-xl ring-1 ring-black/5">
               <Image
                 src="/images/about-dra.jpg"
                 alt="Dra. Kristhy Moreno - Ginecóloga"
@@ -34,16 +36,18 @@ export function About() {
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGAAAAAD/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
                 loading="lazy"
               />
-              {/* Floating Credential Badge */}
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="rounded-2xl border border-white/40 bg-white/95 p-5 shadow-xl backdrop-blur-md">
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent" />
+
+              {/* Credential overlay */}
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="rounded-2xl border border-white/30 bg-white/90 p-5 shadow-lg backdrop-blur-md">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-600">
-                      <GraduationCap className="h-7 w-7" />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                      <GraduationCap className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wider text-teal-600 mb-0.5">{t("highlights.0.title")}</p>
-                      <p className="text-sm font-bold text-slate-900 leading-tight">{t("highlights.0.description")}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-teal-600">{t("highlights.0.title")}</p>
+                      <p className="mt-0.5 text-sm font-bold text-slate-900 leading-tight">{t("highlights.0.description")}</p>
                     </div>
                   </div>
                 </div>
@@ -51,28 +55,29 @@ export function About() {
             </div>
           </div>
 
-          {/* Right Column - Content */}
+          {/* Content Column */}
           <div className="order-1 space-y-8 lg:order-2">
-            <div className="inline-flex items-center rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-teal-800">{heroT("badge_secondary")}</span>
-            </div>
-
+            {/* Header */}
             <div className="space-y-4">
-              <p className="text-sm font-bold uppercase tracking-wide text-teal-600">{t("title")}</p>
-              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-teal-200/60 bg-white/80 px-4 py-2 shadow-sm">
+                <span className="text-xs font-semibold tracking-wide text-teal-700">{heroT("badge_secondary")}</span>
+              </div>
+              <p className="text-sm font-semibold uppercase tracking-wider text-teal-600">{t("title")}</p>
+              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 {t("subtitle")}
               </h2>
             </div>
 
-            <div className="space-y-4 text-slate-700">
+            {/* Bio */}
+            <div className="space-y-4">
               {bio.map((paragraph, idx) => (
-                <p key={idx} className="text-lg leading-relaxed">
+                <p key={idx} className="text-base leading-relaxed text-slate-600">
                   {paragraph}
                 </p>
               ))}
             </div>
 
-            {/* Highlights Grid */}
+            {/* Highlights */}
             {Array.isArray(highlights) && (
               <div className="grid gap-4 sm:grid-cols-2">
                 {highlights.map((item, idx) => {
@@ -80,14 +85,14 @@ export function About() {
                   return (
                     <div
                       key={idx}
-                      className="group flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all hover:border-teal-200 hover:bg-teal-50/50 hover:shadow-md"
+                      className="group flex items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 transition-all duration-200 hover:border-teal-200/60 hover:shadow-md"
                     >
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-teal-600 shadow-sm ring-1 ring-slate-100 transition-transform group-hover:scale-110">
-                        <Icon className="h-6 w-6" />
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-600 transition-transform group-hover:scale-110">
+                        <Icon className="h-5 w-5" />
                       </div>
-                      <div className="space-y-1">
-                        <p className="font-bold text-slate-900">{item.title}</p>
-                        <p className="text-sm text-slate-600 leading-relaxed">{item.description}</p>
+                      <div>
+                        <p className="font-bold text-slate-900 text-sm">{item.title}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-500">{item.description}</p>
                       </div>
                     </div>
                   );
@@ -95,32 +100,28 @@ export function About() {
               </div>
             )}
 
-            {/* Philosophy Card */}
-            <div className="rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50/50 to-white p-6 shadow-sm">
+            {/* Philosophy */}
+            <div className="rounded-2xl border border-teal-100/60 bg-teal-50/30 p-6">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white">
-                  <HeartHandshake className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-600 text-white">
+                  <HeartHandshake className="h-4 w-4" />
                 </div>
-                <p className="text-sm font-bold uppercase tracking-wide text-teal-600">
+                <p className="text-sm font-bold text-teal-700">
                   {t("philosophy.title")}
                 </p>
               </div>
-              <div className="space-y-3 text-slate-700">
+              <div className="space-y-3 text-sm leading-relaxed text-slate-600">
                 {philosophy.map((paragraph, idx) => (
-                  <p key={idx} className="leading-relaxed">
-                    {paragraph}
-                  </p>
+                  <p key={idx}>{paragraph}</p>
                 ))}
               </div>
             </div>
 
+            {/* CTA */}
             <Button
               size="lg"
-              onClick={() => {
-                const element = document.getElementById('contact');
-                element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all cursor-pointer"
+              onClick={() => scrollTo("contact")}
+              className="w-full rounded-full bg-teal-600 px-8 font-semibold text-white shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-600/30 sm:w-auto cursor-pointer"
             >
               {t("cta")}
             </Button>

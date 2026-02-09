@@ -2,101 +2,100 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { ArrowRight, HeartPulse, ShieldCheck, CalendarClock } from "lucide-react";
+import { ArrowRight, ShieldCheck, HeartPulse, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export function Hero() {
   const t = useTranslations("hero");
 
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <section
       id="hero"
-      className="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50/40 via-white to-rose-50/40"
+      className="relative min-h-screen overflow-hidden bg-[#FDFBF7]"
     >
-      {/* Dynamic Background Elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] h-[800px] w-[800px] rounded-full bg-teal-100/20 blur-[120px] mix-blend-multiply" />
-        <div className="absolute bottom-[-10%] right-[-10%] h-[800px] w-[800px] rounded-full bg-rose-100/20 blur-[120px] mix-blend-multiply" />
+      {/* Subtle warm organic shape */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-[40%] -right-[20%] h-[900px] w-[900px] rounded-full bg-teal-50/60 blur-[100px]" />
+        <div className="absolute -bottom-[30%] -left-[15%] h-[600px] w-[600px] rounded-full bg-rose-50/40 blur-[100px]" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid min-h-screen items-center gap-12 py-20 lg:grid-cols-2 lg:gap-16">
-          {/* Left Column - Content */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid min-h-screen items-center gap-12 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+          {/* Content */}
           <div className="flex flex-col justify-center space-y-8">
-            {/* Elegant Badge */}
-            <div className="inline-flex w-fit items-center rounded-full border border-teal-200 bg-teal-50/50 px-4 py-1.5 backdrop-blur-sm">
-              <span className="flex h-2 w-2 rounded-full bg-teal-500 mr-2 animate-pulse"></span>
-              <span className="text-xs font-bold uppercase tracking-widest text-teal-800">
+            {/* Badge */}
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-teal-200/60 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm">
+              <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
+              <span className="text-xs font-semibold tracking-wide text-teal-700">
                 {t("badge")}
               </span>
             </div>
 
-            {/* Main Title - Big & Bold */}
-            <div className="space-y-4">
-              <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
-                <span className="block text-slate-800">{t("title_top")}</span>
-                <span className="block bg-gradient-to-r from-teal-600 to-rose-500 bg-clip-text text-transparent">
+            {/* Title */}
+            <div className="space-y-5">
+              <h1 className="text-[2.75rem] font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl lg:text-[4.25rem]">
+                <span className="block">{t("title_top")}</span>
+                <span className="block text-teal-600">
                   {t("title_bottom")}
                 </span>
               </h1>
-
-              <p className="text-lg text-slate-600 sm:text-xl leading-relaxed max-w-xl">
+              <p className="max-w-lg text-lg leading-relaxed text-slate-600 sm:text-xl">
                 {t("tagline")}
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start gap-4">
+            {/* CTAs */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button
                 size="lg"
-                onClick={() => {
-                  const element = document.getElementById('contact');
-                  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                className="h-14 w-full sm:w-auto rounded-full bg-slate-900 px-8 text-white shadow-xl transition-transform duration-200 hover:scale-105 hover:bg-slate-800 cursor-pointer"
+                onClick={() => scrollTo("contact")}
+                className="h-13 rounded-full bg-teal-600 px-8 text-base font-semibold text-white shadow-lg shadow-teal-600/20 transition-all duration-200 hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-600/30 cursor-pointer"
               >
                 <CalendarClock className="mr-2 h-5 w-5" />
-                <span className="font-semibold text-base">{t("cta_primary")}</span>
+                {t("cta_primary")}
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                onClick={() => {
-                  const element = document.getElementById('about');
-                  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                className="h-14 w-full sm:w-auto rounded-full border-2 border-slate-200 bg-white/50 px-8 text-slate-600 backdrop-blur-md transition-colors duration-200 hover:border-slate-900 hover:bg-white hover:text-slate-900 cursor-pointer"
+                variant="ghost"
+                onClick={() => scrollTo("about")}
+                className="h-13 rounded-full px-8 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
               >
-                <span className="font-medium text-base">{t("cta_secondary")}</span>
+                {t("cta_secondary")}
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
 
-            {/* Stats - Inline */}
-            <div className="flex flex-wrap items-center gap-8 pt-4">
+            {/* Stats */}
+            <div className="flex items-center gap-10 pt-2">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-600 shadow-sm">
-                  <ShieldCheck className="h-6 w-6" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                  <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">12+</p>
-                  <p className="text-sm text-slate-600">{t("years_label")}</p>
+                  <p className="text-2xl font-bold tracking-tight text-slate-900">12+</p>
+                  <p className="text-xs font-medium text-slate-500">{t("years_label")}</p>
                 </div>
               </div>
+              <div className="h-10 w-px bg-slate-200" />
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 text-rose-500 shadow-sm">
-                  <HeartPulse className="h-6 w-6" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
+                  <HeartPulse className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">1500+</p>
-                  <p className="text-sm text-slate-600">{t("patients_label")}</p>
+                  <p className="text-2xl font-bold tracking-tight text-slate-900">1500+</p>
+                  <p className="text-xs font-medium text-slate-500">{t("patients_label")}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Image */}
-          <div className="relative lg:h-[700px]">
-            <div className="relative h-[500px] lg:h-full w-full overflow-hidden rounded-[2.5rem] bg-white shadow-2xl ring-1 ring-slate-200/50">
+          {/* Image */}
+          <div className="relative lg:h-[640px]">
+            <div className="relative h-[480px] w-full overflow-hidden rounded-3xl bg-slate-100 shadow-xl ring-1 ring-black/5 lg:h-full">
               <Image
                 src="/images/hero-consultorio.jpg"
                 alt="Dra. Kristhy Moreno"
@@ -105,20 +104,20 @@ export function Hero() {
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGKADAAQAAAABAAAAIAAAAAD/wAARCAAgABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
                 priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="(max-width: 1024px) 100vw, 45vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
 
-              {/* Floating Badge on Image */}
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="rounded-2xl border border-white/40 bg-white/95 p-6 shadow-xl backdrop-blur-md">
+              {/* Credential badge */}
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="rounded-2xl border border-white/30 bg-white/90 p-5 shadow-lg backdrop-blur-md">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-bold uppercase tracking-wider text-rose-500 mb-1">{t("specialist_title")}</p>
-                      <p className="text-lg font-bold text-slate-900">{t("specialist_field")}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-teal-600">{t("specialist_title")}</p>
+                      <p className="mt-1 text-base font-bold text-slate-900">{t("specialist_field")}</p>
                     </div>
-                    <div className="h-12 w-12 rounded-full bg-teal-600 flex items-center justify-center text-white">
-                      <CalendarClock className="h-6 w-6" />
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 text-white shadow-md">
+                      <CalendarClock className="h-5 w-5" />
                     </div>
                   </div>
                 </div>
@@ -126,6 +125,13 @@ export function Hero() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Section divider */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full" preserveAspectRatio="none">
+          <path d="M0 56V28C240 4 480 0 720 12C960 24 1200 48 1440 28V56H0Z" fill="#F8FAFC" fillOpacity="0.5" />
+        </svg>
       </div>
     </section>
   );
