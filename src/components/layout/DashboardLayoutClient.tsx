@@ -21,7 +21,7 @@ export function DashboardLayoutClient({
 }: DashboardLayoutClientProps) {
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
-      <AppSidebar user={user} />
+      <AppSidebar user={user ?? undefined} />
       <main className="lg:pl-72 transition-all duration-300 ease-in-out">
         {children}
       </main>
