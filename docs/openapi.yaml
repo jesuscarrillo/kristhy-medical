@@ -1,0 +1,689 @@
+openapi: 3.1.0
+info:
+  title: Kristhy Medical API
+  description: |
+    API REST para sistema de gestión médica ginecológica y obstétrica.
+
+    ## Autenticación
+
+    Endpoints del dashboard requieren sesión activa via cookie `session_token`.
+    Endpoints de cron requieren Bearer token en header `Authorization`.
+
+    ## Rate Limiting
+
+    Todos los endpoints públicos tienen rate limiting:
+    - Contact: 5 req / 15 min
+    - Export: 10 req / 15 min
+    - Cron: 60 req / 15 min
+
+    ## Versionado
+
+    Todos los endpoints usan versionado semántico con prefijo `/v1/`.
+
+  version: 1.0.0
+  contact:
+    name: Kristhy Medical Support
+    url: https://kristhy.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://kristhy.com/api/v1
+    description: Production server
+  - url: http://localhost:3000/api/v1
+    description: Development server
+
+tags:
+  - name: Contact
+    description: Formulario de contacto público
+  - name: Session
+    description: Gestión de sesiones de usuario
+  - name: Export
+    description: Exportación de datos en CSV
+  - name: Cron
+    description: Jobs programados (interno)
+  - name: Health
+    description: Health checks y monitoreo
+
+paths:
+  /contact:
+    post:
+      tags:
+        - Contact
+      summary: Enviar formulario de contacto
+      description: |
+        Endpoint público para enviar solicitudes de contacto desde el landing page.
+        Rate limit: 5 requests / 15 minutos por IP.
+      operationId: postContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactRequest'
+            examples:
+              prenatal:
+                summary: Consulta prenatal
+                value:
+                  name: María González
+                  email: maria@example.com
+                  phone: "+58 412-073-5223"
+                  reason: prenatal
+                  message: Necesito una cita para control prenatal
+                  privacy: true
+      responses:
+        '201':
+          description: Mensaje enviado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /session:
+    get:
+      tags:
+        - Session
+      summary: Obtener sesión actual
+      description: |
+        Verifica y retorna la información de la sesión activa.
+        Requiere cookie de sesión válida.
+      operationId: getSession
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Sesión activa encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /patients/export:
+    get:
+      tags:
+        - Export
+      summary: Exportar pacientes a CSV
+      description: |
+        Exporta lista de pacientes filtrada por fechas de registro.
+        Rate limit: 10 requests / 15 minutos por IP.
+        Retorna archivo CSV con BOM UTF-8 para compatibilidad con Excel.
+      operationId: exportPatients
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Fecha de inicio del filtro (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
+          example: "2026-01-01T00:00:00Z"
+        - name: endDate
+          in: query
+          description: Fecha de fin del filtro (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
+          example: "2026-12-31T23:59:59Z"
+      responses:
+        '200':
+          description: Archivo CSV generado exitosamente
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: text/csv; charset=utf-8
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="pacientes_2026-02-10.csv"
+            Cache-Control:
+              schema:
+                type: string
+                example: no-store, must-revalidate
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /appointments/export:
+    get:
+      tags:
+        - Export
+      summary: Exportar citas a CSV
+      description: |
+        Exporta lista de citas filtrada por fechas, tipo y estado.
+        Rate limit: 10 requests / 15 minutos por IP.
+        Retorna archivo CSV con BOM UTF-8 para compatibilidad con Excel.
+      operationId: exportAppointments
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Fecha de inicio del filtro (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: Fecha de fin del filtro (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: type
+          in: query
+          description: Tipo de cita
+          required: false
+          schema:
+            type: string
+            enum: [prenatal, gynecology, ultrasound, followup]
+        - name: status
+          in: query
+          description: Estado de la cita
+          required: false
+          schema:
+            type: string
+            enum: [scheduled, completed, cancelled, noshow]
+      responses:
+        '200':
+          description: Archivo CSV generado exitosamente
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: text/csv; charset=utf-8
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="citas_2026-02-10.csv"
+            Cache-Control:
+              schema:
+                type: string
+                example: no-store, must-revalidate
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /cron/reminders:
+    post:
+      tags:
+        - Cron
+      summary: Enviar recordatorios de citas
+      description: |
+        Job programado para enviar recordatorios automáticos de citas.
+        Ejecutado diariamente a las 8:00 AM por Vercel Cron.
+        Rate limit: 60 requests / 15 minutos por IP.
+        Requiere Bearer token en Authorization header.
+      operationId: sendReminders
+      security:
+        - bearerToken: []
+      responses:
+        '200':
+          description: Recordatorios enviados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CronResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+        - Cron
+      summary: Enviar recordatorios (GET)
+      description: Alias de POST para compatibilidad con Vercel Cron
+      operationId: sendRemindersGet
+      security:
+        - bearerToken: []
+      responses:
+        '200':
+          description: Recordatorios enviados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CronResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: |
+        Verifica el estado del servicio y conectividad a la base de datos.
+        Usado por Docker healthcheck, Kubernetes probes y load balancers.
+        No requiere autenticación.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Servicio saludable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session_token
+      description: Cookie de sesión de Better Auth
+    bearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token secreto para jobs de cron
+
+  schemas:
+    # Request Schemas
+    ContactRequest:
+      type: object
+      required:
+        - name
+        - email
+        - reason
+        - message
+        - privacy
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: María González
+        email:
+          type: string
+          format: email
+          example: maria@example.com
+        phone:
+          type: string
+          pattern: '^[+]?[0-9\s\-()]+$'
+          example: "+58 412-073-5223"
+        reason:
+          type: string
+          enum:
+            - prenatal
+            - highRisk
+            - gynecology
+            - surgery
+            - ultrasound
+            - cervical
+            - other
+          example: prenatal
+        message:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: Necesito una cita para control prenatal del tercer trimestre
+        privacy:
+          type: boolean
+          description: Aceptación de política de privacidad
+          example: true
+
+    # Response Schemas
+    ContactResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                status:
+                  type: string
+                  enum: [pending]
+                  example: pending
+                submittedAt:
+                  type: string
+                  format: date-time
+                  example: "2026-02-10T10:30:00Z"
+
+    SessionResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                session:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: sess_123456
+                    userId:
+                      type: string
+                      example: user_789
+                    expiresAt:
+                      type: string
+                      format: date-time
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: user_789
+                    email:
+                      type: string
+                      format: email
+                      example: dra@kristhy.com
+                    name:
+                      type: string
+                      example: Dra. Kristhy
+                    emailVerified:
+                      type: boolean
+                      example: true
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+
+    CronResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [completed, partial]
+                  example: completed
+                sent:
+                  type: integer
+                  example: 10
+                failed:
+                  type: integer
+                  example: 0
+                total:
+                  type: integer
+                  example: 10
+                executedAt:
+                  type: string
+                  format: date-time
+                  example: "2026-02-10T08:00:00Z"
+
+    HealthResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [healthy]
+                  example: healthy
+                service:
+                  type: string
+                  example: kristhy-medical
+                database:
+                  type: string
+                  enum: [connected, disconnected]
+                  example: connected
+                uptime:
+                  type: number
+                  example: 12345.67
+                  description: Process uptime in seconds
+                memory:
+                  type: object
+                  properties:
+                    rss:
+                      type: integer
+                    heapTotal:
+                      type: integer
+                    heapUsed:
+                      type: integer
+                    external:
+                      type: integer
+                    arrayBuffers:
+                      type: integer
+
+    # Base Schemas
+    SuccessEnvelope:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: object
+        meta:
+          type: object
+          required:
+            - timestamp
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+              example: "2026-02-10T10:30:00Z"
+            version:
+              type: string
+              example: "1.0"
+            message:
+              type: string
+              example: Operation successful
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+        - path
+      properties:
+        error:
+          type: string
+          description: Código de error en PascalCase
+          example: ValidationError
+        message:
+          type: string
+          description: Mensaje legible para el usuario
+          example: Request validation failed
+        details:
+          type: object
+          description: Información adicional del error
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-02-10T10:30:00Z"
+        path:
+          type: string
+          example: /api/v1/contact
+
+  responses:
+    ValidationError:
+      description: Error de validación de request
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  error:
+                    type: string
+                    enum: [ValidationError]
+                  details:
+                    type: object
+                    properties:
+                      errors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field:
+                              type: string
+                              example: email
+                            message:
+                              type: string
+                              example: Invalid email format
+                            code:
+                              type: string
+                              example: invalid_string
+
+    UnauthorizedError:
+      description: Sin autenticación o sesión inválida
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  error:
+                    type: string
+                    enum: [Unauthorized]
+                  message:
+                    type: string
+                    example: Authentication required
+
+    RateLimitError:
+      description: Rate limit excedido
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Segundos hasta que se puede reintentar
+          example: 300
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Timestamp UNIX de reset
+          example: 1707562800
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  error:
+                    type: string
+                    enum: [RateLimitExceeded]
+                  message:
+                    type: string
+                    example: Too many requests
+                  details:
+                    type: object
+                    properties:
+                      retryAfter:
+                        type: integer
+                        example: 300
+                      resetAt:
+                        type: string
+                        format: date-time
+                        example: "2026-02-10T11:00:00Z"
+
+    InternalError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  error:
+                    type: string
+                    enum: [InternalServerError]
+                  message:
+                    type: string
+                    example: An unexpected error occurred
+
+  examples:
+    ContactSuccess:
+      value:
+        data:
+          id: 550e8400-e29b-41d4-a716-446655440000
+          status: pending
+          submittedAt: "2026-02-10T10:30:00Z"
+        meta:
+          timestamp: "2026-02-10T10:30:00Z"
+          version: "1.0"
+          message: Mensaje enviado exitosamente. Te contactaremos pronto.
+
+    ValidationErrorExample:
+      value:
+        error: ValidationError
+        message: Request validation failed
+        details:
+          errors:
+            - field: email
+              message: Invalid email
+              code: invalid_string
+            - field: privacy
+              message: Required
+              code: invalid_type
+        timestamp: "2026-02-10T10:30:00Z"
+        path: /api/v1/contact
+
+    RateLimitExample:
+      value:
+        error: RateLimitExceeded
+        message: Too many requests
+        details:
+          retryAfter: 300
+          resetAt: "2026-02-10T11:00:00Z"
+        timestamp: "2026-02-10T10:30:00Z"
+        path: /api/v1/contact

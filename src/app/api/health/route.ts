@@ -8,6 +8,9 @@ export const revalidate = 0;
  * Health check endpoint for Docker healthcheck and load balancers
  * Verifies database connectivity using Prisma
  *
+ * NOTE: Versioned endpoint available at /api/v1/health
+ * This endpoint maintains backward compatibility for Docker/K8s health checks
+ *
  * @returns 200 if healthy, 503 if unhealthy
  */
 export async function GET() {

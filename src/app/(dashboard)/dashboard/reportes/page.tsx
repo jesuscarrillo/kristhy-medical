@@ -258,13 +258,18 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
     appointmentStatus: params.status || undefined,
   };
 
-  // Build export URL with current filters
-  const exportParams = new URLSearchParams();
-  if (params.startDate) exportParams.set("startDate", params.startDate);
-  if (params.endDate) exportParams.set("endDate", params.endDate);
-  if (params.type) exportParams.set("type", params.type);
-  if (params.status) exportParams.set("status", params.status);
-  const exportUrl = `/api/reports/export?${exportParams.toString()}`;
+  // Build export URLs with current filters
+  const patientParams = new URLSearchParams();
+  if (params.startDate) patientParams.set("startDate", params.startDate);
+  if (params.endDate) patientParams.set("endDate", params.endDate);
+  const patientsExportUrl = `/api/v1/patients/export?${patientParams.toString()}`;
+
+  const appointmentParams = new URLSearchParams();
+  if (params.startDate) appointmentParams.set("startDate", params.startDate);
+  if (params.endDate) appointmentParams.set("endDate", params.endDate);
+  if (params.type) appointmentParams.set("type", params.type);
+  if (params.status) appointmentParams.set("status", params.status);
+  const appointmentsExportUrl = `/api/v1/appointments/export?${appointmentParams.toString()}`;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-6 py-10">
@@ -275,10 +280,15 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
             Estadísticas y análisis del consultorio.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <a href={exportUrl} download>
-              Exportar CSV
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <a href={patientsExportUrl} download>
+              📥 Exportar Pacientes
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <a href={appointmentsExportUrl} download>
+              📥 Exportar Citas
             </a>
           </Button>
         </div>

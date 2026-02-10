@@ -48,25 +48,36 @@ export function ContactForm() {
 
   const onSubmit = async (values: ContactFormValues) => {
     setStatus("idle");
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
 
-    if (res.ok) {
-      setStatus("success");
-      toast.success(t("toast.success"), {
-        description: t("toast.success_detail") ?? "Te contactaremos pronto. Revisa tu email.",
+    try {
+      const res = await fetch("/api/v1/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
-      form.reset({ ...form.getValues(), message: "", privacy: false });
-      return;
-    }
 
-    setStatus("error");
-    toast.error(t("toast.error"), {
-      description: t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
-    });
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus("success");
+        toast.success(t("toast.success"), {
+          description: data.meta?.message ?? t("toast.success_detail") ?? "Te contactaremos pronto. Revisa tu email.",
+        });
+        form.reset({ ...form.getValues(), message: "", privacy: false });
+        return;
+      }
+
+      // Handle error response with new structure
+      setStatus("error");
+      toast.error(t("toast.error"), {
+        description: data.message ?? t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
+      });
+    } catch (error) {
+      setStatus("error");
+      toast.error(t("toast.error"), {
+        description: t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
+      });
+    }
   };
 
   const statusClass = (name: keyof ContactFormValues) => {

@@ -33,7 +33,44 @@ pnpm db:seed
 
 # Iniciar servidor de desarrollo
 pnpm dev
+
+# Ejecutar tests
+pnpm test
+
+# Tests con UI interactiva
+pnpm test:ui
+
+# Tests con cobertura
+pnpm test:coverage
 ```
+
+## API REST
+
+El proyecto incluye una API REST completa con versionado `/v1/`:
+
+- **Especificación OpenAPI:** `docs/openapi.yaml`
+- **Documentación:** `docs/API.md`
+- **Tests:** `src/lib/api/__tests__/`
+
+### Endpoints Principales
+
+```bash
+# Públicos
+POST /api/v1/contact              # Formulario de contacto
+
+# Autenticados (requiere sesión)
+GET  /api/v1/session              # Verificar sesión
+GET  /api/v1/patients/export      # Exportar pacientes (CSV)
+GET  /api/v1/appointments/export  # Exportar citas (CSV)
+
+# Cron (requiere Bearer token)
+POST /api/v1/cron/reminders       # Enviar recordatorios
+
+# Monitoreo
+GET  /api/v1/health               # Health check
+```
+
+Ver `docs/API.md` para documentación completa.
 
 ## Variables de Entorno
 

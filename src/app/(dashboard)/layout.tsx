@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { requireDoctor } from "@/server/middleware/auth";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { DashboardLayoutClient } from "@/components/layout/DashboardLayoutClient";
 
 export default async function DashboardLayout({
   children,
@@ -14,11 +14,8 @@ export default async function DashboardLayout({
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
-      <AppSidebar user={session?.user} />
-      <main className="lg:pl-72 transition-all duration-300 ease-in-out">
-        {children}
-      </main>
-    </div>
+    <DashboardLayoutClient user={session?.user ?? null}>
+      {children}
+    </DashboardLayoutClient>
   );
 }

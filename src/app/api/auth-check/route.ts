@@ -1,3 +1,12 @@
+/**
+ * DEPRECATED: Use /api/v1/session instead
+ *
+ * This endpoint is maintained for backward compatibility.
+ * It maintains the EXACT same response format to avoid breaking existing clients.
+ *
+ * @deprecated Use /api/v1/session for new implementations
+ */
+
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
@@ -14,6 +23,8 @@ export async function GET(request: Request) {
       );
     }
 
+    // IMPORTANT: Keep exact same response format for backward compatibility
+    // Login and other components depend on this structure
     return NextResponse.json({
       session: session.session,
       user: session.user,

@@ -1,11 +1,3 @@
-/**
- * DEPRECATED: Use /api/v1/cron/reminders instead
- *
- * This endpoint is maintained for backward compatibility only.
- *
- * @deprecated Use /api/v1/cron/reminders
- */
-
 import { NextRequest } from "next/server";
 import { sendAppointmentReminders } from "@/server/actions/notifications";
 import {
@@ -24,6 +16,18 @@ import {
 // Secret key for cron job authentication - REQUIRED in production
 const CRON_SECRET = process.env.CRON_SECRET;
 
+/**
+ * POST /api/v1/cron/reminders
+ *
+ * Send appointment reminders (cron job endpoint)
+ *
+ * Requires Authorization header with Bearer token matching CRON_SECRET
+ *
+ * @returns 200 - Reminders sent successfully
+ * @returns 401 - Unauthorized (missing or invalid token)
+ * @returns 429 - Rate limit exceeded
+ * @returns 500 - Server error
+ */
 export async function POST(request: NextRequest) {
   const path = getRequestPath(request);
 
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // In production, CRON_SECRET must be set
     if (!CRON_SECRET) {
-      console.error("[Cron] CRON_SECRET is not configured [DEPRECATED endpoint]");
+      console.error("[Cron] CRON_SECRET is not configured");
       return unauthorizedResponse(
         "Cron service not configured",
         path
@@ -69,8 +73,6 @@ export async function POST(request: NextRequest) {
       {
         message: `Sent ${result.sent} reminders, ${result.failed} failed`,
         version: "1.0",
-        deprecated: true,
-        useInstead: "/api/v1/cron/reminders",
       }
     );
   } catch (error) {

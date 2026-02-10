@@ -1,12 +1,3 @@
-/**
- * DEPRECATED: Use /api/v1/contact instead
- *
- * This endpoint is maintained for backward compatibility only.
- * It proxies requests to the new versioned endpoint.
- *
- * @deprecated Use /api/v1/contact
- */
-
 import { contactSchema } from "@/lib/validations";
 import {
   rateLimit,
@@ -20,6 +11,17 @@ import {
   getRequestPath,
 } from "@/lib/api/responses";
 
+/**
+ * POST /api/v1/contact
+ *
+ * Submit contact form
+ *
+ * @body {name: string, email: string, phone?: string, message: string}
+ * @returns 201 - Message sent successfully
+ * @returns 422 - Validation error
+ * @returns 429 - Rate limit exceeded
+ * @returns 500 - Server error
+ */
 export async function POST(request: Request) {
   const path = getRequestPath(request);
 
@@ -37,24 +39,22 @@ export async function POST(request: Request) {
     const validated = contactSchema.parse(body);
 
     // TODO: Integrate with email provider (Resend/SendGrid)
-    console.info("[Contact Form] DEPRECATED endpoint used", {
+    console.info("[Contact Form]", {
       name: validated.name,
       email: validated.email,
       timestamp: new Date().toISOString(),
     });
 
-    // Return success response matching new format
+    // Return success response with 201 Created
     return successResponse(
       {
-        id: crypto.randomUUID(),
+        id: crypto.randomUUID(), // Generate ID for tracking
         status: "pending",
         submittedAt: new Date().toISOString(),
       },
       {
         message: "Mensaje enviado exitosamente. Te contactaremos pronto.",
         version: "1.0",
-        deprecated: true,
-        useInstead: "/api/v1/contact",
       }
     );
   } catch (error) {

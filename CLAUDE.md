@@ -251,9 +251,122 @@ SEED_DOCTOR_PASSWORD="password"
 SEED_DOCTOR_NAME="Dra. Kristhy"
 ```
 
+## API REST
+
+El proyecto implementa una API REST completa siguiendo mejores prácticas de diseño.
+
+### Estructura
+
+- **Versionado:** Todos los endpoints usan prefijo `/api/v1/` para versionado
+- **Respuestas:** Envelope pattern consistente con `data` y `meta`
+- **Errores:** Estructura estandarizada con códigos semánticos
+- **Rate Limiting:** Protección en todos los endpoints públicos
+
+### Endpoints v1
+
+```typescript
+// Públicos
+POST /api/v1/contact              // Formulario de contacto
+
+// Autenticados (requiere sesión)
+GET  /api/v1/session              // Verificar sesión actual
+GET  /api/v1/patients/export      // Exportar pacientes (CSV)
+GET  /api/v1/appointments/export  // Exportar citas (CSV)
+
+// Cron (requiere Bearer token)
+POST /api/v1/cron/reminders       // Enviar recordatorios
+
+// Monitoreo
+GET  /api/v1/health               // Health check + DB status
+```
+
+### Estructura de Respuestas
+
+**Éxito (2xx):**
+```typescript
+{
+  data: T,
+  meta: {
+    timestamp: string,
+    version?: string,
+    message?: string
+  }
+}
+```
+
+**Error (4xx/5xx):**
+```typescript
+{
+  error: string,        // Código (PascalCase)
+  message: string,      // Mensaje legible
+  details?: unknown,    // Información adicional
+  timestamp: string,
+  path: string
+}
+```
+
+### Códigos de Error
+
+- `BadRequest` (400) - Sintaxis inválida
+- `Unauthorized` (401) - Sin autenticación
+- `Forbidden` (403) - Sin permisos
+- `NotFound` (404) - Recurso no existe
+- `ValidationError` (422) - Error de validación Zod
+- `RateLimitExceeded` (429) - Rate limit alcanzado
+- `InternalServerError` (500) - Error del servidor
+- `ServiceUnavailable` (503) - Servicio no disponible
+
+### Rate Limiting
+
+| Endpoint | Límite | Ventana |
+|----------|--------|---------|
+| `/api/v1/contact` | 5 req | 15 min |
+| `/api/v1/*/export` | 10 req | 15 min |
+| `/api/v1/cron/reminders` | 60 req | 15 min |
+
+### Endpoints Deprecated
+
+Los siguientes endpoints **funcionan** pero están marcados como deprecated:
+
+- `/api/contact` → usar `/api/v1/contact`
+- `/api/auth-check` → usar `/api/v1/session`
+- `/api/reports/export` → usar `/api/v1/patients/export` o `/api/v1/appointments/export`
+- `/api/cron/reminders` → usar `/api/v1/cron/reminders`
+- `/api/health` → usar `/api/v1/health` (mantener para Docker)
+
+**Nota:** Los endpoints deprecated incluyen headers `X-Deprecated: true` y `X-Use-Instead`.
+
+### Utilidades
+
+```typescript
+// lib/api/responses.ts
+successResponse<T>(data, meta?)     // Respuesta exitosa
+errorResponse(...)                   // Respuesta de error
+validationErrorResponse(zodError)   // Error de validación
+handleApiError(error, path)         // Handler genérico
+rateLimitErrorResponse(reset, path) // Rate limit
+
+// lib/api/csv.ts
+escapeCSV(value)                    // Escapar valores
+generateCSV(headers, rows)          // Generar CSV
+addBOM(csv)                         // Agregar BOM UTF-8
+generateFilename(prefix)            // Nombre con timestamp
+```
+
+**Documentación completa:** Ver `docs/API.md`
+
 ## Changelog
 
-### v2.2.1 (Febrero 2026 - Auditoría Integral)
+### v2.2.1 (Febrero 2026 - Auditoría Integral + REST API)
+- **API REST:** Refactorización completa según principios REST
+- **API REST:** Versionado `/api/v1/` en todos los endpoints
+- **API REST:** Estructura de respuesta consistente con envelope pattern
+- **API REST:** Manejo de errores estandarizado con códigos semánticos
+- **API REST:** Endpoints orientados a recursos (patients/export, appointments/export)
+- **API REST:** Rate limiting en todos los endpoints públicos (5-60 req/15min)
+- **API REST:** Documentación completa en `docs/API.md`
+- **API REST:** Utilidades compartidas (`lib/api/responses.ts`, `lib/api/csv.ts`)
+- **API REST:** Backward compatibility en endpoints antiguos (deprecated pero funcionales)
 - **Seguridad:** safeDecrypt en todos los server actions (incluido reports.ts)
 - **Seguridad:** Error handling (try-catch) en 20+ funciones de server actions
 - **Seguridad:** Rate limiting en 7 server actions críticos (mutaciones + uploads)

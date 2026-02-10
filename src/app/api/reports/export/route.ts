@@ -1,3 +1,13 @@
+/**
+ * DEPRECATED: Use /api/v1/patients/export or /api/v1/appointments/export instead
+ *
+ * This endpoint is maintained for backward compatibility only.
+ *
+ * @deprecated Use resource-specific endpoints:
+ * - /api/v1/patients/export
+ * - /api/v1/appointments/export
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -7,47 +17,38 @@ import {
   rateLimit,
   getClientIp,
   RATE_LIMITS,
-  rateLimitResponse,
 } from "@/lib/rate-limit";
-
-function escapeCSV(value: string | null | undefined): string {
-  if (value === null || value === undefined) return "";
-  const str = String(value);
-  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
-}
-
-function generateCSV(
-  headers: string[],
-  rows: (string | null | undefined)[][]
-): string {
-  const headerRow = headers.map(escapeCSV).join(",");
-  const dataRows = rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
-  return `${headerRow}\n${dataRows}`;
-}
+import {
+  unauthorizedResponse,
+  handleApiError,
+  rateLimitErrorResponse,
+  getRequestPath,
+} from "@/lib/api/responses";
+import { generateCSV, addBOM, generateFilename } from "@/lib/api/csv";
 
 export async function GET(request: NextRequest) {
-  // Apply rate limiting
-  const ip = getClientIp(request);
-  const { success, reset } = rateLimit(`export:${ip}`, RATE_LIMITS.export);
-
-  if (!success) {
-    return rateLimitResponse(reset);
-  }
+  const path = getRequestPath(request);
 
   try {
+    // Apply rate limiting
+    const ip = getClientIp(request);
+    const { success, reset } = rateLimit(`export:${ip}`, RATE_LIMITS.export);
+
+    if (!success) {
+      return rateLimitErrorResponse(reset, path);
+    }
+
+    // Verify authentication
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      return unauthorizedResponse("Sesión no válida o expirada", path);
     }
 
+    // Parse filters
     const { searchParams } = new URL(request.url);
-
     const filters: ReportFilters = {
       startDate: searchParams.get("startDate")
         ? new Date(searchParams.get("startDate")!)
@@ -60,15 +61,15 @@ export async function GET(request: NextRequest) {
     };
 
     const data = await getExportData(filters);
-
-    // Determine what to export based on filters
     const exportType = searchParams.get("export") || "appointments";
 
     let csv: string;
     let filename: string;
+    let entity: "patient" | "appointment";
+    let count: number;
 
     if (exportType === "patients") {
-      const headers = [
+      const csvHeaders = [
         "ID",
         "Nombre",
         "Apellido",
@@ -96,10 +97,12 @@ export async function GET(request: NextRequest) {
         p.city,
         p.createdAt,
       ]);
-      csv = generateCSV(headers, rows);
-      filename = `pacientes_${new Date().toISOString().split("T")[0]}.csv`;
+      csv = generateCSV(csvHeaders, rows);
+      filename = generateFilename("pacientes");
+      entity = "patient";
+      count = data.patients.length;
     } else {
-      const headers = [
+      const csvHeaders = [
         "ID",
         "Fecha",
         "Paciente",
@@ -131,33 +134,33 @@ export async function GET(request: NextRequest) {
         String(a.duration),
         a.reason,
       ]);
-      csv = generateCSV(headers, rows);
-      filename = `citas_${new Date().toISOString().split("T")[0]}.csv`;
+      csv = generateCSV(csvHeaders, rows);
+      filename = generateFilename("citas");
+      entity = "appointment";
+      count = data.appointments.length;
     }
 
-    // Add BOM for Excel UTF-8 compatibility
-    const bom = "\uFEFF";
-    const csvWithBom = bom + csv;
+    const csvWithBom = addBOM(csv);
 
+    // Log audit trail
     await logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "export",
-      entity: "report",
-      details: `Tipo: ${exportType}, Registros: ${exportType === "patients" ? data.patients.length : data.appointments.length}`,
+      entity,
+      details: `Exportados ${count} registros [DEPRECATED endpoint]`,
     });
 
     return new NextResponse(csvWithBom, {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
         "Content-Disposition": `attachment; filename="${filename}"`,
+        "Cache-Control": "no-store, must-revalidate",
+        "X-Deprecated": "true",
+        "X-Use-Instead": `/api/v1/${exportType}/export`,
       },
     });
   } catch (error) {
-    console.error("Export error:", error);
-    return NextResponse.json(
-      { error: "Error al exportar datos" },
-      { status: 500 }
-    );
+    return handleApiError(error, path);
   }
 }

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { getUltrasound } from "@/server/actions/ultrasound";
 import { decrypt } from "@/lib/utils/encryption";
 import { UltrasoundPrintView } from "@/components/ultrasound";
@@ -9,6 +10,27 @@ type PrintUltrasoundPageProps = {
     ecoId: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PrintUltrasoundPageProps): Promise<Metadata> {
+  const { id: patientId, ecoId } = await params;
+
+  let ultrasound;
+  try {
+    ultrasound = await getUltrasound(ecoId);
+    if (ultrasound.patientId !== patientId) {
+      return { title: "Ecografía no encontrada" };
+    }
+  } catch {
+    return { title: "Ecografía no encontrada" };
+  }
+
+  const fullName = `${ultrasound.patient.firstName} ${ultrasound.patient.lastName}`;
+  return {
+    title: `Ecografía - ${fullName}`,
+  };
+}
 
 export default async function PrintUltrasoundPage({
   params,
@@ -28,48 +50,34 @@ export default async function PrintUltrasoundPage({
 
   const patientCedula = decrypt(ultrasound.patient.cedula);
 
+  // Serialize dates to ISO strings for client component
   return (
-    <html lang="es">
-      <head>
-        <title>
-          Ecografía - {ultrasound.patient.firstName}{" "}
-          {ultrasound.patient.lastName}
-        </title>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.onload = function() { window.print(); }`,
-          }}
-        />
-      </head>
-      <body>
-        <UltrasoundPrintView
-          ultrasound={{
-            id: ultrasound.id,
-            date: ultrasound.date,
-            type: ultrasound.type,
-            gestationalAge: ultrasound.gestationalAge,
-            reasonForStudy: ultrasound.reasonForStudy,
-            lastMenstrualPeriod: ultrasound.lastMenstrualPeriod,
-            estimatedDueDate: ultrasound.estimatedDueDate,
-            weight: ultrasound.weight,
-            height: ultrasound.height,
-            bloodPressure: ultrasound.bloodPressure,
-            measurements: ultrasound.measurements,
-            findings: ultrasound.findings,
-            otherFindings: ultrasound.otherFindings,
-            diagnoses: ultrasound.diagnoses,
-            recommendations: ultrasound.recommendations,
-          }}
-          patient={{
-            firstName: ultrasound.patient.firstName,
-            lastName: ultrasound.patient.lastName,
-            cedula: ultrasound.patient.cedula,
-            dateOfBirth: ultrasound.patient.dateOfBirth,
-            pregnancyStatus: ultrasound.patient.pregnancyStatus,
-          }}
-          patientCedula={patientCedula}
-        />
-      </body>
-    </html>
+    <UltrasoundPrintView
+      ultrasound={{
+        id: ultrasound.id,
+        date: ultrasound.date.toISOString(),
+        type: ultrasound.type,
+        gestationalAge: ultrasound.gestationalAge,
+        reasonForStudy: ultrasound.reasonForStudy,
+        lastMenstrualPeriod: ultrasound.lastMenstrualPeriod?.toISOString() || null,
+        estimatedDueDate: ultrasound.estimatedDueDate?.toISOString() || null,
+        weight: ultrasound.weight,
+        height: ultrasound.height,
+        bloodPressure: ultrasound.bloodPressure,
+        measurements: ultrasound.measurements,
+        findings: ultrasound.findings,
+        otherFindings: ultrasound.otherFindings,
+        diagnoses: ultrasound.diagnoses,
+        recommendations: ultrasound.recommendations,
+      }}
+      patient={{
+        firstName: ultrasound.patient.firstName,
+        lastName: ultrasound.patient.lastName,
+        cedula: ultrasound.patient.cedula,
+        dateOfBirth: ultrasound.patient.dateOfBirth.toISOString(),
+        pregnancyStatus: ultrasound.patient.pregnancyStatus,
+      }}
+      patientCedula={patientCedula}
+    />
   );
 }
