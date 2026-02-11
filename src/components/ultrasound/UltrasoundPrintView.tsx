@@ -205,10 +205,10 @@ export function UltrasoundPrintView({
         }
 
         .print-ultrasound-container {
-          font-family: "Times New Roman", Times, serif;
+          font-family: Georgia, "Palatino Linotype", Palatino, serif;
           font-size: 11pt;
-          line-height: 1.4;
-          color: #000;
+          line-height: 1.5;
+          color: #1a1a1a;
           background: #fff;
           max-width: 100%;
           padding: 0;
@@ -217,37 +217,49 @@ export function UltrasoundPrintView({
 
         .print-ultrasound-header {
           text-align: center;
-          border-bottom: 2px solid #000;
+          border-bottom: 1px solid #e5e5e5;
           padding-bottom: 15px;
           margin-bottom: 15px;
         }
 
         .print-ultrasound-header h1 {
-          font-size: 16pt;
+          font-size: 18pt;
           font-weight: bold;
-          margin-bottom: 3px;
+          margin-bottom: 2px;
           margin-top: 0;
+          color: #1a1a1a;
+          border-top: 3px solid #0d9488;
+          padding-top: 10px;
+          display: inline-block;
         }
 
         .print-ultrasound-header p {
           font-size: 10pt;
-          color: #333;
+          color: #0d9488;
           margin: 3px 0;
+        }
+
+        .print-ultrasound-header p:last-child {
+          color: #666;
+          font-size: 9pt;
         }
 
         .print-ultrasound-report-title {
           text-align: center;
-          font-size: 14pt;
+          font-size: 13pt;
           font-weight: bold;
           margin-bottom: 15px;
           text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #0d9488;
         }
 
         .print-ultrasound-patient-info {
-          background: #f5f5f5;
-          padding: 10px;
+          border-left: 4px solid #0d9488;
+          background: #f8fffe;
+          padding: 10px 14px;
           margin-bottom: 15px;
-          border: 1px solid #ddd;
+          border-radius: 0 4px 4px 0;
         }
 
         .print-ultrasound-patient-info-grid {
@@ -257,16 +269,19 @@ export function UltrasoundPrintView({
         }
 
         .print-ultrasound-patient-info-item label {
-          font-size: 8pt;
+          font-size: 7pt;
           text-transform: uppercase;
-          color: #666;
+          letter-spacing: 0.05em;
+          color: #0d9488;
           display: block;
           margin-bottom: 2px;
+          font-weight: 600;
         }
 
         .print-ultrasound-patient-info-item span {
           font-size: 10pt;
           font-weight: 500;
+          color: #1a1a1a;
         }
 
         .print-ultrasound-section {
@@ -277,36 +292,41 @@ export function UltrasoundPrintView({
           font-size: 10pt;
           font-weight: bold;
           text-transform: uppercase;
+          letter-spacing: 0.03em;
           color: #333;
-          border-bottom: 1px solid #ddd;
-          padding-bottom: 3px;
+          padding-bottom: 4px;
           margin-bottom: 8px;
+          display: inline-block;
+          border-bottom: 2px solid #0d9488;
         }
 
         .print-ultrasound-section-content {
           font-size: 11pt;
           white-space: pre-wrap;
+          line-height: 1.5;
         }
 
         .print-ultrasound-measurements-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 15px;
+          gap: 12px;
         }
 
         .print-ultrasound-measurement-section {
-          border: 1px solid #ddd;
-          padding: 8px;
-          background: #fafafa;
+          border-left: 3px solid #0d9488;
+          padding: 8px 10px;
+          background: #f8fffe;
+          border-radius: 0 4px 4px 0;
         }
 
         .print-ultrasound-measurement-section h4 {
           font-size: 9pt;
           font-weight: bold;
           text-transform: uppercase;
-          color: #555;
+          letter-spacing: 0.03em;
+          color: #0d9488;
           margin-bottom: 5px;
-          border-bottom: 1px solid #eee;
+          border-bottom: 1px solid #e5e5e5;
           padding-bottom: 3px;
           margin-top: 0;
         }
@@ -317,18 +337,21 @@ export function UltrasoundPrintView({
         }
 
         .print-ultrasound-diagnosis-box {
-          border: 2px solid #333;
-          padding: 12px;
+          border-left: 4px solid #0d9488;
+          padding: 12px 16px;
           margin: 15px 0;
-          background: #fff;
+          background: #f8fffe;
+          border-radius: 0 4px 4px 0;
         }
 
         .print-ultrasound-diagnosis-box h3 {
           font-size: 11pt;
           font-weight: bold;
           text-transform: uppercase;
+          letter-spacing: 0.03em;
           margin-bottom: 8px;
           margin-top: 0;
+          color: #0d9488;
         }
 
         .print-ultrasound-footer {
@@ -352,16 +375,17 @@ export function UltrasoundPrintView({
         }
 
         .print-ultrasound-signature-line {
-          width: 200px;
+          width: 220px;
           height: 1px;
-          background: #000;
-          margin-bottom: 5px;
+          background: #0d9488;
+          margin: 0 auto 8px;
         }
 
         .print-ultrasound-signature-name {
-          font-size: 10pt;
+          font-size: 11pt;
           font-weight: bold;
           margin: 5px 0;
+          color: #0d9488;
         }
 
         .print-ultrasound-signature-title {

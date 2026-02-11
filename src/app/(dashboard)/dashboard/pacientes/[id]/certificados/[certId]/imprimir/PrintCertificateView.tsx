@@ -81,10 +81,10 @@ export default function PrintCertificateView({
         }
 
         .print-certificate-container {
-          font-family: "Times New Roman", Times, serif;
+          font-family: Georgia, "Palatino Linotype", Palatino, serif;
           font-size: 12pt;
-          line-height: 1.5;
-          color: #000;
+          line-height: 1.6;
+          color: #1a1a1a;
           background: #fff;
           max-width: 100%;
           padding: 0;
@@ -93,44 +93,63 @@ export default function PrintCertificateView({
 
         .print-header {
           text-align: center;
-          border-bottom: 2px solid #000;
+          border-bottom: 1px solid #e5e5e5;
           padding-bottom: 20px;
-          margin-bottom: 25px;
+          margin-bottom: 28px;
         }
 
         .print-header h1 {
-          font-size: 18pt;
+          font-size: 20pt;
           font-weight: bold;
-          margin-bottom: 5px;
+          margin-bottom: 2px;
           margin-top: 0;
+          color: #1a1a1a;
+          border-top: 3px solid #0d9488;
+          padding-top: 12px;
+          display: inline-block;
         }
 
         .print-header p {
           font-size: 11pt;
-          color: #333;
+          color: #0d9488;
           margin: 3px 0;
+        }
+
+        .print-header p:last-child {
+          color: #666;
+          font-size: 10pt;
         }
 
         .print-title {
           text-align: center;
           font-size: 14pt;
           font-weight: bold;
-          margin-bottom: 25px;
+          margin-bottom: 28px;
           text-transform: uppercase;
-          text-decoration: underline;
+          letter-spacing: 0.05em;
+          color: #1a1a1a;
+          border-bottom: 2px solid #0d9488;
+          display: inline-block;
+          padding-bottom: 4px;
+        }
+
+        .print-title-wrapper {
+          text-align: center;
+          margin-bottom: 28px;
         }
 
         .print-patient-info {
-          margin-bottom: 25px;
-          padding: 15px;
-          background: #f9f9f9;
-          border: 1px solid #ddd;
+          margin-bottom: 28px;
+          padding: 16px;
+          border-left: 4px solid #0d9488;
+          background: #f8fffe;
+          border-radius: 0 4px 4px 0;
         }
 
         .print-patient-info-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 10px;
+          gap: 12px;
         }
 
         .print-patient-info-item {
@@ -139,13 +158,18 @@ export default function PrintCertificateView({
 
         .print-patient-info-item label {
           font-weight: bold;
+          color: #0d9488;
+          font-size: 9pt;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
         }
 
         .print-rest-info {
-          margin-bottom: 25px;
-          padding: 15px;
-          background: #fff8e1;
-          border: 2px solid #ffc107;
+          margin-bottom: 28px;
+          padding: 18px;
+          background: #fffbeb;
+          border: 2px solid #f59e0b;
+          border-radius: 8px;
           text-align: center;
         }
 
@@ -154,43 +178,48 @@ export default function PrintCertificateView({
           font-weight: bold;
           margin-bottom: 10px;
           margin-top: 0;
+          color: #92400e;
+          letter-spacing: 0.05em;
         }
 
         .print-rest-days {
-          font-size: 24pt;
+          font-size: 28pt;
           font-weight: bold;
-          color: #e65100;
+          color: #d97706;
           margin: 10px 0;
         }
 
         .print-rest-dates {
           font-size: 11pt;
           margin-top: 10px;
+          color: #78350f;
         }
 
         .print-diagnosis {
-          margin-bottom: 25px;
-          padding: 10px;
-          background: #e3f2fd;
-          border-left: 4px solid #1976d2;
+          margin-bottom: 28px;
+          padding: 12px 16px;
+          border-left: 4px solid #0d9488;
+          background: #f8fffe;
+          border-radius: 0 4px 4px 0;
         }
 
         .print-diagnosis label {
           font-weight: bold;
-          font-size: 10pt;
+          font-size: 9pt;
           text-transform: uppercase;
-          color: #1976d2;
+          letter-spacing: 0.03em;
+          color: #0d9488;
         }
 
         .print-content-raw {
           white-space: pre-wrap;
-          margin-bottom: 25px;
+          margin-bottom: 28px;
           font-size: 12pt;
-          line-height: 1.6;
+          line-height: 1.7;
         }
 
         .print-footer {
-          margin-top: 50px;
+          margin-top: 60px;
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
@@ -210,16 +239,17 @@ export default function PrintCertificateView({
         }
 
         .print-signature-line {
-          width: 250px;
+          width: 260px;
           height: 1px;
-          background: #000;
-          margin-bottom: 5px;
+          background: #0d9488;
+          margin: 0 auto 8px;
         }
 
         .print-signature-name {
           font-size: 12pt;
           font-weight: bold;
           margin: 5px 0;
+          color: #0d9488;
         }
 
         .print-signature-title {
@@ -238,8 +268,10 @@ export default function PrintCertificateView({
         </div>
 
         {/* Title */}
-        <div className="print-title">
-          {certificateTypeLabels[certificate.type]}
+        <div className="print-title-wrapper">
+          <div className="print-title">
+            {certificateTypeLabels[certificate.type]}
+          </div>
         </div>
 
         {/* Patient Info */}

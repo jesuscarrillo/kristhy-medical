@@ -73,10 +73,10 @@ export default function PrintPrescriptionView({
         }
 
         .print-prescription-container {
-          font-family: "Times New Roman", Times, serif;
+          font-family: Georgia, "Palatino Linotype", Palatino, serif;
           font-size: 12pt;
-          line-height: 1.4;
-          color: #000;
+          line-height: 1.5;
+          color: #1a1a1a;
           background: #fff;
           max-width: 100%;
           padding: 0;
@@ -85,77 +85,110 @@ export default function PrintPrescriptionView({
 
         .print-prescription-header {
           text-align: center;
-          border-bottom: 2px solid #000;
-          padding-bottom: 15px;
-          margin-bottom: 20px;
+          border-bottom: 1px solid #e5e5e5;
+          padding-bottom: 18px;
+          margin-bottom: 24px;
         }
 
         .print-prescription-header h1 {
-          font-size: 18pt;
+          font-size: 20pt;
           font-weight: bold;
-          margin-bottom: 5px;
+          margin-bottom: 2px;
           margin-top: 0;
+          color: #1a1a1a;
+          border-top: 3px solid #0d9488;
+          padding-top: 12px;
+          display: inline-block;
         }
 
         .print-prescription-header p {
           font-size: 11pt;
-          color: #333;
+          color: #0d9488;
           margin: 3px 0;
         }
 
+        .print-prescription-header p:last-child {
+          color: #666;
+          font-size: 10pt;
+        }
+
         .print-prescription-patient-info {
-          background: #f5f5f5;
-          padding: 12px;
-          margin-bottom: 20px;
-          border: 1px solid #ddd;
+          border-left: 4px solid #0d9488;
+          background: #f8fffe;
+          padding: 14px 16px;
+          margin-bottom: 24px;
+          border-radius: 0 4px 4px 0;
         }
 
         .print-prescription-patient-info-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 8px;
+          gap: 10px;
         }
 
         .print-prescription-patient-info-item label {
-          font-size: 9pt;
+          font-size: 8pt;
           text-transform: uppercase;
-          color: #666;
+          letter-spacing: 0.05em;
+          color: #0d9488;
           display: block;
           margin-bottom: 2px;
+          font-weight: 600;
         }
 
         .print-prescription-patient-info-item span {
           font-size: 11pt;
           font-weight: 500;
+          color: #1a1a1a;
         }
 
         .print-prescription-section {
-          margin-bottom: 20px;
+          margin-bottom: 22px;
         }
 
         .print-prescription-section-title {
           font-size: 10pt;
           text-transform: uppercase;
-          color: #666;
-          border-bottom: 1px solid #ddd;
-          padding-bottom: 5px;
+          letter-spacing: 0.05em;
+          color: #333;
+          padding-bottom: 6px;
           margin-bottom: 10px;
+          display: inline-block;
+          border-bottom: 2px solid #0d9488;
+          font-weight: 600;
         }
 
         .print-prescription-section-content {
           font-size: 12pt;
           white-space: pre-wrap;
+          line-height: 1.6;
         }
 
         .print-prescription-rx-symbol {
-          font-size: 24pt;
+          font-size: 28pt;
           font-weight: bold;
           margin-bottom: 10px;
-          color: #333;
+          color: #0d9488;
+        }
+
+        .print-prescription-diagnosis-box {
+          border-left: 4px solid #0d9488;
+          background: #f8fffe;
+          padding: 10px 14px;
+          margin-bottom: 22px;
+          border-radius: 0 4px 4px 0;
+        }
+
+        .print-prescription-diagnosis-box label {
+          font-size: 8pt;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #0d9488;
+          font-weight: 600;
         }
 
         .print-prescription-footer {
-          margin-top: 40px;
+          margin-top: 50px;
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
@@ -175,16 +208,17 @@ export default function PrintPrescriptionView({
         }
 
         .print-prescription-signature-line {
-          width: 200px;
+          width: 220px;
           height: 1px;
-          background: #000;
-          margin-bottom: 5px;
+          background: #0d9488;
+          margin: 0 auto 8px;
         }
 
         .print-prescription-signature-name {
-          font-size: 11pt;
+          font-size: 12pt;
           font-weight: bold;
           margin: 5px 0;
+          color: #0d9488;
         }
 
         .print-prescription-signature-title {
@@ -232,7 +266,7 @@ export default function PrintPrescriptionView({
         {prescription.diagnosis && (
           <div className="print-prescription-section">
             <div className="print-prescription-section-title">Diagnóstico</div>
-            <div className="print-prescription-section-content">
+            <div className="print-prescription-diagnosis-box">
               {prescription.diagnosis}
             </div>
           </div>

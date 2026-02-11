@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getPatient } from "@/server/actions/patient";
 import { getMedicalRecord } from "@/server/actions/medicalRecord";
 import { MedicalRecordForm } from "@/components/patients/MedicalRecordForm";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { PatientPageHeader } from "@/components/patients/PatientPageHeader";
+import { ArrowLeft, Save } from "lucide-react";
 
 type EditMedicalRecordPageProps = {
   params: Promise<{
@@ -27,48 +31,68 @@ export default async function EditMedicalRecordPage({
     notFound();
   }
 
+  let patient;
+  try {
+    patient = await getPatient(patientId);
+  } catch {
+    notFound();
+  }
+
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Editar registro</h1>
-          <p className="text-sm text-slate-600">
-            {record.patient.firstName} {record.patient.lastName}
-          </p>
-        </div>
-        <Button asChild variant="outline">
+    <div className="mx-auto w-full max-w-7xl px-8 py-10 space-y-8">
+      <PatientPageHeader
+        patient={patient}
+        patientId={patientId}
+        activeTab="historial"
+        showActions={false}
+      />
+
+      <div>
+        <Button asChild variant="ghost" size="sm" className="text-slate-500 hover:text-primary">
           <Link href={`/dashboard/pacientes/${patientId}/historial/${recordId}`}>
-            Cancelar
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Volver al detalle
           </Link>
         </Button>
       </div>
 
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <MedicalRecordForm
-          patientId={patientId}
-          recordId={recordId}
-          initialData={{
-            consultationType: record.consultationType as
-              | "prenatal"
-              | "gynecology"
-              | "emergency"
-              | "followup",
-            date: record.date,
-            chiefComplaint: record.chiefComplaint,
-            symptoms: record.symptoms ?? "",
-            diagnosis: record.diagnosis ?? "",
-            treatment: record.treatment ?? "",
-            vitalSigns: record.vitalSigns ?? "",
-            personalHistory: record.personalHistory ?? "",
-            gynecologicHistory: record.gynecologicHistory ?? "",
-            obstetricalHistory: record.obstetricalHistory ?? "",
-            physicalExam: record.physicalExam ?? "",
-            treatmentPlan: record.treatmentPlan ?? "",
-            followUpDate: record.followUpDate,
-            notes: record.notes ?? "",
-          }}
-        />
-      </div>
+      <Card className="shadow-sm border-0 ring-1 ring-slate-200/50 dark:ring-slate-800">
+        <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Save className="h-5 w-5 text-primary" />
+            Editar Registro Clínico
+          </CardTitle>
+          <CardDescription>
+            Modifica los datos del historial médico.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <MedicalRecordForm
+            patientId={patientId}
+            recordId={recordId}
+            initialData={{
+              consultationType: record.consultationType as
+                | "prenatal"
+                | "gynecology"
+                | "emergency"
+                | "followup",
+              date: record.date,
+              chiefComplaint: record.chiefComplaint,
+              symptoms: record.symptoms ?? "",
+              diagnosis: record.diagnosis ?? "",
+              treatment: record.treatment ?? "",
+              vitalSigns: record.vitalSigns ?? "",
+              personalHistory: record.personalHistory ?? "",
+              gynecologicHistory: record.gynecologicHistory ?? "",
+              obstetricalHistory: record.obstetricalHistory ?? "",
+              physicalExam: record.physicalExam ?? "",
+              treatmentPlan: record.treatmentPlan ?? "",
+              followUpDate: record.followUpDate,
+              notes: record.notes ?? "",
+            }}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

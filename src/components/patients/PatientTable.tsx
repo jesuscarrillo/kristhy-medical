@@ -8,10 +8,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useCallback } from "react";
-import { User, Phone, ChevronRight } from "lucide-react";
+import { User, Phone, ChevronRight, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type Patient = {
@@ -24,12 +25,17 @@ type Patient = {
     dateOfBirth: Date;
     city: string | null;
     createdAt?: Date;
-    // Add other fields as necessary from the server action return type
 };
 
 type PatientTableProps = {
     patients: Patient[];
     query?: string;
+};
+
+const genderIndicator: Record<string, string> = {
+    female: "bg-pink-400",
+    male: "bg-blue-400",
+    other: "bg-slate-400",
 };
 
 export function PatientTable({ patients, query }: PatientTableProps) {
@@ -42,11 +48,11 @@ export function PatientTable({ patients, query }: PatientTableProps) {
     return (
         <Table>
             <TableHeader>
-                <TableRow className="bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50/50">
-                    <TableHead className="w-[300px] pl-6">Nombre Completo</TableHead>
-                    <TableHead>Identificación</TableHead>
-                    <TableHead>Contacto</TableHead>
-                    <TableHead className="text-right pr-6">Acciones</TableHead>
+                <TableRow className="bg-slate-50/80 dark:bg-slate-900/50 hover:bg-slate-50/80">
+                    <TableHead className="w-[300px] pl-6 text-xs uppercase tracking-wider font-medium text-slate-500 dark:text-slate-400">Paciente</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-medium text-slate-500 dark:text-slate-400">Identificación</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-medium text-slate-500 dark:text-slate-400">Contacto</TableHead>
+                    <TableHead className="text-right pr-6 text-xs uppercase tracking-wider font-medium text-slate-500 dark:text-slate-400">Acciones</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -62,60 +68,59 @@ export function PatientTable({ patients, query }: PatientTableProps) {
                     patients.map((patient) => (
                         <TableRow
                             key={patient.id}
-                            className="group cursor-pointer hover:bg-slate-50/80 transition-colors"
+                            className="group cursor-pointer transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-900/30"
                             onClick={() => handleRowClick(patient.id)}
                         >
                             <TableCell className="pl-6 font-medium">
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/10 text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
-                                        <User className="h-4 w-4" />
+                                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary/10 text-secondary ring-2 ring-secondary/20 group-hover:ring-secondary/40 transition-all">
+                                        <span className="text-sm font-semibold">
+                                            {patient.firstName[0]}{patient.lastName[0]}
+                                        </span>
+                                        <span className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-slate-950 ${genderIndicator[patient.gender] || genderIndicator.other}`} />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-slate-900 dark:text-slate-100">
+                                        <span className="text-slate-900 dark:text-slate-100 font-medium">
                                             {patient.firstName} {patient.lastName}
                                         </span>
-                                        <span className="text-xs text-slate-500 hidden sm:inline-block">
-                                            Registrada el{" "}
-                                            {patient.createdAt
-                                                ? new Date(patient.createdAt).toLocaleDateString()
-                                                : "N/A"}
-                                        </span>
+                                        {patient.createdAt && (
+                                            <span className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-0.5">
+                                                <Calendar className="h-3 w-3" />
+                                                {new Date(patient.createdAt).toLocaleDateString("es-VE", { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </TableCell>
-                            <TableCell className="text-slate-600">
-                                <span className="inline-flex items-center rounded-md bg-slate-50 px-2 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-600/10">
-                                    {patient.cedula}
-                                </span>
+                            <TableCell>
+                                <Badge variant="outline" className="font-mono text-[11px] tabular-nums text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                                    {patient.cedula || "—"}
+                                </Badge>
                             </TableCell>
-                            <TableCell className="text-slate-600">
-                                <div className="flex items-center gap-2">
-                                    <Phone className="h-3.5 w-3.5 text-slate-400" />
-                                    {patient.phone}
-                                </div>
+                            <TableCell className="text-slate-600 dark:text-slate-400">
+                                {patient.phone ? (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Phone className="h-3.5 w-3.5 text-slate-400" />
+                                        {patient.phone}
+                                    </div>
+                                ) : (
+                                    <span className="text-slate-400 italic text-sm">Sin teléfono</span>
+                                )}
                             </TableCell>
                             <TableCell className="text-right pr-6">
                                 <Button
                                     asChild
                                     variant="ghost"
                                     size="sm"
-                                    className="hidden group-hover:inline-flex text-primary hover:text-primary hover:bg-primary/5"
-                                    onClick={(e) => e.stopPropagation()} // Prevent double click event if button is clicked
+                                    className="opacity-0 group-hover:opacity-100 text-primary hover:text-primary hover:bg-primary/5 transition-all"
+                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     <Link href={`/dashboard/pacientes/${patient.id}`}>
                                         Ver Expediente
+                                        <ChevronRight className="ml-1 h-4 w-4" />
                                     </Link>
                                 </Button>
-                                <Button
-                                    asChild
-                                    variant="ghost"
-                                    size="icon"
-                                    className="group-hover:hidden text-slate-400"
-                                >
-                                    <Link href={`/dashboard/pacientes/${patient.id}`}>
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Link>
-                                </Button>
+                                <ChevronRight className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:hidden inline-block" />
                             </TableCell>
                         </TableRow>
                     ))

@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { getPatient } from "@/server/actions/patient";
 import { getUltrasound } from "@/server/actions/ultrasound";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { PatientPageHeader } from "@/components/patients/PatientPageHeader";
 import { UltrasoundForm } from "@/components/ultrasound";
 import { pregnancyStatusLabels } from "@/lib/validators/ultrasound";
+import { ArrowLeft, Save, Baby } from "lucide-react";
 
 type EditUltrasoundPageProps = {
   params: Promise<{
@@ -35,54 +39,65 @@ export default async function EditUltrasoundPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-10">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Editar Ecografía</h1>
-            <p className="text-sm text-slate-600">
-              {patient.firstName} {patient.lastName}
-            </p>
-          </div>
-          <Button asChild variant="outline">
-            <Link href={`/dashboard/pacientes/${patientId}/ecografias/${ecoId}`}>
-              Cancelar
-            </Link>
-          </Button>
-        </div>
+    <div className="mx-auto w-full max-w-7xl px-8 py-10 space-y-8">
+      <PatientPageHeader
+        patient={patient}
+        patientId={patientId}
+        activeTab="ecografias"
+        showActions={false}
+      />
 
-        {/* Pregnancy Status Info */}
-        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm text-blue-800">
-            <strong>Estado de embarazo actual:</strong>{" "}
+      <div className="flex items-center gap-4 flex-wrap">
+        <Button asChild variant="ghost" size="sm" className="text-slate-500 hover:text-primary">
+          <Link href={`/dashboard/pacientes/${patientId}/ecografias/${ecoId}`}>
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Volver al detalle
+          </Link>
+        </Button>
+        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
+        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <Baby className="h-4 w-4 text-pink-500" />
+          <span>Estado:</span>
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800 text-[11px]">
             {pregnancyStatusLabels[patient.pregnancyStatus]}
-          </p>
+          </Badge>
         </div>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <UltrasoundForm
-          patientId={patientId}
-          pregnancyStatus={patient.pregnancyStatus}
-          ultrasoundId={ecoId}
-          initialData={{
-            date: ultrasound.date,
-            type: ultrasound.type,
-            gestationalAge: ultrasound.gestationalAge,
-            reasonForStudy: ultrasound.reasonForStudy,
-            lastMenstrualPeriod: ultrasound.lastMenstrualPeriod,
-            estimatedDueDate: ultrasound.estimatedDueDate,
-            weight: ultrasound.weight,
-            height: ultrasound.height,
-            bloodPressure: ultrasound.bloodPressure,
-            measurements: ultrasound.measurements as Record<string, unknown>,
-            findings: ultrasound.findings as Record<string, unknown>,
-            otherFindings: ultrasound.otherFindings,
-            diagnoses: ultrasound.diagnoses,
-            recommendations: ultrasound.recommendations,
-          }}
-        />
-      </div>
+      <Card className="shadow-sm border-0 ring-1 ring-slate-200/50 dark:ring-slate-800">
+        <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Save className="h-5 w-5 text-primary" />
+            Editar Ecografía
+          </CardTitle>
+          <CardDescription>
+            Modifica los datos del estudio ecográfico.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <UltrasoundForm
+            patientId={patientId}
+            pregnancyStatus={patient.pregnancyStatus}
+            ultrasoundId={ecoId}
+            initialData={{
+              date: ultrasound.date,
+              type: ultrasound.type,
+              gestationalAge: ultrasound.gestationalAge,
+              reasonForStudy: ultrasound.reasonForStudy,
+              lastMenstrualPeriod: ultrasound.lastMenstrualPeriod,
+              estimatedDueDate: ultrasound.estimatedDueDate,
+              weight: ultrasound.weight,
+              height: ultrasound.height,
+              bloodPressure: ultrasound.bloodPressure,
+              measurements: ultrasound.measurements as Record<string, unknown>,
+              findings: ultrasound.findings as Record<string, unknown>,
+              otherFindings: ultrasound.otherFindings,
+              diagnoses: ultrasound.diagnoses,
+              recommendations: ultrasound.recommendations,
+            }}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }
