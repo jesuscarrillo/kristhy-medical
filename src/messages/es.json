@@ -142,6 +142,7 @@
       "privacy_link": "Política de Privacidad",
       "privacy": "Acepto la política de privacidad",
       "submit": "Enviar mensaje",
+      "submit_whatsapp": "Enviar por WhatsApp",
       "reasons": {
         "prenatal": "Control prenatal",
         "highRisk": "Embarazo de Alto Riesgo",
@@ -153,9 +154,10 @@
       }
     },
     "toast": {
-      "success": "Mensaje enviado exitosamente",
+      "success": "¡Perfecto!",
       "success_detail": "Te contactaremos pronto. Revisa tu email.",
-      "error": "Ocurrió un error, intenta nuevamente",
+      "whatsapp_opened": "Te redirigimos a WhatsApp para enviar tu mensaje.",
+      "error": "Ocurrió un error",
       "error_detail": "Por favor intenta nuevamente o llámanos."
     }
   },

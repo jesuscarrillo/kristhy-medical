@@ -14,6 +14,9 @@ import {
 /**
  * POST /api/v1/contact
  *
+ * @deprecated This endpoint is deprecated. The contact form now uses WhatsApp integration.
+ * Maintained for backward compatibility only.
+ *
  * Submit contact form
  *
  * @body {name: string, email: string, phone?: string, message: string}
@@ -46,7 +49,7 @@ export async function POST(request: Request) {
     });
 
     // Return success response with 201 Created
-    return successResponse(
+    const response = successResponse(
       {
         id: crypto.randomUUID(), // Generate ID for tracking
         status: "pending",
@@ -57,6 +60,15 @@ export async function POST(request: Request) {
         version: "1.0",
       }
     );
+
+    // Add deprecation headers
+    response.headers.set("X-Deprecated", "true");
+    response.headers.set(
+      "X-Deprecation-Message",
+      "This endpoint is deprecated. Use WhatsApp integration instead."
+    );
+
+    return response;
   } catch (error) {
     return handleApiError(error, path);
   }

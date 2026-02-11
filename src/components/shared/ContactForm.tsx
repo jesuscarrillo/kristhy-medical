@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm, type ControllerRenderProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, type ContactFormValues } from "@/lib/validations";
+import { generateWhatsAppLink, openWhatsApp } from "@/lib/utils/whatsapp";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Mail, Phone, User, Loader2, Send, MessageSquare } from "lucide-react";
+import { Mail, Phone, User, MessageSquare, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -50,32 +51,29 @@ export function ContactForm() {
     setStatus("idle");
 
     try {
-      const res = await fetch("/api/v1/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+      // Generate WhatsApp link with formatted message
+      const whatsappUrl = generateWhatsAppLink(values);
+
+      // Open WhatsApp in new tab
+      openWhatsApp(whatsappUrl);
+
+      // Show success message
+      setStatus("success");
+      toast.success(t("toast.success"), {
+        description: t("toast.whatsapp_opened") ?? "Te redirigimos a WhatsApp para enviar tu mensaje.",
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        setStatus("success");
-        toast.success(t("toast.success"), {
-          description: data.meta?.message ?? t("toast.success_detail") ?? "Te contactaremos pronto. Revisa tu email.",
-        });
-        form.reset({ ...form.getValues(), message: "", privacy: false });
-        return;
-      }
-
-      // Handle error response with new structure
-      setStatus("error");
-      toast.error(t("toast.error"), {
-        description: data.message ?? t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
-      });
+      // Reset form (keep user data, clear message and privacy checkbox)
+      form.reset({ ...form.getValues(), message: "", privacy: false });
     } catch (error) {
       setStatus("error");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.";
+
       toast.error(t("toast.error"), {
-        description: t("toast.error_detail") ?? "Por favor intenta nuevamente o llámanos.",
+        description: errorMessage,
       });
     }
   };
@@ -253,20 +251,11 @@ export function ContactForm() {
 
         <Button
           type="submit"
-          className="w-full sm:w-auto"
+          className="w-full gap-2 bg-[#25D366] hover:bg-[#20BA5A] sm:w-auto"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {t("form.sending") ?? "Enviando..."}
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <Send className="h-4 w-4" />
-              {t("form.submit")}
-            </span>
-          )}
+          <MessageCircle className="h-4 w-4" />
+          {t("form.submit_whatsapp") ?? "Enviar por WhatsApp"}
         </Button>
       </form>
     </Form>

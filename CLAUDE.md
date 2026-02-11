@@ -245,6 +245,9 @@ RESEND_API_KEY="re_xxx"
 EMAIL_FROM="Dra. Kristhy <noreply@domain.com>"
 CRON_SECRET="secret"
 
+# WhatsApp
+NEXT_PUBLIC_WHATSAPP_PHONE="+58 412-073-5223"
+
 # Seed
 SEED_DOCTOR_EMAIL="dra@example.com"
 SEED_DOCTOR_PASSWORD="password"
@@ -356,6 +359,17 @@ generateFilename(prefix)            // Nombre con timestamp
 **Documentación completa:** Ver `docs/API.md`
 
 ## Changelog
+
+### v2.2.2 (Febrero 2026 - Integración WhatsApp)
+- **WhatsApp:** Formulario de contacto integrado con WhatsApp (cliente directo)
+- **WhatsApp:** Utilidad `whatsapp.ts` con funciones de formateo y normalización
+- **WhatsApp:** Variable de entorno `NEXT_PUBLIC_WHATSAPP_PHONE` para configuración
+- **WhatsApp:** Botón "Enviar por WhatsApp" con color verde oficial (#25D366)
+- **WhatsApp:** Mensaje pre-formateado con datos del formulario
+- **WhatsApp:** WhatsAppButton refactorizado para usar env vars
+- **API:** Endpoint `/api/v1/contact` marcado como deprecated (mantiene funcionalidad)
+- **Docs:** Documentación completa de diseño en `docs/plans/2026-02-10-whatsapp-contact-form-design.md`
+- **i18n:** Traducciones ES/EN actualizadas con textos de WhatsApp
 
 ### v2.2.1 (Febrero 2026 - Auditoría Integral + REST API)
 - **API REST:** Refactorización completa según principios REST

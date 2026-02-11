@@ -73,7 +73,12 @@ Cookie: session_token=...
 
 ### Contacto
 
-#### `POST /api/v1/contact`
+#### `POST /api/v1/contact` ⚠️ **DEPRECATED**
+
+> **⚠️ DEPRECATED:** Este endpoint está en desuso. El formulario de contacto ahora usa integración directa con WhatsApp.
+> Mantenido solo para compatibilidad hacia atrás.
+>
+> **Nueva implementación:** El botón "Enviar por WhatsApp" del formulario genera un link `wa.me` con los datos del formulario pre-formateados y abre WhatsApp directamente en el navegador del usuario.
 
 Enviar formulario de contacto desde el landing page.
 

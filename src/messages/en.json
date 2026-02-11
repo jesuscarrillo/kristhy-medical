@@ -142,6 +142,7 @@
       "privacy_link": "Privacy Policy",
       "privacy": "I accept the privacy policy",
       "submit": "Send message",
+      "submit_whatsapp": "Send via WhatsApp",
       "reasons": {
         "prenatal": "Prenatal care",
         "highRisk": "High-Risk Pregnancy",
@@ -153,9 +154,10 @@
       }
     },
     "toast": {
-      "success": "Message sent successfully",
+      "success": "Perfect!",
       "success_detail": "We will contact you soon. Please check your email.",
-      "error": "Something went wrong, please try again",
+      "whatsapp_opened": "We're redirecting you to WhatsApp to send your message.",
+      "error": "Something went wrong",
       "error_detail": "Please try again or call us."
     }
   },
