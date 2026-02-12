@@ -207,6 +207,15 @@ enum DocumentType {
 - `rateLimit()` en API routes (contact, export, cron)
 - In-memory store (producción multi-instancia requiere Redis)
 
+### reCAPTCHA (Login Protection)
+- **v3 (Invisible):** Score-based verification en background
+- **v2 (Fallback):** Checkbox "No soy un robot" cuando score < 0.5
+- **Server Actions:** `verifyRecaptcha()`, `verifyLoginCaptcha()`
+- **Rate Limiting:** 5 intentos por 15 minutos en login
+- **Threshold:** 0.5 (configurable via `RECAPTCHA_SCORE_THRESHOLD`)
+- **Bundle:** ~5KB (react-google-recaptcha-v3 + v2), carga async/defer
+- **Documentación:** Ver `docs/SECURITY.md` para configuración detallada
+
 ### Middleware (src/middleware.ts)
 - Protección de rutas `/dashboard/*` via cookie de sesión
 - Redirect a `/login` si no hay sesión
@@ -247,6 +256,14 @@ CRON_SECRET="secret"
 
 # WhatsApp
 NEXT_PUBLIC_WHATSAPP_PHONE="+58 412-073-5223"
+
+# reCAPTCHA (Login Protection)
+# Obtener en: https://www.google.com/recaptcha/admin
+NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY="6LeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+RECAPTCHA_V3_SECRET_KEY="6LeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+NEXT_PUBLIC_RECAPTCHA_V2_SITE_KEY="6LeYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+RECAPTCHA_V2_SECRET_KEY="6LeYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+RECAPTCHA_SCORE_THRESHOLD="0.5"  # Opcional, default 0.5
 
 # Seed
 SEED_DOCTOR_EMAIL="dra@example.com"
@@ -359,6 +376,22 @@ generateFilename(prefix)            // Nombre con timestamp
 **Documentación completa:** Ver `docs/API.md`
 
 ## Changelog
+
+### v2.2.3 (Febrero 2026 - reCAPTCHA Protection)
+- **Seguridad:** Implementación de Google reCAPTCHA v3 + v2 en login
+- **Seguridad:** Protección contra ataques de fuerza bruta y bots automatizados
+- **reCAPTCHA v3:** Verificación invisible en background (score-based)
+- **reCAPTCHA v2:** Fallback automático con checkbox cuando score < 0.5
+- **Server Actions:** `verifyRecaptcha()` y `verifyLoginCaptcha()`
+- **Performance:** Bundle size +5KB, carga async/defer (no bloquea render)
+- **Rate Limiting:** 5 intentos de login por 15 minutos
+- **Threshold:** Configurable via `RECAPTCHA_SCORE_THRESHOLD` (default 0.5)
+- **Monitoring:** Logs de consola para scores bajos y uso de fallback
+- **Dependencies:** `react-google-recaptcha-v3`, `react-google-recaptcha`
+- **TypeScript:** Tipos declarados en `src/env.d.ts` para env vars
+- **Docs:** Documentación completa en `docs/SECURITY.md`
+- **UX:** Disclaimer de privacidad de Google en login form
+- **Variables:** 5 nuevas env vars (2 site keys, 2 secret keys, 1 threshold)
 
 ### v2.2.2 (Febrero 2026 - Integración WhatsApp)
 - **WhatsApp:** Formulario de contacto integrado con WhatsApp (cliente directo)
