@@ -377,6 +377,19 @@ generateFilename(prefix)            // Nombre con timestamp
 
 ## Changelog
 
+### v2.2.5 (Febrero 2026 - reCAPTCHA Fix + Legal Pages Update)
+- **reCAPTCHA Optimization:** Badge ahora aparece SOLO en login + contacto (no en todas las páginas)
+- **reCAPTCHA Fix:** Removido RecaptchaProvider de [locale]/layout.tsx
+- **reCAPTCHA Architecture:** Creado `/[locale]/contacto/layout.tsx` con provider scoped
+- **Legal Pages:** Términos y Privacidad completamente rediseñadas
+- **Content Update:** Clarificado que formulario redirige a WhatsApp (NO almacena en DB)
+- **Privacy Policy:** Actualizada para reflejar comunicación WhatsApp-only
+- **Design Premium:** Cards con bordes, backgrounds, secciones estructuradas
+- **Dark Mode:** Legal pages ahora tienen dark mode completo (text-slate-X dark:text-slate-X)
+- **Typography:** Jerarquía mejorada con headings h2, listas, y divisores
+- **UX:** Fecha actualizada a "Febrero 2026", enlaces teal con hover states
+- **Files:** 4 archivos modificados/creados (layout, terminos, privacidad, contacto/layout)
+
 ### v2.2.4 (Febrero 2026 - Dark Mode Completo)
 - **Dark Mode:** Implementación completa en landing page y dashboard
 - **Sistema:** next-themes instalado con ThemeProvider en root layout
