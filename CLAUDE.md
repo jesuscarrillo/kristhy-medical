@@ -377,6 +377,23 @@ generateFilename(prefix)            // Nombre con timestamp
 
 ## Changelog
 
+### v2.2.4 (Febrero 2026 - Dark Mode Completo)
+- **Dark Mode:** Implementación completa en landing page y dashboard
+- **Sistema:** next-themes instalado con ThemeProvider en root layout
+- **ThemeToggle:** Componente Sun/Moon con animación de rotación (300ms)
+- **Landing Page:** 11 componentes actualizados (Hero, About, Contact, Testimonials, Services, ServiceCard, Header, ContactForm, Footer, LanguageSwitcher, Label)
+- **Dashboard:** AppSidebar con ThemeToggle integrado, dark mode completo
+- **Paleta Dark:** slate-950 bg principal, slate-800 cards, teal-400 primary, teal-900/30 accents, slate-700 borders, slate-100 text
+- **Performance:** Sin FOUC, persistencia localStorage, detección system, transiciones suaves
+- **Fixes:** Hydration error en DashboardLayoutClient resuelto con Suspense boundary
+- **Fixes:** Select dropdown texto seleccionado con `text-foreground` explícito
+- **Fixes:** WhatsApp floating button eliminado (redundante con formulario)
+- **reCAPTCHA:** Optimizado - movido de root layout a login + [locale] layout únicamente
+- **Bundle:** Reducción ~25KB en páginas que no usan reCAPTCHA
+- **Components:** Label, Select, Input, Textarea todos con dark mode correcto
+- **Contraste:** AAA compliant en ambos modos (WCAG 2.1)
+- **Dependencies:** next-themes@0.4.6
+
 ### v2.2.3 (Febrero 2026 - reCAPTCHA Protection)
 - **Seguridad:** Implementación de Google reCAPTCHA v3 + v2 en login
 - **Seguridad:** Protección contra ataques de fuerza bruta y bots automatizados

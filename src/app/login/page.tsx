@@ -1,9 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { RecaptchaProvider } from "@/components/providers/RecaptchaProvider";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen">
+    <RecaptchaProvider>
+      <div className="flex min-h-screen">
       {/* Visual Side */}
       <div className="hidden w-1/2 flex-col justify-between bg-zinc-900 p-10 text-white lg:flex relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?q=80&w=2982&auto=format&fit=crop')] bg-cover bg-center opacity-40"></div>
@@ -49,5 +53,6 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+    </RecaptchaProvider>
   );
 }

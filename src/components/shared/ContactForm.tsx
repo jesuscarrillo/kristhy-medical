@@ -100,7 +100,7 @@ export function ContactForm() {
     return (
       <div className="space-y-1.5">
         <div className="relative">
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">{icon}</span>
           <Input
             type={type}
             placeholder={placeholder}
@@ -196,7 +196,7 @@ export function ContactForm() {
               <FormLabel htmlFor={getFieldId("message")}>{t("form.message")}</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <span className="pointer-events-none absolute left-3 top-3 text-slate-400">
+                  <span className="pointer-events-none absolute left-3 top-3 text-slate-400 dark:text-slate-500">
                     <MessageSquare className="h-4 w-4" />
                   </span>
                   <Textarea
@@ -231,7 +231,7 @@ export function ContactForm() {
                 <div className="space-y-1 leading-none text-sm">
                   <FormLabel htmlFor={getFieldId("privacy")} className="flex flex-col gap-1">
                     {t("form.privacy")}
-                    <Link href="/privacidad" className="text-sky-600 underline">
+                    <Link href="/privacidad" className="text-sky-600 dark:text-sky-400 underline">
                       {t("form.privacy_link") ?? "Política de Privacidad"}
                     </Link>
                   </FormLabel>
@@ -243,10 +243,10 @@ export function ContactForm() {
         />
 
         {status === "success" && (
-          <p className="text-sm font-semibold text-emerald-600">{t("toast.success")}</p>
+          <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{t("toast.success")}</p>
         )}
         {status === "error" && (
-          <p className="text-sm font-semibold text-red-600">{t("toast.error")}</p>
+          <p className="text-sm font-semibold text-red-600 dark:text-red-400">{t("toast.error")}</p>
         )}
 
         <Button

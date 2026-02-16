@@ -19,17 +19,17 @@ export function Services() {
   const items = t.raw("items") as Record<keyof typeof icons, { title: string; description: string }>;
 
   return (
-    <section id="services" className="bg-white py-24 scroll-mt-24 sm:py-32">
+    <section id="services" className="bg-white dark:bg-slate-900 py-24 scroll-mt-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <p className="text-sm font-semibold uppercase tracking-wider text-teal-600 mb-4">
+          <p className="text-sm font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-4">
             {t("title")}
           </p>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl mb-5">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl mb-5">
             {t("subtitle")}
           </h2>
-          <p className="text-base text-slate-600 leading-relaxed max-w-xl mx-auto">
+          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto">
             {t("description")}
           </p>
         </div>

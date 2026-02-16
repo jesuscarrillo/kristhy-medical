@@ -26,17 +26,17 @@ export function Testimonials() {
   };
 
   return (
-    <section className="bg-white py-24 scroll-mt-24 sm:py-32">
+    <section className="bg-white dark:bg-slate-900 py-24 scroll-mt-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <p className="text-sm font-semibold uppercase tracking-wider text-rose-500 mb-4">
+          <p className="text-sm font-semibold uppercase tracking-wider text-rose-500 dark:text-rose-400 mb-4">
             {t("title")}
           </p>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl mb-5">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl mb-5">
             {t("subtitle")}
           </h2>
-          <p className="text-base text-slate-600 leading-relaxed max-w-xl mx-auto">
+          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto">
             {t("description")}
           </p>
         </div>
@@ -46,9 +46,9 @@ export function Testimonials() {
           <CarouselContent className="-ml-5">
             {items.map((item, index) => (
               <CarouselItem key={index} className="pl-5 md:basis-1/2 lg:basis-1/3">
-                <div className="relative h-full rounded-2xl border border-slate-100 bg-[#FDFBF7] p-7 transition-all duration-300 hover:shadow-lg hover:shadow-slate-100/80">
+                <div className="relative h-full rounded-2xl border border-slate-100 dark:border-slate-700 bg-[#FDFBF7] dark:bg-slate-800/90 p-7 transition-all duration-300 hover:shadow-lg hover:shadow-slate-100/80 dark:hover:shadow-teal-500/10">
                   {/* Quote icon */}
-                  <Quote className="mb-4 h-8 w-8 text-teal-100" />
+                  <Quote className="mb-4 h-8 w-8 text-teal-100 dark:text-slate-700" />
 
                   {/* Stars */}
                   <div className="mb-4 flex items-center gap-0.5">
@@ -56,26 +56,26 @@ export function Testimonials() {
                   </div>
 
                   {/* Text */}
-                  <p className="mb-6 text-sm leading-relaxed text-slate-700">
+                  <p className="mb-6 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                     &ldquo;{item.text}&rdquo;
                   </p>
 
                   {/* Author */}
-                  <div className="flex items-center gap-3 border-t border-slate-100 pt-5">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-sm font-bold text-teal-700">
+                  <div className="flex items-center gap-3 border-t border-slate-100 dark:border-slate-700 pt-5">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 dark:bg-teal-900/30 text-sm font-bold text-teal-700 dark:text-teal-400">
                       {item.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-900">{item.name}</p>
-                      <p className="text-xs text-slate-500">{item.role}</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{item.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
                     </div>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="-left-4 h-10 w-10 rounded-full border-slate-200 bg-white text-slate-600 shadow-md hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-colors" />
-          <CarouselNext className="-right-4 h-10 w-10 rounded-full border-slate-200 bg-white text-slate-600 shadow-md hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-colors" />
+          <CarouselPrevious className="-left-4 h-10 w-10 rounded-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-md hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:text-teal-600 dark:hover:text-teal-400 hover:border-teal-200 dark:hover:border-teal-700 transition-colors" />
+          <CarouselNext className="-right-4 h-10 w-10 rounded-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-md hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:text-teal-600 dark:hover:text-teal-400 hover:border-teal-200 dark:hover:border-teal-700 transition-colors" />
         </Carousel>
       </div>
     </section>

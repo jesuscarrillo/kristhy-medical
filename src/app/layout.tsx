@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import { RecaptchaProvider } from "@/components/providers/RecaptchaProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -32,7 +32,9 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className={`${manrope.variable} font-sans antialiased bg-background text-foreground`}>
-        <RecaptchaProvider>{children}</RecaptchaProvider>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

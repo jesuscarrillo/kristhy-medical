@@ -20,8 +20,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-
-import Image from "next/image"; // Add import at top
+import Image from "next/image";
+import { ThemeToggle } from "./ThemeToggle";
 
 const sidebarLinks = [
     { title: "Panel Principal", href: "/dashboard", icon: LayoutDashboard },
@@ -45,7 +45,7 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
         <div className="flex h-full flex-col justify-between py-6">
             <div className="space-y-6">
                 <div className="flex items-center gap-3 px-6">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white shadow-md ring-1 ring-slate-100/50">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-100/50 dark:ring-slate-700/50">
                         <Image
                             src="/images/header-logo.png"
                             alt="Logo Dra. Kristhy"
@@ -90,7 +90,10 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
             </div>
 
             <div className="space-y-4 px-3">
-                <SignOutButtonFull />
+                <div className="flex items-center gap-2">
+                    <SignOutButtonFull />
+                    <ThemeToggle />
+                </div>
 
                 <div className="flex items-center gap-3 rounded-xl border border-white/40 bg-white/50 p-3 backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-900/50">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary font-bold">
@@ -132,10 +135,10 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
                 <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
-                            <Menu className="h-6 w-6 text-slate-700" />
+                            <Menu className="h-6 w-6 text-slate-700 dark:text-slate-300" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-72 p-0 border-r-0 bg-white/95 backdrop-blur-xl">
+                    <SheetContent side="left" className="w-72 p-0 border-r-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
                         <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
                         <SidebarContent />
                     </SheetContent>
@@ -160,7 +163,7 @@ function SignOutButtonFull() {
     return (
         <Button
             variant="outline"
-            className="w-full justify-start gap-2 text-slate-500 hover:text-red-600 hover:bg-red-50 border-slate-200"
+            className="flex-1 justify-start gap-2 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 border-slate-200 dark:border-slate-700"
             onClick={handleSignOut}
         >
             <LogOut className="h-4 w-4" />

@@ -12,7 +12,7 @@ export function LanguageSwitcher({ currentLocale }: { currentLocale: string }) {
   const locale = currentLocale || "es";
 
   return (
-    <div className="flex items-center rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+    <div className="flex items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1 shadow-sm">
       {["es", "en"].map((lang) => {
         const active = locale === lang;
         const label = lang === "es" ? "ES" : "EN";
@@ -30,7 +30,7 @@ export function LanguageSwitcher({ currentLocale }: { currentLocale: string }) {
             }
             disabled={pending}
             className={`h-8 rounded-full px-3 text-xs font-semibold ${
-              active ? "bg-primary text-primary-foreground" : "text-slate-700 hover:bg-slate-100"
+              active ? "bg-primary text-primary-foreground" : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
             }`}
             aria-label={`Cambiar idioma a ${label}`}
           >

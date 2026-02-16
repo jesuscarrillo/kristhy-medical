@@ -4,7 +4,7 @@ import { getMessages } from "next-intl/server";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderClient } from "@/components/layout/HeaderClient";
 import { ToasterProvider } from "@/components/layout/ToasterProvider";
-import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { RecaptchaProvider } from "@/components/providers/RecaptchaProvider";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -80,17 +80,18 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <div className="flex min-h-screen flex-col bg-white text-slate-900">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <HeaderClient currentLocale={locale} />
-        <main className="flex-1">{children}</main>
-        <Footer currentLocale={locale} />
-        <WhatsAppButton />
-        <ToasterProvider />
-      </div>
+      <RecaptchaProvider>
+        <div className="flex min-h-screen flex-col bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+          <HeaderClient currentLocale={locale} />
+          <main className="flex-1">{children}</main>
+          <Footer currentLocale={locale} />
+          <ToasterProvider />
+        </div>
+      </RecaptchaProvider>
     </NextIntlClientProvider>
   );
 }

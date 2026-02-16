@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navAnchors = [
   { href: "#hero", key: "nav.home" },
@@ -58,7 +59,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
 
   return (
     <header
-      className={`sticky top-0 z-30 transition-all duration-300 ${scrolled ? "bg-white/80 shadow-md backdrop-blur-lg" : "bg-white/60"
+      className={`sticky top-0 z-30 transition-all duration-300 ${scrolled ? "bg-white/80 dark:bg-slate-900/80 shadow-md backdrop-blur-lg" : "bg-white/60 dark:bg-slate-900/60"
         }`}
     >
       <div
@@ -68,9 +69,9 @@ export function Header({ currentLocale }: { currentLocale: string }) {
         <Link
           href={anchorHref("#hero")}
           onClick={(e) => handleScrollTo(e, "#hero")}
-          className="flex items-center gap-3 font-semibold text-slate-900"
+          className="flex items-center gap-3 font-semibold text-slate-900 dark:text-slate-100"
         >
-          <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white shadow-lg ring-1 ring-sky-100">
+          <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white dark:bg-slate-800 shadow-lg ring-1 ring-sky-100 dark:ring-slate-700">
             <Image
               src="/images/header-logo.png"
               alt={`Logo ${t("hero.title")}`}
@@ -82,7 +83,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-base">{t("hero.title")}</span>
-            <span className="text-xs text-slate-500">{t("hero.specialist_field")}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">{t("hero.specialist_field")}</span>
           </div>
         </Link>
 
@@ -94,7 +95,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                   <NavigationMenuLink
                     href={anchorHref(item.href)}
                     onClick={(e) => handleScrollTo(e, item.href)}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                    className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer"
                   >
                     {t(item.key)}
                   </NavigationMenuLink>
@@ -102,6 +103,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
+          <ThemeToggle />
           <LanguageSwitcher currentLocale={currentLocale} />
           <Button
             onClick={(e) => handleScrollTo(e, "#contact")}
@@ -113,6 +115,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <LanguageSwitcher currentLocale={currentLocale} />
           <Sheet>
             <SheetTrigger asChild>
@@ -130,7 +133,7 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                     key={item.key}
                     href={anchorHref(item.href)}
                     onClick={(e) => handleScrollTo(e, item.href)}
-                    className="rounded-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                    className="rounded-full px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     {t(item.key)}
                   </Link>
