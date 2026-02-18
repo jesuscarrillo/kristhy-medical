@@ -68,4 +68,4 @@ export const gynecologicalProfileSchema = z.object({
   ),
 });
 
-export type GynecologicalProfileInput = z.infer<typeof gynecologicalProfileSchema>;
+type GynecologicalProfileInput = z.infer<typeof gynecologicalProfileSchema>;

@@ -15,7 +15,7 @@ const RecaptchaResponseSchema = z.object({
   "error-codes": z.array(z.string()).optional(),
 });
 
-export interface VerifyRecaptchaResult {
+interface VerifyRecaptchaResult {
   success: boolean;
   score?: number;
   needsV2Fallback?: boolean;

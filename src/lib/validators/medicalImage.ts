@@ -35,7 +35,7 @@ export const documentTypeLabels: Record<typeof documentTypeValues[number], strin
   OTHER: "Otro",
 };
 
-export const documentTypeColors: Record<typeof documentTypeValues[number], string> = {
+const documentTypeColors: Record<typeof documentTypeValues[number], string> = {
   LAB_RESULT: "bg-green-100 text-green-800",
   CYTOLOGY: "bg-pink-100 text-pink-800",
   BIOPSY: "bg-red-100 text-red-800",
@@ -81,5 +81,5 @@ export const medicalImageSchema = z.object({
   ),
 });
 
-export type DocumentType = typeof documentTypeValues[number];
-export type MedicalImageInput = z.infer<typeof medicalImageSchema>;
+type DocumentType = typeof documentTypeValues[number];
+type MedicalImageInput = z.infer<typeof medicalImageSchema>;

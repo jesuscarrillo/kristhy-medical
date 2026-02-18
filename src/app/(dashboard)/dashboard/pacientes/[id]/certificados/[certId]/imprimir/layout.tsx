@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import "./print-certificate.css";
 
 /**
  * Layout dedicado para impresión de certificados

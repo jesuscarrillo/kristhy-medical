@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import "./print-ultrasound.css";
 
 /**
  * Layout dedicado para impresión de ecografías

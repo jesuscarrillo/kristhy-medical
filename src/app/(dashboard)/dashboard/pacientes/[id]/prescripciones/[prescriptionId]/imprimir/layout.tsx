@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import "./print-prescription.css";
 
 /**
  * Layout dedicado para impresión de prescripciones

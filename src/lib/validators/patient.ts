@@ -116,5 +116,5 @@ export const patientWithGynProfileSchema = patientSchema.merge(
   })
 );
 
-export type PatientInput = z.infer<typeof patientSchema>;
-export type PatientWithGynProfileInput = z.infer<typeof patientWithGynProfileSchema>;
+type PatientInput = z.infer<typeof patientSchema>;
+type PatientWithGynProfileInput = z.infer<typeof patientWithGynProfileSchema>;

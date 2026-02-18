@@ -11,7 +11,7 @@ export type ReportFilters = {
   appointmentStatus?: string;
 };
 
-export type ReportStats = {
+type ReportStats = {
   overview: {
     totalPatients: number;
     activePatients: number;
@@ -200,7 +200,7 @@ export async function getReportStats(filters: ReportFilters = {}): Promise<Repor
   };
 }
 
-export type ExportData = {
+type ExportData = {
   appointments: {
     id: string;
     date: string;

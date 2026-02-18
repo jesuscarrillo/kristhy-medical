@@ -13,7 +13,7 @@ import { ZodError } from "zod";
 /**
  * Standard error response structure
  */
-export interface ErrorResponse {
+interface ErrorResponse {
   error: string;          // Error code (PascalCase)
   message: string;        // Human-readable message
   details?: unknown;      // Additional error context
@@ -24,7 +24,7 @@ export interface ErrorResponse {
 /**
  * Standard success response envelope
  */
-export interface ApiResponse<T = unknown> {
+interface ApiResponse<T = unknown> {
   data?: T;
   meta?: {
     timestamp: string;
@@ -36,7 +36,7 @@ export interface ApiResponse<T = unknown> {
 /**
  * Paginated response structure
  */
-export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
+interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
   meta: {
     timestamp: string;
     page: number;
@@ -108,7 +108,7 @@ export function successResponse<T>(
 /**
  * Create paginated response
  */
-export function paginatedResponse<T>(
+function paginatedResponse<T>(
   items: T[],
   page: number,
   pageSize: number,

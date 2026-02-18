@@ -11,7 +11,7 @@ import type { ContactFormValues } from "@/lib/validations";
  * @param phone - Phone number in any format
  * @returns Phone number with digits only
  */
-export function normalizePhoneNumber(phone: string): string {
+function normalizePhoneNumber(phone: string): string {
   return phone.replace(/\D/g, "");
 }
 
@@ -22,7 +22,7 @@ export function normalizePhoneNumber(phone: string): string {
  * @returns Normalized WhatsApp phone number (digits only)
  * @throws Error if no phone number is configured
  */
-export function getWhatsAppPhone(): string {
+function getWhatsAppPhone(): string {
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE;
 
   if (!phone) {
@@ -58,7 +58,7 @@ const MAX_MESSAGE_LENGTH = 4096;
  * @param data - Validated contact form values
  * @returns Formatted message string
  */
-export function formatWhatsAppMessage(data: ContactFormValues): string {
+function formatWhatsAppMessage(data: ContactFormValues): string {
   const reason = REASON_LABELS[data.reason] ?? data.reason;
 
   const message = `Buen día Dra. Kristhy, estoy interesada en agendar una cita.

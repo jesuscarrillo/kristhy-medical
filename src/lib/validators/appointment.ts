@@ -12,4 +12,4 @@ export const appointmentSchema = z.object({
   notes: z.preprocess(emptyToUndefined, z.string().trim().max(2000).optional()),
 });
 
-export type AppointmentInput = z.infer<typeof appointmentSchema>;
+type AppointmentInput = z.infer<typeof appointmentSchema>;

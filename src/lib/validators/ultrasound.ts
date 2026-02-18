@@ -43,7 +43,7 @@ export const validUltrasoundTypes: Record<typeof pregnancyStatusValues[number], 
 };
 
 // First trimester measurements schema
-export const firstTrimesterMeasurementsSchema = z.object({
+const firstTrimesterMeasurementsSchema = z.object({
   // Saco gestacional
   sacoDiameter: z.preprocess(emptyToUndefined, z.coerce.number().min(0).max(100).optional()), // mm
   // CRL (Crown-rump length)
@@ -70,7 +70,7 @@ export const firstTrimesterMeasurementsSchema = z.object({
 });
 
 // Second/Third trimester measurements schema (biometría fetal)
-export const secondThirdTrimesterMeasurementsSchema = z.object({
+const secondThirdTrimesterMeasurementsSchema = z.object({
   // Biometría fetal
   dbp: z.preprocess(emptyToUndefined, z.coerce.number().min(0).max(120).optional()), // Diámetro biparietal mm
   cc: z.preprocess(emptyToUndefined, z.coerce.number().min(0).max(400).optional()),  // Circunferencia cefálica mm
@@ -114,7 +114,7 @@ export const secondThirdTrimesterMeasurementsSchema = z.object({
 });
 
 // Gynecological measurements schema
-export const gynecologicalMeasurementsSchema = z.object({
+const gynecologicalMeasurementsSchema = z.object({
   // Útero
   uteroLongitud: z.preprocess(emptyToUndefined, z.coerce.number().min(0).max(200).optional()), // mm
   uteroAnteroPosterior: z.preprocess(emptyToUndefined, z.coerce.number().min(0).max(100).optional()), // mm
@@ -149,7 +149,7 @@ export const gynecologicalMeasurementsSchema = z.object({
 });
 
 // Base ultrasound schema
-export const ultrasoundBaseSchema = z.object({
+const ultrasoundBaseSchema = z.object({
   patientId: z.string().min(1, "Paciente requerido"),
   date: z.coerce.date(),
   type: z.enum(ultrasoundTypeValues, { message: "Tipo de ecografía requerido" }),
@@ -202,7 +202,7 @@ export const ultrasoundSchema = ultrasoundBaseSchema.extend({
 });
 
 // Schema for ultrasound images
-export const ultrasoundImageSchema = z.object({
+const ultrasoundImageSchema = z.object({
   ultrasoundId: z.string().min(1, "Ecografía requerida"),
   fileName: z.string().min(1, "Nombre de archivo requerido"),
   fileUrl: z.string().url("URL de archivo inválida"),
@@ -213,8 +213,5 @@ export const ultrasoundImageSchema = z.object({
 
 export type PregnancyStatus = typeof pregnancyStatusValues[number];
 export type UltrasoundType = typeof ultrasoundTypeValues[number];
-export type UltrasoundInput = z.infer<typeof ultrasoundSchema>;
-export type UltrasoundImageInput = z.infer<typeof ultrasoundImageSchema>;
-export type FirstTrimesterMeasurements = z.infer<typeof firstTrimesterMeasurementsSchema>;
-export type SecondThirdTrimesterMeasurements = z.infer<typeof secondThirdTrimesterMeasurementsSchema>;
-export type GynecologicalMeasurements = z.infer<typeof gynecologicalMeasurementsSchema>;
+type UltrasoundInput = z.infer<typeof ultrasoundSchema>;
+type UltrasoundImageInput = z.infer<typeof ultrasoundImageSchema>;

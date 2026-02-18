@@ -129,7 +129,7 @@ export async function uploadMedicalImage(formData: FormData) {
   }
 }
 
-export interface GetImagesFilters {
+interface GetImagesFilters {
   documentType?: DocumentType;
   isNormal?: boolean;
   startDate?: Date;
@@ -137,7 +137,7 @@ export interface GetImagesFilters {
   tags?: string[];
 }
 
-export async function getMedicalImages(
+async function getMedicalImages(
   patientId: string,
   filters?: GetImagesFilters,
   page = 1,
@@ -181,7 +181,7 @@ export async function getMedicalImages(
   };
 }
 
-export async function getMedicalImage(id: string) {
+async function getMedicalImage(id: string) {
   const session = await requireDoctor();
 
   const image = await prisma.medicalImage.findUnique({
@@ -213,7 +213,7 @@ export async function getMedicalImage(id: string) {
   return image;
 }
 
-export async function updateMedicalImage(id: string, formData: FormData) {
+async function updateMedicalImage(id: string, formData: FormData) {
   try {
     const session = await requireDoctor();
 
@@ -276,7 +276,7 @@ export async function updateMedicalImage(id: string, formData: FormData) {
   }
 }
 
-export async function deleteMedicalImage(id: string) {
+async function deleteMedicalImage(id: string) {
   try {
     const session = await requireDoctor();
 

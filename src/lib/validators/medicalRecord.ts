@@ -26,4 +26,4 @@ export const medicalRecordSchema = z.object({
   notes: z.preprocess(emptyToUndefined, z.string().trim().max(2000).optional()),
 });
 
-export type MedicalRecordInput = z.infer<typeof medicalRecordSchema>;
+type MedicalRecordInput = z.infer<typeof medicalRecordSchema>;

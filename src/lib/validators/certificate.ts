@@ -81,5 +81,5 @@ export const certificateSchema = z.object({
   }
 );
 
-export type CertificateType = typeof certificateTypeValues[number];
-export type CertificateInput = z.infer<typeof certificateSchema>;
+type CertificateType = typeof certificateTypeValues[number];
+type CertificateInput = z.infer<typeof certificateSchema>;

@@ -11,7 +11,7 @@ const VerifyLoginSchema = z.object({
   recaptchaV2Token: z.string().nullable().optional(),
 });
 
-export interface VerifyLoginResult {
+interface VerifyLoginResult {
   success: boolean;
   needsV2Fallback?: boolean;
   error?: string;

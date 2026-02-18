@@ -77,7 +77,7 @@ const _fetchMedicalRecords = cache(async (patientId: string) => {
   return records.map((record) => decryptMedicalRecordFields(record));
 });
 
-export async function getMedicalRecords(patientId: string) {
+async function getMedicalRecords(patientId: string) {
   await requireDoctor();
   return _fetchMedicalRecords(patientId);
 }

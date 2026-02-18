@@ -7,7 +7,7 @@
 /**
  * Escape CSV value
  */
-export function escapeCSV(value: string | null | undefined): string {
+function escapeCSV(value: string | null | undefined): string {
   if (value === null || value === undefined) return "";
   const str = String(value);
   if (str.includes(",") || str.includes('"') || str.includes("\n")) {

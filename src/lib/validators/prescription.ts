@@ -10,4 +10,4 @@ export const prescriptionSchema = z.object({
   diagnosis: z.preprocess(emptyToUndefined, z.string().trim().max(500).optional()),
 });
 
-export type PrescriptionInput = z.infer<typeof prescriptionSchema>;
+type PrescriptionInput = z.infer<typeof prescriptionSchema>;

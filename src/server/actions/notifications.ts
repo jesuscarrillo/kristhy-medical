@@ -147,7 +147,7 @@ export async function sendAppointmentReminders(): Promise<SendReminderResult> {
   return results;
 }
 
-export async function sendManualReminder(appointmentId: string) {
+async function sendManualReminder(appointmentId: string) {
   await requireDoctor();
 
   if (!resend) {
@@ -227,7 +227,7 @@ export async function sendManualReminder(appointmentId: string) {
   }
 }
 
-export async function getAppointmentsForReminder() {
+async function getAppointmentsForReminder() {
   await requireDoctor();
 
   const now = new Date();
