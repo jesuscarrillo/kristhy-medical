@@ -75,8 +75,8 @@ export function MonthlyBarChart({ data, title }: MonthlyChartProps) {
   const max = Math.max(...data.map((d) => d.count), 1);
   const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
 
-  // Generate grid lines (4 lines)
-  const gridLines = [0.25, 0.5, 0.75, 1].map((pct) => Math.round(max * pct));
+  // Porcentajes fijos como fuente de verdad — siempre únicos, nunca se reordenan
+  const GRID_PCTS = [0.25, 0.5, 0.75, 1] as const;
 
   return (
     <div className="space-y-3">
@@ -86,14 +86,14 @@ export function MonthlyBarChart({ data, title }: MonthlyChartProps) {
       <div className="relative">
         {/* Grid lines */}
         <div className="absolute inset-x-0 top-0 h-48 pointer-events-none">
-          {gridLines.map((val, i) => (
+          {GRID_PCTS.map((pct, i) => (
             <div
-              key={String(val)}
+              key={`gridline-${pct}`}
               className="absolute w-full border-t border-dashed border-slate-200/60 dark:border-slate-700/40"
-              style={{ bottom: `${((i + 1) / 4) * 100}%` }}
+              style={{ bottom: `${(i + 1) * 25}%` }}
             >
               <span className="absolute -top-2.5 -left-1 text-[8px] text-slate-400 font-mono tabular-nums">
-                {val}
+                {Math.round(max * pct)}
               </span>
             </div>
           ))}
