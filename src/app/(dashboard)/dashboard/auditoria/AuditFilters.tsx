@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Select,
@@ -33,7 +34,16 @@ const actions = [
   { value: "export", label: "Exportar" },
 ];
 
-export function AuditFilters({
+// Export público: componente auto-contenido con su propio Suspense boundary
+export function AuditFilters(props: AuditFiltersProps) {
+  return (
+    <Suspense fallback={null}>
+      <AuditFiltersInner {...props} />
+    </Suspense>
+  );
+}
+
+function AuditFiltersInner({
   currentEntity,
   currentAction,
 }: AuditFiltersProps) {

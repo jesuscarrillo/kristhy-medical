@@ -70,8 +70,8 @@ export function About() {
 
             {/* Bio */}
             <div className="space-y-4">
-              {bio.map((paragraph, idx) => (
-                <p key={`bio-${idx}`} className="text-base leading-relaxed text-slate-600 dark:text-slate-300">
+              {bio.map((paragraph) => (
+                <p key={paragraph} className="text-base leading-relaxed text-slate-600 dark:text-slate-300">
                   {paragraph}
                 </p>
               ))}
@@ -111,8 +111,8 @@ export function About() {
                 </p>
               </div>
               <div className="space-y-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                {philosophy.map((paragraph, idx) => (
-                  <p key={`phil-${idx}`}>{paragraph}</p>
+                {philosophy.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
             </div>

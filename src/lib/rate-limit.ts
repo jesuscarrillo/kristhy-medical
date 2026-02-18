@@ -127,7 +127,7 @@ export async function rateLimitAction(
 }
 
 // Helper to create rate limit response
-export function rateLimitResponse(reset: number) {
+function rateLimitResponse(reset: number) {
   const retryAfter = Math.ceil((reset - Date.now()) / 1000);
   return NextResponse.json(
     {

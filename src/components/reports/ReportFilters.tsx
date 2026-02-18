@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,16 @@ import {
 } from "@/components/ui/select";
 import { CalendarDays, Filter, Activity, X } from "lucide-react";
 
+// Export público: componente auto-contenido con su propio Suspense boundary
 export function ReportFilters() {
+  return (
+    <Suspense fallback={null}>
+      <ReportFiltersInner />
+    </Suspense>
+  );
+}
+
+function ReportFiltersInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 

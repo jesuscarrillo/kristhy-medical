@@ -111,14 +111,10 @@ function SidebarContent({ user, pathname }: SidebarContentProps) {
     );
 }
 
-export function AppSidebar({ user }: { user?: { name?: string | null; email?: string | null } }) {
-    const pathname = usePathname();
+// Extraído como componente separado para usar key={pathname} en el padre
+// y que React resetee el estado mobileOpen al navegar (react-doctor pattern)
+function MobileHeader({ user, pathname }: { user?: { name?: string | null; email?: string | null }; pathname: string }) {
     const [mobileOpen, setMobileOpen] = useState(false);
-
-    // Cerrar al navegar
-    useEffect(() => {
-        setMobileOpen(false);
-    }, [pathname]);
 
     // Cerrar si el viewport pasa al breakpoint desktop (lg = 1024px)
     useEffect(() => {
@@ -131,38 +127,46 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
     }, []);
 
     return (
+        <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/20 bg-white/80 px-6 backdrop-blur-md dark:bg-slate-900/80 lg:hidden">
+            <div className="flex items-center gap-3">
+                <div className="relative h-8 w-8 overflow-hidden rounded-full bg-white shadow-sm">
+                    <Image
+                        src="/images/header-logo.png"
+                        alt="Logo Dra. Kristhy mobile"
+                        fill
+                        sizes="32px"
+                        className="object-contain"
+                    />
+                </div>
+                <span className="font-bold text-slate-800 dark:text-slate-100">Dra. Kristhy</span>
+            </div>
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <Menu className="h-6 w-6 text-slate-700 dark:text-slate-300" />
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" aria-describedby={undefined} className="w-72 p-0 border-r-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
+                    <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
+                    <SidebarContent user={user} pathname={pathname} />
+                </SheetContent>
+            </Sheet>
+        </div>
+    );
+}
+
+export function AppSidebar({ user }: { user?: { name?: string | null; email?: string | null } }) {
+    const pathname = usePathname();
+
+    return (
         <>
             {/* Desktop Sidebar */}
             <aside className="hidden w-72 border-r border-white/20 bg-white/50 backdrop-blur-xl transition-all dark:bg-slate-900/50 lg:fixed lg:bottom-0 lg:left-0 lg:top-0 lg:flex lg:flex-col">
                 <SidebarContent user={user} pathname={pathname} />
             </aside>
 
-            {/* Mobile Header / Trigger */}
-            <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/20 bg-white/80 px-6 backdrop-blur-md dark:bg-slate-900/80 lg:hidden">
-                <div className="flex items-center gap-3">
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full bg-white shadow-sm">
-                        <Image
-                            src="/images/header-logo.png"
-                            alt="Logo Dra. Kristhy mobile"
-                            fill
-                            sizes="32px"
-                            className="object-contain"
-                        />
-                    </div>
-                    <span className="font-bold text-slate-800 dark:text-slate-100">Dra. Kristhy</span>
-                </div>
-                <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Menu className="h-6 w-6 text-slate-700 dark:text-slate-300" />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" aria-describedby={undefined} className="w-72 p-0 border-r-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
-                        <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
-                        <SidebarContent user={user} pathname={pathname} />
-                    </SheetContent>
-                </Sheet>
-            </div>
+            {/* Mobile Header — key={pathname} resetea estado al navegar sin useEffect */}
+            <MobileHeader key={pathname} user={user} pathname={pathname} />
         </>
     );
 }

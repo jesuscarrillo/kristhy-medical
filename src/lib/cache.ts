@@ -10,7 +10,7 @@ export const CACHE_TAGS = {
 } as const;
 
 // Helper para crear funciones con caché
-export function createCachedFunction<T extends (...args: unknown[]) => Promise<unknown>>(
+function createCachedFunction<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   tags: string[],
   revalidateSeconds = 60

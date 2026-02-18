@@ -191,7 +191,7 @@ export function UltrasoundPrintView({
 
   return (
     <>
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @page {
           size: letter;
           margin: 1.5cm;
@@ -406,7 +406,7 @@ export function UltrasoundPrintView({
           gap: 20px;
           font-size: 10pt;
         }
-      `}</style>
+      ` }} />
       <div className="print-ultrasound-container">
         {/* Header */}
         <div className="print-ultrasound-header">

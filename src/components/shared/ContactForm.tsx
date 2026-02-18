@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm, type ControllerRenderProps } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, type ContactFormValues } from "@/lib/validations";
 import { generateWhatsAppLink, openWhatsApp } from "@/lib/utils/whatsapp";
@@ -29,10 +29,66 @@ import { Mail, Phone, User, MessageSquare, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
+type TextFieldName = "name" | "email" | "phone";
+
+// Extraído como componente para evitar inline render function (react-doctor)
+function TextFieldInput({
+  name,
+  icon,
+  placeholder,
+  type = "text",
+  hasError,
+  isTouched,
+  field,
+}: {
+  name: TextFieldName;
+  icon: React.ReactNode;
+  placeholder: string;
+  type?: string;
+  hasError: boolean;
+  isTouched: boolean;
+  field: { value: string; onChange: React.ChangeEventHandler<HTMLInputElement>; onBlur: () => void; name: TextFieldName };
+}) {
+  const statusClass =
+    hasError && isTouched
+      ? "border-red-400 focus-visible:ring-red-300"
+      : !hasError && isTouched
+        ? "border-emerald-400 focus-visible:ring-emerald-300"
+        : "";
+  const controlId = `contact-${name}-field`;
+  const autoComplete =
+    name === "name" ? "name" : name === "email" ? "email" : name === "phone" ? "tel" : "off";
+  return (
+    <div className="space-y-1.5">
+      <div className="relative">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+          {icon}
+        </span>
+        <Input
+          type={type}
+          placeholder={placeholder}
+          className={`pl-10 ${statusClass}`}
+          id={controlId}
+          autoComplete={autoComplete}
+          {...field}
+        />
+      </div>
+      <FormMessage />
+    </div>
+  );
+}
+
 export function ContactForm() {
   const t = useTranslations("contact");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const getFieldId = (name: string) => `contact-${name}-field`;
+  const statusClass = (name: keyof ContactFormValues) => {
+    const hasError = !!form.formState.errors[name];
+    const touched = !!form.formState.touchedFields[name];
+    if (hasError && touched) return "border-red-400 focus-visible:ring-red-300";
+    if (!hasError && touched) return "border-emerald-400 focus-visible:ring-emerald-300";
+    return "";
+  };
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     mode: "onBlur",
@@ -78,43 +134,6 @@ export function ContactForm() {
     }
   };
 
-  const statusClass = (name: keyof ContactFormValues) => {
-    const hasError = !!form.formState.errors[name];
-    const touched = form.formState.touchedFields[name];
-    if (hasError && touched) return "border-red-400 focus-visible:ring-red-300";
-    if (!hasError && touched) return "border-emerald-400 focus-visible:ring-emerald-300";
-    return "";
-  };
-
-  type TextFieldName = "name" | "email" | "phone";
-
-  const renderInput = <T extends TextFieldName>(
-    field: ControllerRenderProps<ContactFormValues, T>,
-    icon: React.ReactNode,
-    placeholder: string,
-    type = "text",
-  ) => {
-    const controlId = getFieldId(field.name);
-    const autoComplete =
-      field.name === "name" ? "name" : field.name === "email" ? "email" : field.name === "phone" ? "tel" : "off";
-    return (
-      <div className="space-y-1.5">
-        <div className="relative">
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">{icon}</span>
-          <Input
-            type={type}
-            placeholder={placeholder}
-            className={`pl-10 ${statusClass(field.name)}`}
-            id={controlId}
-            autoComplete={autoComplete}
-            {...field}
-          />
-        </div>
-        <FormMessage />
-      </div>
-    );
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -125,7 +144,15 @@ export function ContactForm() {
             <FormItem id={getFieldId("name")}>
               <FormLabel htmlFor={getFieldId("name")}>{t("form.name")}</FormLabel>
               <FormControl>
-                {renderInput(field, <User className="h-4 w-4" />, "María González", "text")}
+                <TextFieldInput
+                  name="name"
+                  field={field}
+                  icon={<User className="h-4 w-4" />}
+                  placeholder="María González"
+                  type="text"
+                  hasError={!!form.formState.errors.name}
+                  isTouched={!!form.formState.touchedFields.name}
+                />
               </FormControl>
             </FormItem>
           )}
@@ -139,7 +166,15 @@ export function ContactForm() {
               <FormItem id={getFieldId("email")}>
                 <FormLabel htmlFor={getFieldId("email")}>{t("form.email")}</FormLabel>
                 <FormControl>
-                  {renderInput(field, <Mail className="h-4 w-4" />, "maria@email.com", "email")}
+                  <TextFieldInput
+                    name="email"
+                    field={field}
+                    icon={<Mail className="h-4 w-4" />}
+                    placeholder="maria@email.com"
+                    type="email"
+                    hasError={!!form.formState.errors.email}
+                    isTouched={!!form.formState.touchedFields.email}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -151,7 +186,15 @@ export function ContactForm() {
               <FormItem id={getFieldId("phone")}>
                 <FormLabel htmlFor={getFieldId("phone")}>{t("form.phone")}</FormLabel>
                 <FormControl>
-                  {renderInput(field, <Phone className="h-4 w-4" />, "+58 412-073-5223", "text")}
+                  <TextFieldInput
+                    name="phone"
+                    field={field}
+                    icon={<Phone className="h-4 w-4" />}
+                    placeholder="+58 412-073-5223"
+                    type="text"
+                    hasError={!!form.formState.errors.phone}
+                    isTouched={!!form.formState.touchedFields.phone}
+                  />
                 </FormControl>
               </FormItem>
             )}

@@ -8,22 +8,25 @@ import {
 } from "@/components/ui/carousel";
 import { Star, StarHalf, Quote } from "lucide-react";
 
+// Extraído como componente para evitar inline render function (react-doctor)
+function StarRating({ rating }: { rating: number }) {
+  const full = Math.floor(rating);
+  const hasHalf = rating % 1 !== 0;
+  // Usar el número de estrella (1-based) como clave estable, sin índice de array
+  const starNumbers = Array.from({ length: full }, (_, i) => i + 1);
+  return (
+    <>
+      {starNumbers.map((starNum) => (
+        <Star key={starNum} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+      ))}
+      {hasHalf && <StarHalf key="half" className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />}
+    </>
+  );
+}
+
 export function Testimonials() {
   const t = useTranslations("testimonials");
   const items = t.raw("items") as { name: string; role: string; text: string; rating: number }[];
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const full = Math.floor(rating);
-    const hasHalf = rating % 1 !== 0;
-    for (let i = 0; i < full; i++) {
-      stars.push(<Star key={`full-${i}`} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />);
-    }
-    if (hasHalf) {
-      stars.push(<StarHalf key="half" className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />);
-    }
-    return stars;
-  };
 
   return (
     <section className="bg-white dark:bg-slate-900 py-24 scroll-mt-24 sm:py-32">
@@ -52,7 +55,7 @@ export function Testimonials() {
 
                   {/* Stars */}
                   <div className="mb-4 flex items-center gap-0.5">
-                    {renderStars(item.rating)}
+                    <StarRating rating={item.rating} />
                   </div>
 
                   {/* Text */}

@@ -183,4 +183,3 @@ const footerTextStyle = {
   margin: "4px 0",
 };
 
-export default AppointmentReminderEmail;

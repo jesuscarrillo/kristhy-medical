@@ -102,6 +102,92 @@ function formatTime(date: Date) {
   });
 }
 
+// Extraído como componente para evitar inline render function (react-doctor)
+function DayCell({
+  date,
+  isWeekView = false,
+  appointmentsByDate,
+  today,
+}: {
+  date: Date | null;
+  isWeekView?: boolean;
+  appointmentsByDate: Map<string, Appointment[]>;
+  today: Date;
+}) {
+  if (!date) return <div className="min-h-[140px] bg-slate-50/30" />;
+
+  const dayAppointments = appointmentsByDate.get(date.toDateString()) || [];
+  const isToday = isSameDay(date, today);
+  const isPast = date < today && !isToday;
+
+  return (
+    <div
+      className={cn(
+        "group relative flex min-h-[140px] flex-col border-t border-slate-100 p-2 transition-colors hover:bg-slate-50/50 dark:border-slate-800 dark:hover:bg-slate-900/50",
+        isPast && "bg-slate-50/30 dark:bg-slate-900/20",
+        isWeekView && "min-h-[200px]"
+      )}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded-full text-sm transition-all",
+            isToday
+              ? "bg-primary text-primary-foreground font-bold shadow-md shadow-primary/20 scale-110"
+              : isPast
+                ? "text-slate-400"
+                : "text-slate-700 font-medium dark:text-slate-300"
+          )}
+        >
+          {date.getDate()}
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary"
+          asChild
+        >
+          <Link href={`/dashboard/citas/nuevo?date=${date.toISOString().split("T")[0]}`}>
+            <Plus className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+
+      <div className="flex-1 space-y-1.5 overflow-y-auto pr-1 customize-scrollbar">
+        {dayAppointments
+          .sort((a, b) => a.date.getTime() - b.date.getTime())
+          .slice(0, isWeekView ? 10 : 3)
+          .map((apt) => (
+            <Link
+              key={apt.id}
+              href={`/dashboard/citas/${apt.id}`}
+              className={cn(
+                "flex items-center gap-2 rounded-md border px-2 py-1.5 text-xs transition-all hover:scale-[1.02] hover:shadow-sm",
+                typeColors[apt.type] || "bg-slate-100 text-slate-800 border-slate-200"
+              )}
+            >
+              <div className={cn("h-1.5 w-1.5 rounded-full shrink-0", statusIndicators[apt.status] || "bg-slate-400")} />
+              <div className="flex flex-col min-w-0">
+                <span className="font-semibold leading-none">{formatTime(apt.date)}</span>
+                <span className="truncate opacity-90 mt-0.5">
+                  {apt.patient.firstName} {apt.patient.lastName.charAt(0)}.
+                </span>
+              </div>
+            </Link>
+          ))}
+
+        {dayAppointments.length > (isWeekView ? 10 : 3) && (
+          <div className="mt-1 text-center">
+            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+              +{dayAppointments.length - (isWeekView ? 10 : 3)} más
+            </Badge>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function CalendarView({ appointments, initialDate }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(initialDate ?? new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
@@ -154,81 +240,6 @@ export function CalendarView({ appointments, initialDate }: CalendarViewProps) {
       return `${weekStart.getDate()} - ${weekEnd.getDate()} ${MONTHS_ES[weekStart.getMonth()]} ${weekStart.getFullYear()}`;
     }
     return `${weekStart.getDate()} ${MONTHS_ES[weekStart.getMonth()].slice(0, 3)} - ${weekEnd.getDate()} ${MONTHS_ES[weekEnd.getMonth()].slice(0, 3)} ${weekEnd.getFullYear()}`;
-  };
-
-  const renderDayCell = (date: Date | null, isWeekView = false) => {
-    if (!date) return <div className="min-h-[140px] bg-slate-50/30" />;
-
-    const dayAppointments = appointmentsByDate.get(date.toDateString()) || [];
-    const isToday = isSameDay(date, today);
-    const isPast = date < today && !isToday;
-
-    return (
-      <div
-        className={cn(
-          "group relative flex min-h-[140px] flex-col border-t border-slate-100 p-2 transition-colors hover:bg-slate-50/50 dark:border-slate-800 dark:hover:bg-slate-900/50",
-          isPast && "bg-slate-50/30 dark:bg-slate-900/20",
-          isWeekView && "min-h-[200px]"
-        )}
-      >
-        <div className="flex items-center justify-between mb-2">
-          <span
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full text-sm transition-all",
-              isToday
-                ? "bg-primary text-primary-foreground font-bold shadow-md shadow-primary/20 scale-110"
-                : isPast
-                  ? "text-slate-400"
-                  : "text-slate-700 font-medium dark:text-slate-300"
-            )}
-          >
-            {date.getDate()}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary"
-            asChild
-          >
-            <Link href={`/dashboard/citas/nuevo?date=${date.toISOString().split("T")[0]}`}>
-              <Plus className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-
-        <div className="flex-1 space-y-1.5 overflow-y-auto pr-1 customize-scrollbar">
-          {dayAppointments
-            .sort((a, b) => a.date.getTime() - b.date.getTime())
-            .slice(0, isWeekView ? 10 : 3)
-            .map((apt) => (
-              <Link
-                key={apt.id}
-                href={`/dashboard/citas/${apt.id}`}
-                className={cn(
-                  "flex items-center gap-2 rounded-md border px-2 py-1.5 text-xs transition-all hover:scale-[1.02] hover:shadow-sm",
-                  typeColors[apt.type] || "bg-slate-100 text-slate-800 border-slate-200"
-                )}
-              >
-                <div className={cn("h-1.5 w-1.5 rounded-full shrink-0", statusIndicators[apt.status] || "bg-slate-400")} />
-                <div className="flex flex-col min-w-0">
-                  <span className="font-semibold leading-none">{formatTime(apt.date)}</span>
-                  <span className="truncate opacity-90 mt-0.5">
-                    {apt.patient.firstName} {apt.patient.lastName.charAt(0)}.
-                  </span>
-                </div>
-              </Link>
-            ))}
-
-          {dayAppointments.length > (isWeekView ? 10 : 3) && (
-            <div className="mt-1 text-center">
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
-                +{dayAppointments.length - (isWeekView ? 10 : 3)} más
-              </Badge>
-            </div>
-          )}
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -309,13 +320,13 @@ export function CalendarView({ appointments, initialDate }: CalendarViewProps) {
         {viewMode === "month" ? (
           monthDays.map((date, index) => (
             <div key={date?.toISOString() ?? `empty-${index}`} className="bg-white dark:bg-slate-950 min-h-[140px]">
-              {renderDayCell(date)}
+              <DayCell date={date} appointmentsByDate={appointmentsByDate} today={today} />
             </div>
           ))
         ) : (
           weekDays.map((date) => (
             <div key={date.toISOString()} className="bg-white dark:bg-slate-950 min-h-[200px]">
-              {renderDayCell(date, true)}
+              <DayCell date={date} isWeekView appointmentsByDate={appointmentsByDate} today={today} />
             </div>
           ))
         )}

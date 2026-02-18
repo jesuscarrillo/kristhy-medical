@@ -59,7 +59,7 @@ export default function PrintPrescriptionView({
 
   return (
     <>
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @page {
           size: letter;
           margin: 1.5cm;
@@ -226,7 +226,7 @@ export default function PrintPrescriptionView({
           color: #666;
           margin: 3px 0;
         }
-      `}</style>
+      ` }} />
 
       <div className="print-prescription-container">
         {/* Header */}

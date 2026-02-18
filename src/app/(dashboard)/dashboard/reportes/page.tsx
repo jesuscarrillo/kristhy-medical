@@ -357,8 +357,8 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
         <Suspense
           fallback={
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[...Array(4)].map((_, i) => (
-                <Card key={`skeleton-${i}`} className="border-0 ring-1 ring-slate-200/50 shadow-sm overflow-hidden">
+              {(["patients", "upcoming", "completed", "records"] as const).map((id) => (
+                <Card key={id} className="border-0 ring-1 ring-slate-200/50 shadow-sm overflow-hidden">
                   <div className="h-1 w-full animate-pulse bg-slate-200" />
                   <CardContent className="p-5">
                     <div className="h-20 animate-pulse rounded bg-slate-100" />

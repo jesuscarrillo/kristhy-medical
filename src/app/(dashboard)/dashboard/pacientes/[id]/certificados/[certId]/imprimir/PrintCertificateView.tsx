@@ -67,7 +67,7 @@ export default function PrintCertificateView({
 
   return (
     <>
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @page {
           size: letter;
           margin: 2cm;
@@ -257,7 +257,7 @@ export default function PrintCertificateView({
           color: #666;
           margin: 3px 0;
         }
-      `}</style>
+      ` }} />
 
       <div className="print-certificate-container">
         {/* Header */}
