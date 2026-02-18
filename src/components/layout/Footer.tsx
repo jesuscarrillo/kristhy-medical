@@ -32,8 +32,8 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
               {t("nav.services")}
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-500 dark:text-slate-400">
-              {services.map((item, idx) => (
-                <li key={idx} className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
+              {services.map((item) => (
+                <li key={item} className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
                   {item}
                 </li>
               ))}

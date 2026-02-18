@@ -75,9 +75,9 @@ export function Contact() {
                     </div>
                   );
                   return href ? (
-                    <a key={idx} href={href}>{content}</a>
+                    <a key={label} href={href}>{content}</a>
                   ) : (
-                    <div key={idx}>{content}</div>
+                    <div key={label}>{content}</div>
                   );
                 })}
               </div>

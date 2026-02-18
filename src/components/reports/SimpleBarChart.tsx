@@ -88,7 +88,7 @@ export function MonthlyBarChart({ data, title }: MonthlyChartProps) {
         <div className="absolute inset-x-0 top-0 h-48 pointer-events-none">
           {gridLines.map((val, i) => (
             <div
-              key={i}
+              key={`grid-${i}`}
               className="absolute w-full border-t border-dashed border-slate-200/60 dark:border-slate-700/40"
               style={{ bottom: `${((i + 1) / 4) * 100}%` }}
             >

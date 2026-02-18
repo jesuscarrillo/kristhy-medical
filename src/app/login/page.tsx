@@ -1,10 +1,15 @@
-"use client";
-
+import type { Metadata } from "next";
 import Image from "next/image";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RecaptchaProvider } from "@/components/providers/RecaptchaProvider";
 
-export default function LoginPage() {
+export const metadata: Metadata = {
+  title: "Iniciar Sesión | Dra. Kristhy",
+  description: "Acceso al sistema de gestión médica de la Dra. Kristhy Moreno.",
+  robots: { index: false, follow: false },
+};
+
+export default async function LoginPage() {
   return (
     <RecaptchaProvider>
       <div className="flex min-h-screen">
@@ -19,6 +24,7 @@ export default function LoginPage() {
               src="/images/header-logo.png"
               alt="Logo Dra. Kristhy"
               fill
+              sizes="48px"
               className="object-contain p-1"
             />
           </div>

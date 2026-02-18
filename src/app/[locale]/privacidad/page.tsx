@@ -1,5 +1,21 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === "en" ? "Privacy Policy | Dra. Kristhy" : "Política de Privacidad | Dra. Kristhy",
+    description: locale === "en"
+      ? "Privacy policy of the Dra. Kristhy Moreno medical portal."
+      : "Política de privacidad del portal médico de la Dra. Kristhy Moreno.",
+    robots: { index: true, follow: false },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

@@ -27,21 +27,18 @@ const sidebarLinks = [
     { title: "Panel Principal", href: "/dashboard", icon: LayoutDashboard },
     { title: "Pacientes", href: "/dashboard/pacientes", icon: Users },
     { title: "Citas", href: "/dashboard/citas", icon: Calendar },
-    { title: "Consultas", href: "/dashboard/consultas", icon: Stethoscope }, // Unhidden
+    { title: "Consultas", href: "/dashboard/consultas", icon: Stethoscope },
     { title: "Reportes", href: "/dashboard/reportes", icon: BarChart3 },
     { title: "Auditoría", href: "/dashboard/auditoria", icon: ClipboardList },
 ];
 
-export function AppSidebar({ user }: { user?: { name?: string | null; email?: string | null } }) {
-    const pathname = usePathname();
-    const [isMobileOpen, setIsMobileOpen] = useState(false);
+interface SidebarContentProps {
+    user?: { name?: string | null; email?: string | null };
+    pathname: string;
+}
 
-    // Close mobile menu on route change
-    useEffect(() => {
-        setIsMobileOpen(false);
-    }, [pathname]);
-
-    const SidebarContent = () => (
+function SidebarContent({ user, pathname }: SidebarContentProps) {
+    return (
         <div className="flex h-full flex-col justify-between py-6">
             <div className="space-y-6">
                 <div className="flex items-center gap-3 px-6">
@@ -50,6 +47,7 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
                             src="/images/header-logo.png"
                             alt="Logo Dra. Kristhy"
                             fill
+                            sizes="48px"
                             className="object-contain scale-110"
                         />
                     </div>
@@ -64,7 +62,7 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
                 </div>
 
                 <nav className="space-y-1.5 px-3">
-                    {sidebarLinks.map((link) => { // Removed filter
+                    {sidebarLinks.map((link) => {
                         const isActive = link.href === "/dashboard"
                             ? pathname === "/dashboard"
                             : pathname.startsWith(link.href);
@@ -111,12 +109,32 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
             </div>
         </div>
     );
+}
+
+export function AppSidebar({ user }: { user?: { name?: string | null; email?: string | null } }) {
+    const pathname = usePathname();
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    // Cerrar al navegar
+    useEffect(() => {
+        setMobileOpen(false);
+    }, [pathname]);
+
+    // Cerrar si el viewport pasa al breakpoint desktop (lg = 1024px)
+    useEffect(() => {
+        const mql = window.matchMedia("(min-width: 1024px)");
+        const handler = (e: MediaQueryListEvent) => {
+            if (e.matches) setMobileOpen(false);
+        };
+        mql.addEventListener("change", handler);
+        return () => mql.removeEventListener("change", handler);
+    }, []);
 
     return (
         <>
             {/* Desktop Sidebar */}
             <aside className="hidden w-72 border-r border-white/20 bg-white/50 backdrop-blur-xl transition-all dark:bg-slate-900/50 lg:fixed lg:bottom-0 lg:left-0 lg:top-0 lg:flex lg:flex-col">
-                <SidebarContent />
+                <SidebarContent user={user} pathname={pathname} />
             </aside>
 
             {/* Mobile Header / Trigger */}
@@ -127,20 +145,21 @@ export function AppSidebar({ user }: { user?: { name?: string | null; email?: st
                             src="/images/header-logo.png"
                             alt="Logo Dra. Kristhy mobile"
                             fill
+                            sizes="32px"
                             className="object-contain"
                         />
                     </div>
                     <span className="font-bold text-slate-800 dark:text-slate-100">Dra. Kristhy</span>
                 </div>
-                <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+                <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
                             <Menu className="h-6 w-6 text-slate-700 dark:text-slate-300" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-72 p-0 border-r-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
+                    <SheetContent side="left" aria-describedby={undefined} className="w-72 p-0 border-r-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
                         <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
-                        <SidebarContent />
+                        <SidebarContent user={user} pathname={pathname} />
                     </SheetContent>
                 </Sheet>
             </div>

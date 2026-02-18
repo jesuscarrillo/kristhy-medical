@@ -71,7 +71,7 @@ export function About() {
             {/* Bio */}
             <div className="space-y-4">
               {bio.map((paragraph, idx) => (
-                <p key={idx} className="text-base leading-relaxed text-slate-600 dark:text-slate-300">
+                <p key={`bio-${idx}`} className="text-base leading-relaxed text-slate-600 dark:text-slate-300">
                   {paragraph}
                 </p>
               ))}
@@ -84,7 +84,7 @@ export function About() {
                   const Icon = highlightIcons[idx % highlightIcons.length];
                   return (
                     <div
-                      key={idx}
+                      key={item.title ?? idx}
                       className="group flex items-start gap-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 transition-all duration-200 hover:border-teal-200/60 dark:hover:border-teal-700/60 hover:shadow-md"
                     >
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 transition-transform group-hover:scale-110">
@@ -112,7 +112,7 @@ export function About() {
               </div>
               <div className="space-y-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                 {philosophy.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
+                  <p key={`phil-${idx}`}>{paragraph}</p>
                 ))}
               </div>
             </div>

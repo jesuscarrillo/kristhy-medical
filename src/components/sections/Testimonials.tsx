@@ -45,7 +45,7 @@ export function Testimonials() {
         <Carousel className="relative" opts={{ align: "start", loop: true }}>
           <CarouselContent className="-ml-5">
             {items.map((item, index) => (
-              <CarouselItem key={index} className="pl-5 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem key={item.name ?? index} className="pl-5 md:basis-1/2 lg:basis-1/3">
                 <div className="relative h-full rounded-2xl border border-slate-100 dark:border-slate-700 bg-[#FDFBF7] dark:bg-slate-800/90 p-7 transition-all duration-300 hover:shadow-lg hover:shadow-slate-100/80 dark:hover:shadow-teal-500/10">
                   {/* Quote icon */}
                   <Quote className="mb-4 h-8 w-8 text-teal-100 dark:text-slate-700" />

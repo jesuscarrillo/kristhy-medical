@@ -308,13 +308,13 @@ export function CalendarView({ appointments, initialDate }: CalendarViewProps) {
         ))}
         {viewMode === "month" ? (
           monthDays.map((date, index) => (
-            <div key={index} className="bg-white dark:bg-slate-950 min-h-[140px]">
+            <div key={date?.toISOString() ?? `empty-${index}`} className="bg-white dark:bg-slate-950 min-h-[140px]">
               {renderDayCell(date)}
             </div>
           ))
         ) : (
-          weekDays.map((date, index) => (
-            <div key={index} className="bg-white dark:bg-slate-950 min-h-[200px]">
+          weekDays.map((date) => (
+            <div key={date.toISOString()} className="bg-white dark:bg-slate-950 min-h-[200px]">
               {renderDayCell(date, true)}
             </div>
           ))

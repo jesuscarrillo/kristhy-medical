@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { uploadUltrasoundImage, deleteUltrasoundImage } from "@/server/actions/ultrasound";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,12 +152,14 @@ export function UltrasoundImageUploader({
                   href={image.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block aspect-video bg-slate-100"
+                  className="block aspect-video bg-slate-100 relative"
                 >
-                  <img
+                  <Image
                     src={image.fileUrl}
                     alt={image.description || image.fileName}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 300px"
+                    className="object-cover"
                   />
                 </a>
                 <div className="p-2 bg-white">

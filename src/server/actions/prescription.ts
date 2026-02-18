@@ -2,32 +2,43 @@
 
 import { cache } from "react";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { prescriptionSchema } from "@/lib/validators/prescription";
+import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 import { logAudit } from "./audit";
 
 export async function createPrescription(formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    await rateLimitAction("createPrescription", RATE_LIMITS.mutation);
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = prescriptionSchema.parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = prescriptionSchema.parse(rawData);
 
-  const prescription = await prisma.prescription.create({
-    data: validatedData,
-  });
+    const prescription = await prisma.prescription.create({
+      data: validatedData,
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "create",
-    entity: "prescription",
-    entityId: prescription.id,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "create",
+      entity: "prescription",
+      entityId: prescription.id,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/prescripciones`);
-  revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
-  return { success: true, prescriptionId: prescription.id };
+    revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/prescripciones`);
+    revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
+    return { success: true, prescriptionId: prescription.id };
+  } catch (error) {
+    console.error("[createPrescription]", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos de la prescripción inválidos");
+    }
+    throw new Error("Error al crear la prescripción");
+  }
 }
 
 const _fetchPrescriptions = cache(async (patientId: string) => {
@@ -78,45 +89,58 @@ export async function getPrescription(id: string) {
 }
 
 export async function updatePrescription(id: string, formData: FormData) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const rawData = Object.fromEntries(formData);
-  const validatedData = prescriptionSchema.partial().parse(rawData);
+    const rawData = Object.fromEntries(formData);
+    const validatedData = prescriptionSchema.partial().parse(rawData);
 
-  const prescription = await prisma.prescription.update({
-    where: { id },
-    data: validatedData,
-  });
+    const prescription = await prisma.prescription.update({
+      where: { id },
+      data: validatedData,
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "update",
-    entity: "prescription",
-    entityId: id,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "update",
+      entity: "prescription",
+      entityId: id,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
-  revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones/${id}`);
-  return { success: true };
+    revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
+    revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones/${id}`);
+    return { success: true };
+  } catch (error) {
+    console.error("[updatePrescription]", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Datos de la prescripción inválidos");
+    }
+    throw new Error("Error al actualizar la prescripción");
+  }
 }
 
 export async function deletePrescription(id: string) {
-  const session = await requireDoctor();
+  try {
+    const session = await requireDoctor();
 
-  const prescription = await prisma.prescription.update({
-    where: { id },
-    data: { isActive: false },
-  });
+    const prescription = await prisma.prescription.update({
+      where: { id },
+      data: { isActive: false },
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "delete",
-    entity: "prescription",
-    entityId: id,
-  });
+    await logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "delete",
+      entity: "prescription",
+      entityId: id,
+    });
 
-  revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
-  return { success: true };
+    revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
+    return { success: true };
+  } catch (error) {
+    console.error("[deletePrescription]", error);
+    throw new Error("Error al eliminar la prescripción");
+  }
 }

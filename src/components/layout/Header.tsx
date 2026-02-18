@@ -33,6 +33,7 @@ const navAnchors = [
 export function Header({ currentLocale }: { currentLocale: string }) {
   const t = useTranslations();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const localeBase = currentLocale === routing.defaultLocale ? "" : `/${currentLocale}`;
   const anchorHref = (hash: string) => {
@@ -45,7 +46,6 @@ export function Header({ currentLocale }: { currentLocale: string }) {
     if (element) {
       e.preventDefault();
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Update URL without reload
       window.history.pushState(null, '', anchorHref(hash));
     }
   };
@@ -55,6 +55,16 @@ export function Header({ currentLocale }: { currentLocale: string }) {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Cerrar el menú móvil si el viewport pasa al breakpoint desktop (md = 768px)
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 768px)");
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
   }, []);
 
   return (
@@ -117,13 +127,13 @@ export function Header({ currentLocale }: { currentLocale: string }) {
         <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <LanguageSwitcher currentLocale={currentLocale} />
-          <Sheet>
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline" aria-label="Abrir menú">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" aria-describedby={undefined} className="w-72">
               <SheetHeader>
                 <SheetTitle>{t("hero.title")}</SheetTitle>
               </SheetHeader>
@@ -132,14 +142,14 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                   <Link
                     key={item.key}
                     href={anchorHref(item.href)}
-                    onClick={(e) => handleScrollTo(e, item.href)}
+                    onClick={(e) => { handleScrollTo(e, item.href); setMobileOpen(false); }}
                     className="rounded-full px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     {t(item.key)}
                   </Link>
                 ))}
                 <Button
-                  onClick={(e) => handleScrollTo(e, "#contact")}
+                  onClick={(e) => { handleScrollTo(e, "#contact"); setMobileOpen(false); }}
                   className="mt-2 cursor-pointer"
                 >
                   <CalendarClock className="mr-2 h-4 w-4" />

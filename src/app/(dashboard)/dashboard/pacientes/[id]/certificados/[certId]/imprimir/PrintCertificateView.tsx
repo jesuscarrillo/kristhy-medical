@@ -278,19 +278,19 @@ export default function PrintCertificateView({
         <div className="print-patient-info">
           <div className="print-patient-info-grid">
             <div className="print-patient-info-item">
-              <label>Paciente: </label>
+              <span className="print-label">Paciente: </span>
               {certificate.patient.firstName} {certificate.patient.lastName}
             </div>
             <div className="print-patient-info-item">
-              <label>Cédula: </label>
+              <span className="print-label">Cédula: </span>
               {patientCedula}
             </div>
             <div className="print-patient-info-item">
-              <label>Edad: </label>
+              <span className="print-label">Edad: </span>
               {calculateAge(certificate.patient.dateOfBirth)} años
             </div>
             <div className="print-patient-info-item">
-              <label>Fecha: </label>
+              <span className="print-label">Fecha: </span>
               {formatDate(certificate.date)}
             </div>
           </div>
@@ -313,7 +313,7 @@ export default function PrintCertificateView({
         {/* Diagnosis */}
         {certificate.diagnosis && (
           <div className="print-diagnosis">
-            <label>Diagnóstico: </label>
+            <span className="print-label">Diagnóstico: </span>
             {certificate.diagnosis}
           </div>
         )}

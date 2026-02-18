@@ -424,30 +424,30 @@ export function UltrasoundPrintView({
         <div className="print-ultrasound-patient-info">
           <div className="print-ultrasound-patient-info-grid">
             <div className="print-ultrasound-patient-info-item">
-              <label>Paciente</label>
+              <span className="print-label">Paciente</span>
               <span>{patient.firstName} {patient.lastName}</span>
             </div>
             <div className="print-ultrasound-patient-info-item">
-              <label>Cédula</label>
+              <span className="print-label">Cédula</span>
               <span>{patientCedula}</span>
             </div>
             <div className="print-ultrasound-patient-info-item">
-              <label>Edad</label>
+              <span className="print-label">Edad</span>
               <span>{calculateAge(patient.dateOfBirth)} años</span>
             </div>
             <div className="print-ultrasound-patient-info-item">
-              <label>Fecha del estudio</label>
+              <span className="print-label">Fecha del estudio</span>
               <span>{formatDate(ultrasound.date)}</span>
             </div>
             {ultrasound.type !== "GYNECOLOGICAL" && (
               <>
                 <div className="print-ultrasound-patient-info-item">
-                  <label>Estado</label>
+                  <span className="print-label">Estado</span>
                   <span>{pregnancyStatusLabels[patient.pregnancyStatus]}</span>
                 </div>
                 {ultrasound.gestationalAge && (
                   <div className="print-ultrasound-patient-info-item">
-                    <label>Edad Gestacional</label>
+                    <span className="print-label">Edad Gestacional</span>
                     <span>{ultrasound.gestationalAge}</span>
                   </div>
                 )}

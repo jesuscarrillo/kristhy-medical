@@ -3,6 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+const isDev = process.env.NODE_ENV === "development";
+
 // Security headers configuration
 const securityHeaders = [
   {
@@ -37,7 +39,8 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com",
+      // unsafe-eval solo en desarrollo: Turbopack y React DevTools lo requieren para source maps y HMR
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com",
       "font-src 'self' data:",

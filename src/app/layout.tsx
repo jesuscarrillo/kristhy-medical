@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning>
+    <html lang="es" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${manrope.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider>
           {children}

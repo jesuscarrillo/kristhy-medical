@@ -240,23 +240,23 @@ export default function PrintPrescriptionView({
         <div className="print-prescription-patient-info">
           <div className="print-prescription-patient-info-grid">
             <div className="print-prescription-patient-info-item">
-              <label>Paciente</label>
+              <span className="print-label">Paciente</span>
               <span>
                 {prescription.patient.firstName} {prescription.patient.lastName}
               </span>
             </div>
             <div className="print-prescription-patient-info-item">
-              <label>Cédula</label>
+              <span className="print-label">Cédula</span>
               <span>{patientCedula}</span>
             </div>
             <div className="print-prescription-patient-info-item">
-              <label>Edad</label>
+              <span className="print-label">Edad</span>
               <span>
                 {calculateAge(prescription.patient.dateOfBirth)} años
               </span>
             </div>
             <div className="print-prescription-patient-info-item">
-              <label>Fecha</label>
+              <span className="print-label">Fecha</span>
               <span>{formatDate(prescription.date)}</span>
             </div>
           </div>

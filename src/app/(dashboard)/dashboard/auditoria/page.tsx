@@ -88,10 +88,12 @@ export default async function AuditPage({ searchParams }: PageProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
-          <AuditFilters
-            currentEntity={params.entity}
-            currentAction={params.action}
-          />
+          <Suspense fallback={<div className="h-10 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />}>
+            <AuditFilters
+              currentEntity={params.entity}
+              currentAction={params.action}
+            />
+          </Suspense>
         </CardContent>
       </Card>
 

@@ -61,6 +61,8 @@ export function PatientCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls="patient-search-list"
+          aria-haspopup="listbox"
           className="w-full justify-between font-normal"
           disabled={disabled}
         >
@@ -86,7 +88,7 @@ export function PatientCombobox({
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <CommandList>
+          <CommandList id="patient-search-list">
             <CommandEmpty>No se encontraron pacientes.</CommandEmpty>
             <CommandGroup>
               {filteredPatients.slice(0, 50).map((patient) => (
