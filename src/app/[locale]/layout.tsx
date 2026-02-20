@@ -26,11 +26,28 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://drakristhymoreno.com"),
   openGraph: {
     title: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
-    description: "Atención integral en salud reproductiva",
-    images: ["/og-image.jpg"],
+    description:
+      "Obstetra ginecóloga en San Cristóbal, Táchira. Especialista en control prenatal, embarazos de alto riesgo y atención ginecológica integral para la mujer.",
+    siteName: "Dra. Kristhy Moreno",
+    url: "https://drakristhymoreno.com",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 1152,
+        height: 896,
+        alt: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
+      },
+    ],
     type: "website",
     locale: "es_VE",
     alternateLocale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Dra. Kristhy Moreno | Obstetricia y Ginecología",
+    description:
+      "Obstetra ginecóloga en San Cristóbal, Táchira. Control prenatal, embarazos de alto riesgo y atención integral.",
+    images: ["/images/logo.png"],
   },
   icons: {
     icon: [
@@ -62,19 +79,21 @@ export default async function LocaleLayout({
     name: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
     description: "Consultorio especializado en obstetricia y ginecología",
     url: "https://drakristhymoreno.com",
-    telephone: "+584247771234",
+    telephone: "+58412-073-5223",
     address: {
       "@type": "PostalAddress",
       addressLocality: "San Cristóbal",
       addressRegion: "Táchira",
       addressCountry: "VE",
     },
+    image: "https://drakristhymoreno.com/images/logo.png",
     medicalSpecialty: ["Obstetrics", "Gynecology"],
     physician: {
       "@type": "Physician",
       name: "Dra. Kristhy Moreno",
       medicalSpecialty: "Obstetrics and Gynecology",
       jobTitle: "Especialista en Obstetricia y Ginecología",
+      image: "https://drakristhymoreno.com/dra-kristhy.webp",
     },
   };
 

@@ -6,48 +6,48 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: "2026-02-20",
       changeFrequency: "monthly",
       priority: 1,
       alternates: {
         languages: {
-          es: `${baseUrl}/es`,
+          es: baseUrl,
           en: `${baseUrl}/en`,
         },
       },
     },
     {
       url: `${baseUrl}/servicios`,
-      lastModified: new Date(),
+      lastModified: "2026-02-20",
       changeFrequency: "monthly",
       priority: 0.8,
       alternates: {
         languages: {
-          es: `${baseUrl}/es/servicios`,
+          es: `${baseUrl}/servicios`,
           en: `${baseUrl}/en/servicios`,
         },
       },
     },
     {
       url: `${baseUrl}/sobre-mi`,
-      lastModified: new Date(),
+      lastModified: "2026-02-20",
       changeFrequency: "monthly",
       priority: 0.7,
       alternates: {
         languages: {
-          es: `${baseUrl}/es/sobre-mi`,
+          es: `${baseUrl}/sobre-mi`,
           en: `${baseUrl}/en/sobre-mi`,
         },
       },
     },
     {
       url: `${baseUrl}/contacto`,
-      lastModified: new Date(),
+      lastModified: "2026-02-20",
       changeFrequency: "monthly",
       priority: 0.7,
       alternates: {
         languages: {
-          es: `${baseUrl}/es/contacto`,
+          es: `${baseUrl}/contacto`,
           en: `${baseUrl}/en/contacto`,
         },
       },

@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard/", "/api/", "/login"],
+        disallow: ["/dashboard/", "/api/", "/login", "/imprimir/"],
       },
     ],
     sitemap: "https://drakristhymoreno.com/sitemap.xml",
