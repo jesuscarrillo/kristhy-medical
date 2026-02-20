@@ -24,6 +24,15 @@ export const metadata: Metadata = {
     "ginecología Venezuela",
   ],
   metadataBase: new URL("https://drakristhymoreno.com"),
+  verification: {
+    // Completar después de registrar en cada plataforma:
+    // Google Search Console → https://search.google.com/search-console
+    // Bing Webmaster Tools  → https://www.bing.com/webmasters
+    google: "",
+    other: {
+      "msvalidate.01": [""],  // Bing Webmaster Tools
+    },
+  },
   openGraph: {
     title: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
     description:
