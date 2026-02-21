@@ -77,12 +77,14 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
 
           <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-400">
-              Si tienes preguntas sobre estos términos, contáctanos en{" "}
+              Si tienes preguntas sobre estos términos, contáctanos vía{" "}
               <a
                 className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 underline transition-colors"
-                href="mailto:drakristhymoreno@gmail.com"
+                href="https://wa.me/584120735223"
+                target="_blank"
+                rel="noreferrer"
               >
-                drakristhymoreno@gmail.com
+                WhatsApp
               </a>
               .
             </p>

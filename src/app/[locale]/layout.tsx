@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { Footer } from "@/components/layout/Footer";
 import { HeaderClient } from "@/components/layout/HeaderClient";
 import { ToasterProvider } from "@/components/layout/ToasterProvider";
+import { LocaleHtmlLang } from "@/components/shared/LocaleHtmlLang";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -12,9 +13,9 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: "Dra. Kristhy Moreno | Obstetricia y Ginecología | San Cristóbal",
+  title: "Dra. Kristhy Moreno | Obstetra · San Cristóbal",
   description:
-    "Obstetra ginecóloga en San Cristóbal, Táchira. Control prenatal, embarazos de alto riesgo y atención integral.",
+    "Obstetra ginecóloga en San Cristóbal, Táchira. Especialista en control prenatal, embarazos de alto riesgo, ecografías obstétricas y ginecología integral.",
   keywords: [
     "ginecóloga San Cristóbal",
     "obstetra Táchira",
@@ -115,6 +116,7 @@ export default async function LocaleLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <LocaleHtmlLang locale={locale} />
         <HeaderClient currentLocale={locale} />
         <main className="flex-1">{children}</main>
         <Footer currentLocale={locale} />
