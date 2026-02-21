@@ -13,7 +13,7 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: "Dra. Kristhy Moreno | Obstetra · San Cristóbal",
+  title: "Dra. Kristhy Moreno | Obstetra Ginecóloga · San Cristóbal",
   description:
     "Obstetra ginecóloga en San Cristóbal, Táchira. Especialista en control prenatal, embarazos de alto riesgo, ecografías obstétricas y ginecología integral.",
   keywords: [
