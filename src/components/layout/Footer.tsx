@@ -97,8 +97,8 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 shrink-0 text-teal-500 dark:text-teal-400" />
-                <a href="mailto:drakristhymoreno@gmail.com" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
-                  {contactT("email")}
+                <a href="https://wa.me/584120735223" target="_blank" rel="noreferrer" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
+                  WhatsApp
                 </a>
               </li>
               <li className="flex items-center gap-2.5">

@@ -36,7 +36,7 @@ export function Contact() {
   const contactItems = [
     { icon: MapPin, label: t("address"), href: undefined },
     { icon: Phone, label: t("phone"), href: `tel:${t("phone").replace(/\s+/g, "")}` },
-    { icon: Mail, label: t("email"), href: "mailto:drakristhymoreno@gmail.com" },
+    { icon: Mail, label: "WhatsApp", href: "https://wa.me/584120735223" },
     { icon: Clock, label: t("schedule"), href: undefined },
   ];
 
