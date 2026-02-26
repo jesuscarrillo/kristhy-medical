@@ -22,7 +22,7 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
           {/* About */}
           <div className="space-y-4">
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{heroT("title")}</h3>
-            <p className="text-xs font-medium uppercase tracking-wider text-teal-600 dark:text-teal-400">{heroT("specialist_field")}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-teal-700 dark:text-teal-400">{heroT("specialist_field")}</p>
             <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{t("mini_bio")}</p>
           </div>
 
@@ -124,13 +124,13 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col gap-3 border-t border-slate-100 dark:border-slate-800 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t border-slate-100 dark:border-slate-800 pt-6 text-xs text-slate-600 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <span>{t("rights")}</span>
           <div className="flex items-center gap-4">
-            <Link href="/privacidad" className="transition-colors hover:text-slate-700 dark:hover:text-slate-300">
+            <Link href="/privacidad" className="transition-colors hover:text-slate-900 dark:hover:text-slate-200">
               {t("privacy")}
             </Link>
-            <Link href="/terminos" className="transition-colors hover:text-slate-700 dark:hover:text-slate-300">
+            <Link href="/terminos" className="transition-colors hover:text-slate-900 dark:hover:text-slate-200">
               {t("terms")}
             </Link>
           </div>

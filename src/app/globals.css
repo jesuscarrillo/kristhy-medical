@@ -60,8 +60,8 @@
   --popover: #ffffff;
   --popover-foreground: #334155;
   
-  /* Primary: Elegant Deep Teal */
-  --primary: #0d9488; /* Teal 600 */
+  /* Primary: Elegant Deep Teal — teal-700 for WCAG AA (5.08:1 with white) */
+  --primary: #0f766e; /* Teal 700 */
   --primary-foreground: #f0fdfa;
   
   /* Secondary: Soft Rose Gold / Coral */

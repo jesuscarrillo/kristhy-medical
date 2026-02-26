@@ -274,7 +274,7 @@ export function ContactForm() {
                 <div className="space-y-1 leading-none text-sm">
                   <FormLabel htmlFor={getFieldId("privacy")} className="flex flex-col gap-1">
                     {t("form.privacy")}
-                    <Link href="/privacidad" className="text-sky-600 dark:text-sky-400 underline">
+                    <Link href="/privacidad" className="text-sky-700 dark:text-sky-400 underline">
                       {t("form.privacy_link") ?? "Política de Privacidad"}
                     </Link>
                   </FormLabel>
@@ -294,7 +294,7 @@ export function ContactForm() {
 
         <Button
           type="submit"
-          className="w-full gap-2 bg-[#25D366] hover:bg-[#20BA5A] sm:w-auto"
+          className="w-full gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-slate-900 font-semibold sm:w-auto"
           disabled={form.formState.isSubmitting}
         >
           <MessageCircle className="h-4 w-4" />

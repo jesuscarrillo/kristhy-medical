@@ -30,8 +30,8 @@ export function About() {
                 alt="Dra. Kristhy Moreno - Ginecóloga"
                 fill
                 className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                quality={90}
+                sizes="(max-width: 1023px) 100vw, 568px"
+                quality={80}
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGAAAAAD/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
                 loading="lazy"
@@ -46,7 +46,7 @@ export function About() {
                       <GraduationCap className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">{t("highlights.0.title")}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">{t("highlights.0.title")}</p>
                       <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight">{t("highlights.0.description")}</p>
                     </div>
                   </div>
@@ -62,7 +62,7 @@ export function About() {
               <div className="inline-flex items-center gap-2 rounded-full border border-teal-200/60 dark:border-teal-700/60 bg-white/80 dark:bg-slate-800/80 px-4 py-2 shadow-sm">
                 <span className="text-xs font-semibold tracking-wide text-teal-700 dark:text-teal-400">{heroT("badge_secondary")}</span>
               </div>
-              <p className="text-sm font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">{t("title")}</p>
+              <p className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">{t("title")}</p>
               <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
                 {t("subtitle")}
               </h2>
@@ -121,7 +121,7 @@ export function About() {
             <Button
               size="lg"
               onClick={() => scrollTo("contact")}
-              className="w-full rounded-full bg-teal-600 px-8 font-semibold text-white shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-600/30 sm:w-auto cursor-pointer"
+              className="w-full rounded-full bg-teal-700 px-8 font-semibold text-white shadow-lg shadow-teal-700/20 transition-all hover:bg-teal-800 hover:shadow-xl hover:shadow-teal-700/30 sm:w-auto cursor-pointer"
             >
               {t("cta")}
             </Button>

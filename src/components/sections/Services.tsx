@@ -23,7 +23,7 @@ export function Services() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <p className="text-sm font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-4">
+          <p className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400 mb-4">
             {t("title")}
           </p>
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl mb-5">

@@ -45,7 +45,7 @@ export function Contact() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <p className="text-sm font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-4">
+          <p className="text-sm font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400 mb-4">
             {t("title")}
           </p>
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl mb-5">
@@ -93,7 +93,7 @@ export function Contact() {
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15809.61057777098!2d-72.2223847!3d7.7686526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e66459a83329507%3A0x4c02561b00000000!2sSan%20Crist%C3%B3bal%2C%20T%C3%A1chira!5e0!3m2!1sen!2sve!4v1707073286435!5m2!1sen!2sve"
                 />
               ) : (
-                <div className="flex h-56 w-full items-center justify-center bg-slate-50 dark:bg-slate-900 text-sm text-slate-400">
+                <div className="flex h-56 w-full items-center justify-center bg-slate-50 dark:bg-slate-900 text-sm text-slate-600 dark:text-slate-400">
                   {t("loading_map")}
                 </div>
               )}

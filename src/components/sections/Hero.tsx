@@ -53,7 +53,7 @@ export function Hero() {
               <Button
                 size="lg"
                 onClick={() => scrollTo("contact")}
-                className="h-13 rounded-full bg-teal-600 px-8 text-base font-semibold text-white shadow-lg shadow-teal-600/20 transition-all duration-200 hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-600/30 cursor-pointer"
+                className="h-13 rounded-full bg-teal-700 px-8 text-base font-semibold text-white shadow-lg shadow-teal-700/20 transition-all duration-200 hover:bg-teal-800 hover:shadow-xl hover:shadow-teal-700/30 cursor-pointer"
               >
                 <CalendarClock className="mr-2 h-5 w-5" />
                 {t("cta_primary")}
@@ -104,7 +104,7 @@ export function Hero() {
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGKADAAQAAAABAAAAIAAAAAD/wAARCAAgABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG"
                 priority
-                sizes="(max-width: 1024px) 100vw, 45vw"
+                sizes="(max-width: 1023px) 100vw, 512px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
 
@@ -113,7 +113,7 @@ export function Hero() {
                 <div className="rounded-2xl border border-white/30 dark:border-slate-700/50 bg-white/90 dark:bg-slate-800/90 p-5 shadow-lg backdrop-blur-md">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">{t("specialist_title")}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">{t("specialist_title")}</p>
                       <p className="mt-1 text-base font-bold text-slate-900 dark:text-slate-100">{t("specialist_field")}</p>
                     </div>
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 dark:bg-teal-500 text-white shadow-md">
