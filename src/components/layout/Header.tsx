@@ -117,9 +117,9 @@ export function Header({ currentLocale }: { currentLocale: string }) {
           <LanguageSwitcher currentLocale={currentLocale} />
           <Button
             onClick={(e) => handleScrollTo(e, "#contact")}
-            className="shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
+            className="group rounded-full bg-teal-600 px-6 font-bold text-white shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)] transition-all duration-300 hover:bg-teal-700 hover:shadow-[0_0_25px_-5px_rgba(13,148,136,0.6)] hover:-translate-y-0.5 cursor-pointer"
           >
-            <CalendarClock className="mr-2 h-4 w-4" />
+            <CalendarClock className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
             {t("hero.cta_primary")}
           </Button>
         </nav>
@@ -150,9 +150,9 @@ export function Header({ currentLocale }: { currentLocale: string }) {
                 ))}
                 <Button
                   onClick={(e) => { handleScrollTo(e, "#contact"); setMobileOpen(false); }}
-                  className="mt-2 cursor-pointer"
+                  className="group mt-2 rounded-full bg-teal-600 px-6 font-bold text-white shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)] transition-all duration-300 hover:bg-teal-700 hover:shadow-[0_0_25px_-5px_rgba(13,148,136,0.6)] cursor-pointer"
                 >
-                  <CalendarClock className="mr-2 h-4 w-4" />
+                  <CalendarClock className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                   {t("hero.cta_primary")}
                 </Button>
               </div>

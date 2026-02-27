@@ -29,9 +29,8 @@ export function LanguageSwitcher({ currentLocale }: { currentLocale: string }) {
               })
             }
             disabled={pending}
-            className={`h-8 rounded-full px-3 text-xs font-semibold ${
-              active ? "bg-primary text-primary-foreground" : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-            }`}
+            className={`h-8 rounded-full px-3 text-xs transition-all duration-300 ${active ? "font-bold bg-teal-600 text-white shadow-[0_0_15px_-3px_rgba(13,148,136,0.4)] hover:bg-teal-700" : "font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+              }`}
             aria-label={`Cambiar idioma a ${label}`}
           >
             <span className="mr-1">{flag}</span>

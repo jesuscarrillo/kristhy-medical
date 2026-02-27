@@ -29,17 +29,22 @@ export function Testimonials() {
   const items = t.raw("items") as { name: string; role: string; text: string; rating: number }[];
 
   return (
-    <section className="bg-white dark:bg-slate-900 py-24 scroll-mt-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-[#FDFBF7] dark:bg-slate-950 py-24 scroll-mt-24 sm:py-32 overflow-hidden">
+      {/* Subtle radial gradients for depth */}
+      <div className="absolute inset-x-0 bottom-0 h-[800px] w-full bg-[radial-gradient(ellipse_80%_80%_at_50%_120%,rgba(244,63,94,0.08),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_120%,rgba(244,63,94,0.08),rgba(15,23,42,0))]" />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <p className="text-sm font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-4">
-            {t("title")}
-          </p>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl mb-5">
+        <div className="mx-auto max-w-2xl text-center mb-20">
+          <div className="inline-flex items-center justify-center rounded-full border border-rose-200/50 dark:border-rose-700/50 bg-rose-50/50 dark:bg-slate-800/50 px-5 py-2 mb-6 shadow-sm backdrop-blur-md">
+            <span className="text-xs font-bold uppercase tracking-widest text-rose-800 dark:text-rose-300">
+              {t("title")}
+            </span>
+          </div>
+          <h2 className="text-4xl font-black tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl mb-6">
             {t("subtitle")}
           </h2>
-          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto">
+          <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto font-medium">
             {t("description")}
           </p>
         </div>
@@ -49,17 +54,17 @@ export function Testimonials() {
           <CarouselContent className="-ml-5">
             {items.map((item, index) => (
               <CarouselItem key={item.name ?? index} className="pl-5 md:basis-1/2 lg:basis-1/3">
-                <div className="relative h-full rounded-2xl border border-slate-100 dark:border-slate-700 bg-[#FDFBF7] dark:bg-slate-800/90 p-7 transition-all duration-300 hover:shadow-lg hover:shadow-slate-100/80 dark:hover:shadow-teal-500/10">
+                <div className="relative h-full rounded-[2rem] border border-slate-200/60 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-rose-900/10 backdrop-blur-sm group">
                   {/* Quote icon */}
-                  <Quote className="mb-4 h-8 w-8 text-teal-100 dark:text-slate-700" />
+                  <Quote className="mb-5 h-10 w-10 text-rose-100 dark:text-slate-800 transition-colors group-hover:text-rose-200 dark:group-hover:text-slate-700" />
 
                   {/* Stars */}
-                  <div className="mb-4 flex items-center gap-0.5">
+                  <div className="mb-5 flex items-center gap-1">
                     <StarRating rating={item.rating} />
                   </div>
 
                   {/* Text */}
-                  <p className="mb-6 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                  <p className="mb-8 text-base font-medium leading-relaxed text-slate-700 dark:text-slate-300">
                     &ldquo;{item.text}&rdquo;
                   </p>
 

@@ -36,24 +36,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Garantiza que la imagen LCP sea detectable en el HTML inicial con fetchpriority=high.
-  // ReactDOM.preload() en un Server Component inyecta el <link rel="preload"> en el <head>
-  // durante SSR, independientemente de que Hero sea un client component.
-  ReactDOM.preload(
-    "/_next/image?url=%2Fimages%2Fhero-consultorio.jpg&w=640&q=75",
-    {
-      as: "image",
-      fetchPriority: "high",
-      imageSrcSet: [
-        "/_next/image?url=%2Fimages%2Fhero-consultorio.jpg&w=384&q=75 384w",
-        "/_next/image?url=%2Fimages%2Fhero-consultorio.jpg&w=640&q=75 640w",
-        "/_next/image?url=%2Fimages%2Fhero-consultorio.jpg&w=750&q=75 750w",
-        "/_next/image?url=%2Fimages%2Fhero-consultorio.jpg&w=828&q=75 828w",
-      ].join(", "),
-      imageSizes: "(max-width: 1023px) 100vw, 512px",
-    },
-  );
-
   return (
     <>
       <Hero />

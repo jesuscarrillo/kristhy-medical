@@ -202,9 +202,9 @@ export function ContactForm() {
         </div>
 
         <FormField
-            control={form.control}
-            name="reason"
-            render={({ field }) => (
+          control={form.control}
+          name="reason"
+          render={({ field }) => (
             <FormItem id={getFieldId("reason")}>
               <FormLabel htmlFor={getFieldId("reason")}>{t("form.reason")}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -294,10 +294,10 @@ export function ContactForm() {
 
         <Button
           type="submit"
-          className="w-full gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-slate-900 font-semibold sm:w-auto"
+          className="group w-full gap-2 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)] transition-all duration-300 hover:shadow-[0_0_25px_-5px_rgba(13,148,136,0.6)] hover:-translate-y-0.5 sm:w-auto"
           disabled={form.formState.isSubmitting}
         >
-          <MessageCircle className="h-4 w-4" />
+          <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
           {t("form.submit_whatsapp") ?? "Enviar por WhatsApp"}
         </Button>
       </form>
