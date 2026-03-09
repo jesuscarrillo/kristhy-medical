@@ -24,16 +24,12 @@ const securityHeaders = [
     value: "nosniff",
   },
   {
-    key: "X-XSS-Protection",
-    value: "1; mode=block",
-  },
-  {
     key: "Referrer-Policy",
     value: "strict-origin-when-cross-origin",
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    value: "camera=(), microphone=(), geolocation=()",
   },
   {
     key: "Content-Security-Policy",
@@ -60,7 +56,7 @@ const nextConfig: NextConfig = {
     formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 2592000,
     qualities: [75, 80, 90],
     remotePatterns: [
       {

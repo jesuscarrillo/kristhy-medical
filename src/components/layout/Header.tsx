@@ -88,7 +88,6 @@ export function Header({ currentLocale }: { currentLocale: string }) {
               fill
               sizes="80px"
               className="object-contain scale-125"
-              priority
             />
           </div>
           <div className="flex flex-col leading-tight">

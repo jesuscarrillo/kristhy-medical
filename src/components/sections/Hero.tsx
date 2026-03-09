@@ -23,8 +23,8 @@ export function Hero() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
         {/* Animated Orbs */}
-        <div className="absolute -top-[20%] -right-[10%] h-[800px] w-[800px] rounded-full bg-teal-400/20 dark:bg-teal-500/20 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-[8000ms]" />
-        <div className="absolute top-[40%] -left-[15%] h-[600px] w-[600px] rounded-full bg-rose-400/20 dark:bg-rose-500/15 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-[10000ms]" />
+        <div className="absolute -top-[20%] -right-[10%] h-[800px] w-[800px] rounded-full bg-teal-400/20 dark:bg-teal-500/20 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse" style={{ animationDuration: "8000ms" }} />
+        <div className="absolute top-[40%] -left-[15%] h-[600px] w-[600px] rounded-full bg-rose-400/20 dark:bg-rose-500/15 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse" style={{ animationDuration: "10000ms" }} />
 
         {/* Procedural Noise Texture Overlay */}
         <div

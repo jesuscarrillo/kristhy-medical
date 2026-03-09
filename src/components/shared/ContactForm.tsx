@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { routing } from "@/i18n/routing";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -80,6 +81,8 @@ function TextFieldInput({
 
 export function ContactForm() {
   const t = useTranslations("contact");
+  const locale = useLocale();
+  const localeBase = locale === routing.defaultLocale ? "" : `/${locale}`;
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const getFieldId = (name: string) => `contact-${name}-field`;
   const statusClass = (name: keyof ContactFormValues) => {
@@ -274,7 +277,7 @@ export function ContactForm() {
                 <div className="space-y-1 leading-none text-sm">
                   <FormLabel htmlFor={getFieldId("privacy")} className="flex flex-col gap-1">
                     {t("form.privacy")}
-                    <Link href="/privacidad" className="text-sky-700 dark:text-sky-400 underline">
+                    <Link href={`${localeBase}/privacidad`} className="text-sky-700 dark:text-sky-400 underline">
                       {t("form.privacy_link") ?? "Política de Privacidad"}
                     </Link>
                   </FormLabel>

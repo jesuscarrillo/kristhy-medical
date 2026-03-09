@@ -1,6 +1,6 @@
 "use client";
 
-import { LazyMotion, domAnimation, m, useReducedMotion, type Variants } from "framer-motion";
+import { m, useReducedMotion, type Variants } from "framer-motion";
 import { ReactNode } from "react";
 
 const baseVariants: Variants = {
@@ -25,17 +25,15 @@ export function Reveal({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <LazyMotion features={domAnimation}>
-      <m.div
-        className={className}
-        variants={prefersReducedMotion ? reducedVariants : baseVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ delay: prefersReducedMotion ? 0 : delay }}
-      >
-        {children}
-      </m.div>
-    </LazyMotion>
+    <m.div
+      className={className}
+      variants={prefersReducedMotion ? reducedVariants : baseVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ delay: prefersReducedMotion ? 0 : delay }}
+    >
+      {children}
+    </m.div>
   );
 }

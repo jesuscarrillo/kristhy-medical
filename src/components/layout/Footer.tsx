@@ -67,12 +67,12 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
                 </Link>
               </li>
               <li>
-                <Link href="/privacidad" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
+                <Link href={`${localeBase}/privacidad`} className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
                   {t("privacy")}
                 </Link>
               </li>
               <li>
-                <Link href="/terminos" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
+                <Link href={`${localeBase}/terminos`} className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">
                   {t("terms")}
                 </Link>
               </li>
@@ -127,10 +127,10 @@ export function Footer({ currentLocale }: { currentLocale?: string }) {
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-100 dark:border-slate-800 pt-6 text-xs text-slate-600 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <span>{t("rights")}</span>
           <div className="flex items-center gap-4">
-            <Link href="/privacidad" className="transition-colors hover:text-slate-900 dark:hover:text-slate-200">
+            <Link href={`${localeBase}/privacidad`} className="transition-colors hover:text-slate-900 dark:hover:text-slate-200">
               {t("privacy")}
             </Link>
-            <Link href="/terminos" className="transition-colors hover:text-slate-900 dark:hover:text-slate-200">
+            <Link href={`${localeBase}/terminos`} className="transition-colors hover:text-slate-900 dark:hover:text-slate-200">
               {t("terms")}
             </Link>
           </div>

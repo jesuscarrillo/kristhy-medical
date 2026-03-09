@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { Mail, MapPin, Phone, Clock, ArrowUpRight } from "lucide-react";
+import { MessageCircle, MapPin, Phone, Clock, ArrowUpRight } from "lucide-react";
 
 const ContactForm = dynamic(
   () => import("@/components/shared/ContactForm").then((m) => m.ContactForm),
@@ -36,7 +36,7 @@ export function Contact() {
   const contactItems = [
     { icon: MapPin, label: t("address"), href: undefined },
     { icon: Phone, label: t("phone"), href: `tel:${t("phone").replace(/\s+/g, "")}` },
-    { icon: Mail, label: "WhatsApp", href: "https://wa.me/584120735223" },
+    { icon: MessageCircle, label: "WhatsApp", href: "https://wa.me/584120735223" },
     { icon: Clock, label: t("schedule"), href: undefined },
   ];
 
@@ -69,7 +69,7 @@ export function Contact() {
               <div className="space-y-5">
                 {contactItems.map(({ icon: Icon, label, href }, idx) => {
                   const content = (
-                    <div className="group flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300 transition-colors hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">
+                    <div className="group flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300 transition-colors hover:text-slate-900 dark:hover:text-slate-100">
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 transition-transform duration-300 group-hover:scale-110 group-hover:bg-teal-100 dark:group-hover:bg-teal-800/50">
                         <Icon className="h-5 w-5" />
                       </div>

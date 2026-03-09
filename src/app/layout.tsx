@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { MotionProvider } from "@/components/providers/MotionProvider";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -31,10 +32,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body className={`${manrope.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider>
-          {children}
+          <MotionProvider>
+            {children}
+          </MotionProvider>
         </ThemeProvider>
         <Analytics />
       </body>

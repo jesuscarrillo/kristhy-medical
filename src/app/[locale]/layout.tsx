@@ -25,15 +25,6 @@ export const metadata: Metadata = {
     "ginecología Venezuela",
   ],
   metadataBase: new URL("https://drakristhymoreno.com"),
-  verification: {
-    // Completar después de registrar en cada plataforma:
-    // Google Search Console → https://search.google.com/search-console
-    // Bing Webmaster Tools  → https://www.bing.com/webmasters
-    google: "",
-    other: {
-      "msvalidate.01": [""],  // Bing Webmaster Tools
-    },
-  },
   openGraph: {
     title: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
     description:
@@ -53,7 +44,7 @@ export const metadata: Metadata = {
     alternateLocale: "en_US",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Dra. Kristhy Moreno | Obstetricia y Ginecología",
     description:
       "Obstetra ginecóloga en San Cristóbal, Táchira. Control prenatal, embarazos de alto riesgo y atención integral.",
@@ -89,13 +80,20 @@ export default async function LocaleLayout({
     name: "Dra. Kristhy Moreno - Obstetricia y Ginecología",
     description: "Consultorio especializado en obstetricia y ginecología",
     url: "https://drakristhymoreno.com",
-    telephone: "+58412-073-5223",
+    telephone: "+584120735223",
     address: {
       "@type": "PostalAddress",
       addressLocality: "San Cristóbal",
       addressRegion: "Táchira",
       addressCountry: "VE",
     },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 7.7686526,
+      longitude: -72.2223847,
+    },
+    openingHours: ["Mo-Fr 08:00-17:00", "Sa 08:00-12:00"],
+    priceRange: "$$",
     image: "https://drakristhymoreno.com/images/logo.png",
     medicalSpecialty: ["Obstetrics", "Gynecology"],
     physician: {
@@ -107,6 +105,8 @@ export default async function LocaleLayout({
     },
   };
 
+  const skipText = locale === "en" ? "Skip to main content" : "Ir al contenido principal";
+
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="flex min-h-screen flex-col bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
@@ -117,8 +117,14 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <LocaleHtmlLang locale={locale} />
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-9999 focus:rounded-lg focus:bg-teal-600 focus:px-4 focus:py-2 focus:text-white focus:font-bold focus:shadow-lg"
+        >
+          {skipText}
+        </a>
         <HeaderClient currentLocale={locale} />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <Footer currentLocale={locale} />
         <ToasterProvider />
       </div>
