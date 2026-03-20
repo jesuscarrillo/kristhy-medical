@@ -13,8 +13,10 @@ import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function createCertificate(formData: FormData) {
   try {
-    await rateLimitAction("createCertificate", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("createCertificate", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = certificateSchema.parse(rawData);
@@ -137,8 +139,10 @@ export async function getCertificate(id: string) {
 
 export async function updateCertificate(id: string, formData: FormData) {
   try {
-    await rateLimitAction("updateCertificate", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("updateCertificate", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = certificateSchema.partial().parse(rawData);
@@ -206,8 +210,10 @@ export async function updateCertificate(id: string, formData: FormData) {
 
 export async function deleteCertificate(id: string) {
   try {
-    await rateLimitAction("deleteCertificate", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("deleteCertificate", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const certificate = await prisma.medicalCertificate.update({
       where: { id },

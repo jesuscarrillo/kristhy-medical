@@ -39,8 +39,10 @@ function decryptMedicalRecordFields<T extends Record<string, unknown>>(
 
 export async function createMedicalRecord(formData: FormData) {
   try {
-    await rateLimitAction("createMedicalRecord", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("createMedicalRecord", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = medicalRecordSchema.parse(rawData);
@@ -139,8 +141,10 @@ export async function getMedicalRecord(id: string) {
 
 export async function updateMedicalRecord(id: string, formData: FormData) {
   try {
-    await rateLimitAction("updateMedicalRecord", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("updateMedicalRecord", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = medicalRecordSchema.partial().parse(rawData);
@@ -173,8 +177,10 @@ export async function updateMedicalRecord(id: string, formData: FormData) {
 
 export async function deleteMedicalRecord(id: string) {
   try {
-    await rateLimitAction("deleteMedicalRecord", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("deleteMedicalRecord", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const record = await prisma.medicalRecord.delete({
       where: { id },

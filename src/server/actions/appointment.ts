@@ -12,8 +12,10 @@ import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function createAppointment(formData: FormData) {
   try {
-    await rateLimitAction("createAppointment", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("createAppointment", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = appointmentSchema.parse(rawData);
@@ -141,8 +143,10 @@ export async function getAppointment(id: string) {
 
 export async function updateAppointment(id: string, formData: FormData) {
   try {
-    await rateLimitAction("updateAppointment", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("updateAppointment", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = appointmentSchema.partial().parse(rawData);
@@ -177,8 +181,10 @@ export async function updateAppointment(id: string, formData: FormData) {
 
 export async function deleteAppointment(id: string) {
   try {
-    await rateLimitAction("deleteAppointment", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("deleteAppointment", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     await prisma.appointment.update({
       where: { id },

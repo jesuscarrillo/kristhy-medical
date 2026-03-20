@@ -24,8 +24,10 @@ function validateTypeVsPregnancyStatus(
 
 export async function createUltrasound(formData: FormData) {
   try {
-    await rateLimitAction("createUltrasound", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("createUltrasound", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = ultrasoundSchema.parse(rawData);
@@ -282,8 +284,10 @@ export async function deleteUltrasound(id: string) {
 
 export async function uploadUltrasoundImage(formData: FormData) {
   try {
-    await rateLimitAction("uploadUltrasoundImage", RATE_LIMITS.upload);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("uploadUltrasoundImage", RATE_LIMITS.upload),
+      requireDoctor(),
+    ]);
 
     const file = formData.get("file");
     const ultrasoundId = formData.get("ultrasoundId");

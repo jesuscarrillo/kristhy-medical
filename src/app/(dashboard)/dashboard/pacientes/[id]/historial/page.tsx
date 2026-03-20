@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPatient } from "@/server/actions/patient";
+import { getMedicalRecords } from "@/server/actions/medicalRecord";
 import { MedicalRecordForm } from "@/components/patients/MedicalRecordForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -42,14 +43,14 @@ const consultationBorderColors: Record<string, string> = {
 
 export default async function PatientHistoryPage({ params }: PatientHistoryPageProps) {
   const resolvedParams = await params;
-  let patient;
-  try {
-    patient = await getPatient(resolvedParams.id);
-  } catch {
-    notFound();
-  }
-
   const patientId = resolvedParams.id;
+
+  const [patient, medicalRecords] = await Promise.all([
+    getPatient(patientId).catch(() => null),
+    getMedicalRecords(patientId).catch(() => []),
+  ]);
+
+  if (!patient) notFound();
 
   return (
     <div className="mx-auto w-full max-w-7xl px-8 py-10 space-y-8">
@@ -64,12 +65,12 @@ export default async function PatientHistoryPage({ params }: PatientHistoryPageP
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              Registros ({patient.medicalRecords.length})
+              Registros ({medicalRecords.length})
             </h2>
           </div>
 
           <div className="space-y-3">
-            {patient.medicalRecords.length === 0 ? (
+            {medicalRecords.length === 0 ? (
               <Card className="border-dashed bg-slate-50/50 dark:bg-slate-900/30">
                 <CardContent className="flex flex-col items-center justify-center p-8 text-center">
                   <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-3 mb-3">
@@ -80,7 +81,7 @@ export default async function PatientHistoryPage({ params }: PatientHistoryPageP
                 </CardContent>
               </Card>
             ) : (
-              patient.medicalRecords.map((record) => (
+              medicalRecords.map((record) => (
                 <Card
                   key={record.id}
                   className={`group overflow-hidden transition-all hover:shadow-md border-0 ring-1 ring-slate-200/50 dark:ring-slate-800 border-l-4 ${consultationBorderColors[record.consultationType] || "border-l-slate-300"}`}

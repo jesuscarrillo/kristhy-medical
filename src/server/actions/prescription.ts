@@ -12,8 +12,10 @@ import { logAudit } from "./audit";
 
 export async function createPrescription(formData: FormData) {
   try {
-    await rateLimitAction("createPrescription", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("createPrescription", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
     const validatedData = prescriptionSchema.parse(rawData);

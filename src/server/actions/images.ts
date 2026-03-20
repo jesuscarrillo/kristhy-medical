@@ -13,8 +13,10 @@ import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function uploadMedicalImage(formData: FormData) {
   try {
-    await rateLimitAction("uploadMedicalImage", RATE_LIMITS.upload);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("uploadMedicalImage", RATE_LIMITS.upload),
+      requireDoctor(),
+    ]);
 
     const file = formData.get("file");
     const patientId = formData.get("patientId");

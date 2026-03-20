@@ -41,20 +41,12 @@ function decryptPatientFields<T extends Record<string, unknown>>(patient: T) {
   };
 }
 
-function decryptMedicalRecordFields<T extends Record<string, unknown>>(record: T) {
-  return {
-    ...record,
-    personalHistory: safeDecrypt(record.personalHistory ? String(record.personalHistory) : null),
-    gynecologicHistory: safeDecrypt(
-      record.gynecologicHistory ? String(record.gynecologicHistory) : null
-    ),
-  };
-}
-
 export async function createPatient(formData: FormData) {
   try {
-    await rateLimitAction("createPatient", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("createPatient", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
 
@@ -182,17 +174,6 @@ export async function getPatient(id: string) {
   const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
-      appointments: {
-        orderBy: { date: "desc" },
-        take: 10,
-      },
-      medicalRecords: {
-        orderBy: { date: "desc" },
-        take: 10,
-      },
-      images: {
-        orderBy: { date: "desc" },
-      },
       gynecologicalProfile: true,
     },
   });
@@ -210,18 +191,15 @@ export async function getPatient(id: string) {
     details: `Paciente: ${patient.firstName} ${patient.lastName}`,
   }));
 
-  return {
-    ...decryptPatientFields(patient),
-    medicalRecords: patient.medicalRecords.map((record) =>
-      decryptMedicalRecordFields(record)
-    ),
-  };
+  return decryptPatientFields(patient);
 }
 
 export async function updatePatient(id: string, formData: FormData) {
   try {
-    await rateLimitAction("updatePatient", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("updatePatient", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     const rawData = Object.fromEntries(formData);
 
@@ -301,8 +279,10 @@ export async function updatePatient(id: string, formData: FormData) {
 
 export async function deletePatient(id: string) {
   try {
-    await rateLimitAction("deletePatient", RATE_LIMITS.mutation);
-    const session = await requireDoctor();
+    const [, session] = await Promise.all([
+      rateLimitAction("deletePatient", RATE_LIMITS.mutation),
+      requireDoctor(),
+    ]);
 
     await prisma.patient.update({
       where: { id },

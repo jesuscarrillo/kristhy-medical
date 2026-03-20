@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPatient } from "@/server/actions/patient";
+import { getMedicalImages } from "@/server/actions/images";
 import { ImageUploader } from "@/components/patients/ImageUploader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,14 +19,14 @@ type PatientImagesPageProps = {
 
 export default async function PatientImagesPage({ params }: PatientImagesPageProps) {
   const resolvedParams = await params;
-  let patient;
-  try {
-    patient = await getPatient(resolvedParams.id);
-  } catch {
-    notFound();
-  }
-
   const patientId = resolvedParams.id;
+
+  const [patient, { images }] = await Promise.all([
+    getPatient(patientId).catch(() => null),
+    getMedicalImages(patientId, undefined, 1, 200).catch(() => ({ images: [] })),
+  ]);
+
+  if (!patient) notFound();
 
   return (
     <div className="mx-auto w-full max-w-7xl px-8 py-10 space-y-8">
@@ -56,7 +57,7 @@ export default async function PatientImagesPage({ params }: PatientImagesPagePro
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {patient.images.length === 0 ? (
+            {images.length === 0 ? (
               <Card className="col-span-full border-dashed bg-slate-50/50 dark:bg-slate-900/30">
                 <CardContent className="flex flex-col items-center justify-center p-12 text-center">
                   <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-4 mb-4">
@@ -67,7 +68,7 @@ export default async function PatientImagesPage({ params }: PatientImagesPagePro
                 </CardContent>
               </Card>
             ) : (
-              patient.images.map((image) => (
+              images.map((image) => (
                 <a
                   key={image.id}
                   href={image.fileUrl}
