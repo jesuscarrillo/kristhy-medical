@@ -144,7 +144,7 @@ export function Hero() {
       {/* Section divider */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full" preserveAspectRatio="none">
-          <path d="M0 56V28C240 4 480 0 720 12C960 24 1200 48 1440 28V56H0Z" fill="#F8FAFC" fillOpacity="0.5" />
+          <path d="M0 56V28C240 4 480 0 720 12C960 24 1200 48 1440 28V56H0Z" className="fill-slate-50/50 dark:fill-slate-950/50" />
         </svg>
       </div>
     </section>

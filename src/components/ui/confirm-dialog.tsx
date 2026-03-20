@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +42,9 @@ export function ConfirmDialog({
     try {
       await onConfirm();
       setOpen(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Ocurrió un error. Intenta de nuevo.";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

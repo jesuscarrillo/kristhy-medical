@@ -226,7 +226,7 @@ export function CalendarView({ appointments, initialDate }: CalendarViewProps) {
 
   const monthDays = getMonthDays(currentDate.getFullYear(), currentDate.getMonth());
   const weekDays = getWeekDays(currentDate);
-  const today = new Date();
+  const [today] = useState(() => new Date());
 
   const getHeaderText = () => {
     if (viewMode === "month") {

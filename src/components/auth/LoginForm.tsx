@@ -36,7 +36,6 @@ export function LoginForm() {
       // 1. Verificar que reCAPTCHA esté disponible
       if (!executeRecaptcha) {
         setError("Sistema de seguridad no disponible. Recarga la página.");
-        setIsLoading(false);
         return;
       }
 
@@ -55,21 +54,18 @@ export function LoginForm() {
       if (captchaResult.needsV2Fallback && !showV2Fallback) {
         setShowV2Fallback(true);
         setError("Verificación adicional requerida. Por favor, completa el desafío.");
-        setIsLoading(false);
         return;
       }
 
       // 5. Si v2 está visible pero no completado
       if (showV2Fallback && !recaptchaV2Token) {
         setError("Por favor, completa la verificación antes de continuar.");
-        setIsLoading(false);
         return;
       }
 
       // 6. Si captcha falló
       if (!captchaResult.success) {
         setError(captchaResult.error || "Verificación de seguridad fallida.");
-        setIsLoading(false);
         return;
       }
 
@@ -78,7 +74,6 @@ export function LoginForm() {
 
       if (authResult.error) {
         setError(authResult.error.message || "Credenciales inválidas. Intenta de nuevo.");
-        setIsLoading(false);
         return;
       }
 
@@ -87,6 +82,7 @@ export function LoginForm() {
     } catch (err) {
       console.error("Login failed:", err);
       setError("Error al iniciar sesión. Intenta de nuevo.");
+    } finally {
       setIsLoading(false);
     }
   };

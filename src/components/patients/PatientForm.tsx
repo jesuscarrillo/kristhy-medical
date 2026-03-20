@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -116,6 +116,8 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
       numberOfPartners: initialData?.gynecologicalProfile?.numberOfPartners ?? "",
     },
   });
+
+  const gender = useWatch({ control: form.control, name: "gender" });
 
   const onSubmit = async (values: PatientFormValues) => {
     setSubmitError(null);
@@ -376,7 +378,7 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
       </div>
 
       {/* Pregnancy Status (only for female patients) */}
-      {form.watch("gender") === "female" && (
+      {gender === "female" && (
         <div className="space-y-4 rounded-lg border border-purple-200 bg-purple-50 p-6">
           <h2 className="text-lg font-semibold text-purple-800">Estado de Embarazo</h2>
           <div className="space-y-2">
@@ -400,7 +402,7 @@ export function PatientForm({ patientId, initialData }: PatientFormProps) {
       )}
 
       {/* Gynecological Profile Section (only for female patients) */}
-      {(form.watch("gender") === "female" || !form.watch("gender")) && (
+      {(gender === "female" || !gender) && (
         <div className="space-y-4 rounded-lg border border-slate-200 p-6">
           <button
             type="button"
