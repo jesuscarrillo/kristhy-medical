@@ -1,6 +1,7 @@
 "use server";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -52,14 +53,14 @@ export async function createCertificate(formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "certificate",
       entityId: certificate.id,
       details: `Certificado ${validatedData.type} - Paciente: ${patient.firstName} ${patient.lastName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/certificados`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -122,20 +123,21 @@ export async function getCertificate(id: string) {
     throw new Error("Certificado no encontrado");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "certificate",
     entityId: id,
     details: `Certificado ${certificate.type} - Paciente: ${certificate.patient.firstName} ${certificate.patient.lastName}`,
-  });
+  }));
 
   return certificate;
 }
 
 export async function updateCertificate(id: string, formData: FormData) {
   try {
+    await rateLimitAction("updateCertificate", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
@@ -178,14 +180,14 @@ export async function updateCertificate(id: string, formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "certificate",
       entityId: id,
       details: `Paciente: ${existing.patient.firstName} ${existing.patient.lastName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
     revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados/${id}`);
@@ -204,6 +206,7 @@ export async function updateCertificate(id: string, formData: FormData) {
 
 export async function deleteCertificate(id: string) {
   try {
+    await rateLimitAction("deleteCertificate", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const certificate = await prisma.medicalCertificate.update({
@@ -216,14 +219,14 @@ export async function deleteCertificate(id: string) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "certificate",
       entityId: id,
       details: `Paciente: ${certificate.patient.firstName} ${certificate.patient.lastName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
 

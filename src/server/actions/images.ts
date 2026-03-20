@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -108,14 +109,14 @@ export async function uploadMedicalImage(formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "medical_image",
       entityId: image.id,
       details: `Archivo: ${file.name}, Tipo: ${fileType}${validatedData.documentType ? `, Documento: ${validatedData.documentType}` : ""}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${patientId}/imagenes`);
     revalidatePath(`/dashboard/pacientes/${patientId}`);
@@ -137,7 +138,7 @@ interface GetImagesFilters {
   tags?: string[];
 }
 
-async function getMedicalImages(
+export async function getMedicalImages(
   patientId: string,
   filters?: GetImagesFilters,
   page = 1,
@@ -181,7 +182,7 @@ async function getMedicalImages(
   };
 }
 
-async function getMedicalImage(id: string) {
+export async function getMedicalImage(id: string) {
   const session = await requireDoctor();
 
   const image = await prisma.medicalImage.findUnique({
@@ -201,19 +202,19 @@ async function getMedicalImage(id: string) {
     throw new Error("Imagen no encontrada");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "medical_image",
     entityId: id,
     details: `Archivo: ${image.fileName}`,
-  });
+  }));
 
   return image;
 }
 
-async function updateMedicalImage(id: string, formData: FormData) {
+export async function updateMedicalImage(id: string, formData: FormData) {
   try {
     const session = await requireDoctor();
 
@@ -256,14 +257,14 @@ async function updateMedicalImage(id: string, formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "medical_image",
       entityId: id,
       details: `Archivo: ${existing.fileName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
 
@@ -276,7 +277,7 @@ async function updateMedicalImage(id: string, formData: FormData) {
   }
 }
 
-async function deleteMedicalImage(id: string) {
+export async function deleteMedicalImage(id: string) {
   try {
     const session = await requireDoctor();
 
@@ -294,14 +295,14 @@ async function deleteMedicalImage(id: string) {
       where: { id },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "medical_image",
       entityId: id,
       details: `Archivo: ${image.fileName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
 

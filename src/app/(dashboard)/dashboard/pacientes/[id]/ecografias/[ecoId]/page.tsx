@@ -44,23 +44,13 @@ export default async function UltrasoundDetailPage({
 }: UltrasoundDetailPageProps) {
   const { id: patientId, ecoId } = await params;
 
-  let ultrasound;
-  try {
-    ultrasound = await getUltrasound(ecoId);
-  } catch {
-    notFound();
-  }
+  const [ultrasound, patient] = await Promise.all([
+    getUltrasound(ecoId).catch(() => null),
+    getPatient(patientId).catch(() => null),
+  ]);
 
-  if (ultrasound.patientId !== patientId) {
-    notFound();
-  }
-
-  let patient;
-  try {
-    patient = await getPatient(patientId);
-  } catch {
-    notFound();
-  }
+  if (!ultrasound || !patient) notFound();
+  if (ultrasound.patientId !== patientId) notFound();
 
   const patientCedula = safeDecrypt(ultrasound.patient.cedula);
 

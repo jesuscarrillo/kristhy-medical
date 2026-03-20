@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
-async function requireAuth() {
+const requireAuth = cache(async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -12,9 +13,9 @@ async function requireAuth() {
   }
 
   return session;
-}
+});
 
-export async function requireDoctor() {
+export const requireDoctor = cache(async () => {
   const session = await requireAuth();
 
   if (session.user.role !== "doctor") {
@@ -22,4 +23,4 @@ export async function requireDoctor() {
   }
 
   return session;
-}
+});

@@ -1,6 +1,7 @@
 "use server";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -106,14 +107,14 @@ export async function createPatient(formData: FormData) {
       return created;
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "patient",
       entityId: patient.id,
       details: `Paciente: ${validatedPatientData.firstName} ${validatedPatientData.lastName}`,
-    });
+    }));
 
     revalidatePath("/dashboard/pacientes");
     revalidateTag(CACHE_TAGS.patients, "default");
@@ -200,14 +201,14 @@ export async function getPatient(id: string) {
     throw new Error("Patient not found");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "patient",
     entityId: id,
     details: `Paciente: ${patient.firstName} ${patient.lastName}`,
-  });
+  }));
 
   return {
     ...decryptPatientFields(patient),
@@ -276,13 +277,13 @@ export async function updatePatient(id: string, formData: FormData) {
       return updated;
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "patient",
       entityId: id,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${id}`);
     revalidateTag(CACHE_TAGS.patients, "default");
@@ -299,24 +300,30 @@ export async function updatePatient(id: string, formData: FormData) {
 }
 
 export async function deletePatient(id: string) {
-  const session = await requireDoctor();
+  try {
+    await rateLimitAction("deletePatient", RATE_LIMITS.mutation);
+    const session = await requireDoctor();
 
-  await prisma.patient.update({
-    where: { id },
-    data: { isActive: false },
-  });
+    await prisma.patient.update({
+      where: { id },
+      data: { isActive: false },
+    });
 
-  await logAudit({
-    userId: session.user.id,
-    userEmail: session.user.email,
-    action: "delete",
-    entity: "patient",
-    entityId: id,
-  });
+    after(() => logAudit({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      action: "delete",
+      entity: "patient",
+      entityId: id,
+    }));
 
-  revalidatePath("/dashboard/pacientes");
-  revalidateTag(CACHE_TAGS.patients, "default");
-  revalidateTag(CACHE_TAGS.dashboard, "default");
+    revalidatePath("/dashboard/pacientes");
+    revalidateTag(CACHE_TAGS.patients, "default");
+    revalidateTag(CACHE_TAGS.dashboard, "default");
 
-  return { success: true };
+    return { success: true };
+  } catch (error) {
+    console.error("[deletePatient] Error:", error);
+    throw new Error("Error al eliminar el paciente");
+  }
 }

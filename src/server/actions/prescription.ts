@@ -1,6 +1,7 @@
 "use server";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireDoctor } from "@/server/middleware/auth";
@@ -21,13 +22,13 @@ export async function createPrescription(formData: FormData) {
       data: validatedData,
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "prescription",
       entityId: prescription.id,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/prescripciones`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -76,14 +77,14 @@ export async function getPrescription(id: string) {
     throw new Error("Prescription not found");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "prescription",
     entityId: id,
     details: `Paciente: ${prescription.patient.firstName} ${prescription.patient.lastName}`,
-  });
+  }));
 
   return prescription;
 }
@@ -100,13 +101,13 @@ export async function updatePrescription(id: string, formData: FormData) {
       data: validatedData,
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "prescription",
       entityId: id,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
     revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones/${id}`);
@@ -129,13 +130,13 @@ export async function deletePrescription(id: string) {
       data: { isActive: false },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "prescription",
       entityId: id,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
     return { success: true };

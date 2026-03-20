@@ -36,11 +36,11 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // unsafe-eval solo en desarrollo: Turbopack y React DevTools lo requieren para source maps y HMR
-      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com`,
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com https://va.vercel-scripts.com`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
       "frame-src 'self' https://www.google.com https://recaptcha.google.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",

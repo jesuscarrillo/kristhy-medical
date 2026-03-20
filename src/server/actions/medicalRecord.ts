@@ -1,6 +1,7 @@
 "use server";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -48,14 +49,14 @@ export async function createMedicalRecord(formData: FormData) {
       data: encryptMedicalRecordFields(validatedData),
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "medical_record",
       entityId: record.id,
       details: `Tipo: ${validatedData.consultationType}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/historial`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -77,7 +78,7 @@ const _fetchMedicalRecords = cache(async (patientId: string) => {
   return records.map((record) => decryptMedicalRecordFields(record));
 });
 
-async function getMedicalRecords(patientId: string) {
+export async function getMedicalRecords(patientId: string) {
   await requireDoctor();
   return _fetchMedicalRecords(patientId);
 }
@@ -124,20 +125,21 @@ export async function getMedicalRecord(id: string) {
     throw new Error("Medical record not found");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "medical_record",
     entityId: id,
     details: `Paciente: ${record.patient.firstName} ${record.patient.lastName}`,
-  });
+  }));
 
   return decryptMedicalRecordFields(record);
 }
 
 export async function updateMedicalRecord(id: string, formData: FormData) {
   try {
+    await rateLimitAction("updateMedicalRecord", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
@@ -148,13 +150,13 @@ export async function updateMedicalRecord(id: string, formData: FormData) {
       data: encryptMedicalRecordFields(validatedData),
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "medical_record",
       entityId: id,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
     revalidatePath(`/dashboard/pacientes/${record.patientId}/historial/${id}`);
@@ -171,19 +173,20 @@ export async function updateMedicalRecord(id: string, formData: FormData) {
 
 export async function deleteMedicalRecord(id: string) {
   try {
+    await rateLimitAction("deleteMedicalRecord", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const record = await prisma.medicalRecord.delete({
       where: { id },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "medical_record",
       entityId: id,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
     revalidatePath(`/dashboard/pacientes/${record.patientId}`);

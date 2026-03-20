@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -21,14 +22,14 @@ export async function createAppointment(formData: FormData) {
       data: validatedData,
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "appointment",
       entityId: appointment.id,
       details: `Cita: ${validatedData.type}`,
-    });
+    }));
 
     revalidatePath("/dashboard/citas");
     revalidateTag(CACHE_TAGS.appointments, "default");
@@ -127,19 +128,20 @@ export async function getAppointment(id: string) {
     throw new Error("Cita no encontrada");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "appointment",
     entityId: id,
-  });
+  }));
 
   return appointment;
 }
 
 export async function updateAppointment(id: string, formData: FormData) {
   try {
+    await rateLimitAction("updateAppointment", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     const rawData = Object.fromEntries(formData);
@@ -150,13 +152,13 @@ export async function updateAppointment(id: string, formData: FormData) {
       data: validatedData,
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "appointment",
       entityId: id,
-    });
+    }));
 
     revalidatePath(`/dashboard/citas/${id}`);
     revalidatePath("/dashboard/citas");
@@ -175,6 +177,7 @@ export async function updateAppointment(id: string, formData: FormData) {
 
 export async function deleteAppointment(id: string) {
   try {
+    await rateLimitAction("deleteAppointment", RATE_LIMITS.mutation);
     const session = await requireDoctor();
 
     await prisma.appointment.update({
@@ -182,13 +185,13 @@ export async function deleteAppointment(id: string) {
       data: { status: "cancelled" },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "appointment",
       entityId: id,
-    });
+    }));
 
     revalidatePath("/dashboard/citas");
     revalidateTag(CACHE_TAGS.appointments, "default");

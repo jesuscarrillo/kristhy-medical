@@ -1,6 +1,7 @@
 "use server";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
@@ -77,14 +78,14 @@ export async function createUltrasound(formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "ultrasound",
       entityId: ultrasound.id,
       details: `Ecografía ${validatedData.type} - Paciente: ${patient.firstName} ${patient.lastName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/ecografias`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -153,14 +154,14 @@ export async function getUltrasound(id: string) {
     throw new Error("Ecografía no encontrada");
   }
 
-  await logAudit({
+  after(() => logAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "ultrasound",
     entityId: id,
     details: `Ecografía ${ultrasound.type} - Paciente: ${ultrasound.patient.firstName} ${ultrasound.patient.lastName}`,
-  });
+  }));
 
   return ultrasound;
 }
@@ -223,14 +224,14 @@ export async function updateUltrasound(id: string, formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "ultrasound",
       entityId: id,
       details: `Paciente: ${existing.patient.firstName} ${existing.patient.lastName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias`);
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias/${id}`);
@@ -261,14 +262,14 @@ export async function deleteUltrasound(id: string) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "ultrasound",
       entityId: id,
       details: `Paciente: ${ultrasound.patient.firstName} ${ultrasound.patient.lastName}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias`);
 
@@ -360,14 +361,14 @@ export async function uploadUltrasoundImage(formData: FormData) {
       },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "ultrasound_image",
       entityId: image.id,
       details: `Ecografía: ${ultrasoundId} - Archivo: ${file.name}`,
-    });
+    }));
 
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias/${ultrasoundId}`);
 
@@ -402,14 +403,14 @@ export async function deleteUltrasoundImage(id: string) {
       where: { id },
     });
 
-    await logAudit({
+    after(() => logAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "ultrasound_image",
       entityId: id,
       details: `Archivo: ${image.fileName}`,
-    });
+    }));
 
     revalidatePath(
       `/dashboard/pacientes/${image.ultrasound.patientId}/ecografias/${image.ultrasoundId}`
