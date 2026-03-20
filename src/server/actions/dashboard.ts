@@ -1,6 +1,6 @@
 "use server";
 
-import { unstable_cache } from "next/cache";
+import { cacheTag, cacheLife } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { safeDecrypt } from "@/lib/utils/encryption";
@@ -89,11 +89,12 @@ async function fetchDashboardStats() {
 }
 
 // Caché de 30 segundos para el dashboard
-const getCachedDashboardStats = unstable_cache(
-  fetchDashboardStats,
-  [CACHE_TAGS.dashboard],
-  { revalidate: 30, tags: [CACHE_TAGS.dashboard, CACHE_TAGS.patients, CACHE_TAGS.appointments] }
-);
+async function getCachedDashboardStats() {
+  "use cache";
+  cacheTag(CACHE_TAGS.dashboard, CACHE_TAGS.patients, CACHE_TAGS.appointments);
+  cacheLife({ revalidate: 30 });
+  return fetchDashboardStats();
+}
 
 export async function getDashboardStats() {
   await requireDoctor();
