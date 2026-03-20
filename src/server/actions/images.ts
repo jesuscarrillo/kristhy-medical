@@ -184,7 +184,7 @@ export async function getMedicalImages(
   };
 }
 
-export async function getMedicalImage(id: string) {
+async function getMedicalImage(id: string) {
   const session = await requireDoctor();
 
   const image = await prisma.medicalImage.findUnique({
