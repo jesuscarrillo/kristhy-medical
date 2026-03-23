@@ -216,6 +216,14 @@ enum DocumentType {
 - **Bundle:** ~5KB (react-google-recaptcha-v3 + v2), carga async/defer
 - **Documentación:** Ver `docs/SECURITY.md` para configuración detallada
 
+### Supply Chain Protection (ignore-scripts)
+- **`.npmrc`** en raíz del proyecto con `ignore-scripts=true`
+- Bloquea ejecución de lifecycle hooks (`preinstall`, `postinstall`, etc.) al instalar dependencias
+- Previene ataques de supply chain via paquetes maliciosos
+- Solo ~2% de paquetes npm usan install scripts, impacto mínimo
+- **Paquetes que requieren rebuild manual:** `prisma`, `sharp`, `bcrypt`, `node-sass`
+- Después de `pnpm install`, ejecutar: `pnpm rebuild prisma` o `pnpm prisma generate`
+
 ### Middleware (src/middleware.ts)
 - Protección de rutas `/dashboard/*` via cookie de sesión
 - Redirect a `/login` si no hay sesión
