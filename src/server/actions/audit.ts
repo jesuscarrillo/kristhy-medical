@@ -1,6 +1,7 @@
 "use server";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { requireDoctor } from "@/server/middleware/auth";
@@ -58,6 +59,35 @@ export async function logAudit(params: LogAuditParams) {
   } catch (error) {
     console.error("Error logging audit:", error);
   }
+}
+
+/**
+ * Versión no-bloqueante de logAudit para usar dentro de server actions.
+ *
+ * Next.js 16 no permite llamar headers() dentro de after() porque el request
+ * context ya no existe al ejecutarse el callback. Esta función lee los headers
+ * ANTES de registrar el after(), captura ip/userAgent en el closure, y delega
+ * la escritura a DB sin bloquear la respuesta al cliente.
+ *
+ * Uso: await scheduleAudit({ ... })  en lugar de  after(() => logAudit({ ... }))
+ */
+export async function scheduleAudit(params: LogAuditParams) {
+  const headersList = await headers();
+  const ipAddress =
+    headersList.get("x-forwarded-for")?.split(",")[0] ||
+    headersList.get("x-real-ip") ||
+    "unknown";
+  const userAgent = headersList.get("user-agent") || "unknown";
+
+  after(async () => {
+    try {
+      await prisma.auditLog.create({
+        data: { ...params, ipAddress, userAgent },
+      });
+    } catch (error) {
+      console.error("Error logging audit:", error);
+    }
+  });
 }
 
 export interface AuditLogFilters {

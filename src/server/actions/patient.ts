@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { encrypt, safeDecrypt } from "@/lib/utils/encryption";
 import { patientSchema } from "@/lib/validators/patient";
 import { gynecologicalProfileSchema } from "@/lib/validators/gynecologicalProfile";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 import { CACHE_TAGS } from "@/lib/cache";
 import { z } from "zod";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
@@ -99,14 +99,14 @@ export async function createPatient(formData: FormData) {
       return created;
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "patient",
       entityId: patient.id,
       details: `Paciente: ${validatedPatientData.firstName} ${validatedPatientData.lastName}`,
-    }));
+    });
 
     revalidatePath("/dashboard/pacientes");
     revalidateTag(CACHE_TAGS.patients, "default");
@@ -182,14 +182,14 @@ export async function getPatient(id: string) {
     throw new Error("Patient not found");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "patient",
     entityId: id,
     details: `Paciente: ${patient.firstName} ${patient.lastName}`,
-  }));
+  });
 
   return decryptPatientFields(patient);
 }
@@ -255,13 +255,13 @@ export async function updatePatient(id: string, formData: FormData) {
       return updated;
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "patient",
       entityId: id,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${id}`);
     revalidateTag(CACHE_TAGS.patients, "default");
@@ -289,13 +289,13 @@ export async function deletePatient(id: string) {
       data: { isActive: false },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "patient",
       entityId: id,
-    }));
+    });
 
     revalidatePath("/dashboard/pacientes");
     revalidateTag(CACHE_TAGS.patients, "default");

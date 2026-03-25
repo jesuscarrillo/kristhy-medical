@@ -5,7 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { appointmentSchema } from "@/lib/validators/appointment";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 import { CACHE_TAGS } from "@/lib/cache";
 import { z } from "zod";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
@@ -24,14 +24,14 @@ export async function createAppointment(formData: FormData) {
       data: validatedData,
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "appointment",
       entityId: appointment.id,
       details: `Cita: ${validatedData.type}`,
-    }));
+    });
 
     revalidatePath("/dashboard/citas");
     revalidateTag(CACHE_TAGS.appointments, "default");
@@ -130,13 +130,13 @@ export async function getAppointment(id: string) {
     throw new Error("Cita no encontrada");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "appointment",
     entityId: id,
-  }));
+  });
 
   return appointment;
 }
@@ -156,13 +156,13 @@ export async function updateAppointment(id: string, formData: FormData) {
       data: validatedData,
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "appointment",
       entityId: id,
-    }));
+    });
 
     revalidatePath(`/dashboard/citas/${id}`);
     revalidatePath("/dashboard/citas");
@@ -191,13 +191,13 @@ export async function deleteAppointment(id: string) {
       data: { status: "cancelled" },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "appointment",
       entityId: id,
-    }));
+    });
 
     revalidatePath("/dashboard/citas");
     revalidateTag(CACHE_TAGS.appointments, "default");

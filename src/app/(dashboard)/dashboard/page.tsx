@@ -12,11 +12,8 @@ import {
   Plus,
   ArrowRight,
   TrendingUp,
-  Stethoscope,
-  Baby,
-  Scan,
-  ClipboardCheck
 } from "lucide-react";
+import { fmt, timeFormatter, dateWeekdayFormatter, dateDayMonthFormatter } from "@/lib/utils/formatters";
 
 export default function DashboardPage() {
   return (
@@ -95,8 +92,11 @@ async function DashboardContent() {
         />
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+      {/* Main Content Grid — content-visibility:auto en secciones below-fold */}
+      <div
+        className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 400px" }}
+      >
         {/* Upcoming Appointments */}
         <Card className="xl:col-span-2 shadow-sm border-0 ring-1 ring-slate-200/50 dark:ring-slate-800">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -120,7 +120,8 @@ async function DashboardContent() {
             ) : (
               <div className="space-y-3 pt-4">
                 {stats.upcomingAppointments.map((appointment) => {
-                  const typeColor = APPOINTMENT_TYPE_COLORS[appointment.type] || APPOINTMENT_TYPE_COLORS.default;
+                  const typeColor = APPOINTMENT_TYPE_COLORS[appointment.type as keyof typeof APPOINTMENT_TYPE_COLORS]
+                    ?? APPOINTMENT_TYPE_COLORS.default;
                   return (
                     <div
                       key={appointment.id}
@@ -129,10 +130,7 @@ async function DashboardContent() {
                       <div className="flex items-center gap-4">
                         <div className={`flex h-12 w-14 flex-col items-center justify-center rounded-lg ${typeColor.timeBg} transition-colors`}>
                           <span className={`text-sm font-bold leading-none ${typeColor.timeText}`}>
-                            {new Date(appointment.date).toLocaleTimeString("es-VE", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }).split(' ')[0]}
+                            {fmt(timeFormatter, appointment.date)}
                           </span>
                         </div>
                         <div>
@@ -141,10 +139,10 @@ async function DashboardContent() {
                           </Link>
                           <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${typeColor.badge}`}>
-                              {formatAppointmentType(appointment.type)}
+                              {APPOINTMENT_TYPE_LABELS.get(appointment.type) ?? appointment.type}
                             </Badge>
                             <span className="text-xs text-slate-400">
-                              {new Date(appointment.date).toLocaleDateString("es-VE", { weekday: 'short', day: 'numeric', month: 'short' })}
+                              {fmt(dateWeekdayFormatter, appointment.date)}
                             </span>
                           </div>
                         </div>
@@ -196,7 +194,7 @@ async function DashboardContent() {
                       </p>
                     </div>
                     <p className="text-xs text-slate-400">
-                      {new Date(patient.createdAt).toLocaleDateString("es-VE", { day: 'numeric', month: 'short' })}
+                      {fmt(dateDayMonthFormatter, patient.createdAt)}
                     </p>
                   </Link>
                 ))}
@@ -249,44 +247,45 @@ function DashboardSkeleton() {
   );
 }
 
-const STATS_BORDER_COLORS: Record<string, string> = {
-  blue: "border-t-blue-500",
+// as const satisfies en todos los lookup objects del dashboard
+const STATS_BORDER_COLORS = {
+  blue:   "border-t-blue-500",
   emerald: "border-t-emerald-500",
-  amber: "border-t-amber-500",
-  rose: "border-t-rose-500",
-};
+  amber:  "border-t-amber-500",
+  rose:   "border-t-rose-500",
+} as const satisfies Record<string, string>;
 
-const STATS_ICON_STYLES: Record<string, string> = {
-  blue: "bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 dark:from-blue-900/30 dark:to-blue-800/20 dark:text-blue-400",
+const STATS_ICON_STYLES = {
+  blue:   "bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 dark:from-blue-900/30 dark:to-blue-800/20 dark:text-blue-400",
   emerald: "bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600 dark:from-emerald-900/30 dark:to-emerald-800/20 dark:text-emerald-400",
-  amber: "bg-gradient-to-br from-amber-50 to-amber-100 text-amber-600 dark:from-amber-900/30 dark:to-amber-800/20 dark:text-amber-400",
-  rose: "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-600 dark:from-rose-900/30 dark:to-rose-800/20 dark:text-rose-400",
-};
+  amber:  "bg-gradient-to-br from-amber-50 to-amber-100 text-amber-600 dark:from-amber-900/30 dark:to-amber-800/20 dark:text-amber-400",
+  rose:   "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-600 dark:from-rose-900/30 dark:to-rose-800/20 dark:text-rose-400",
+} as const satisfies Record<string, string>;
 
-const STATS_TREND_COLORS: Record<string, string> = {
-  blue: "text-blue-600 dark:text-blue-400",
+const STATS_TREND_COLORS = {
+  blue:   "text-blue-600 dark:text-blue-400",
   emerald: "text-emerald-600 dark:text-emerald-400",
-  amber: "text-amber-600 dark:text-amber-400",
-  rose: "text-rose-600 dark:text-rose-400",
-};
+  amber:  "text-amber-600 dark:text-amber-400",
+  rose:   "text-rose-600 dark:text-rose-400",
+} as const satisfies Record<string, string>;
 
 function StatsCard({ title, value, icon: Icon, color, trend, trendUp }: {
   title: string;
   value: number;
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
+  color: keyof typeof STATS_BORDER_COLORS;
   trend?: string;
   trendUp?: boolean;
 }) {
   return (
-    <Card className={`border-0 border-t-4 ${STATS_BORDER_COLORS[color] || STATS_BORDER_COLORS.blue} ring-1 ring-slate-200/50 dark:ring-slate-800 shadow-sm transition-all hover:shadow-md hover:-translate-y-1`}>
+    <Card className={`border-0 border-t-4 ${STATS_BORDER_COLORS[color]} ring-1 ring-slate-200/50 dark:ring-slate-800 shadow-sm transition-all hover:shadow-md hover:-translate-y-1`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
             <p className="mt-2 text-4xl font-bold tracking-tight text-slate-800 dark:text-slate-100">{value}</p>
           </div>
-          <div className={`rounded-xl p-3 ${STATS_ICON_STYLES[color] || STATS_ICON_STYLES.blue}`}>
+          <div className={`rounded-xl p-3 ${STATS_ICON_STYLES[color]}`}>
             <Icon className="h-6 w-6" />
           </div>
         </div>
@@ -295,9 +294,9 @@ function StatsCard({ title, value, icon: Icon, color, trend, trendUp }: {
             {trendUp ? (
               <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
             ) : (
-              <span className={`inline-block h-1.5 w-1.5 rounded-full ${STATS_TREND_COLORS[color]?.includes('amber') ? 'bg-amber-500' : 'bg-slate-400'}`} />
+              <span className={`inline-block h-1.5 w-1.5 rounded-full ${STATS_TREND_COLORS[color]?.includes("amber") ? "bg-amber-500" : "bg-slate-400"}`} />
             )}
-            <span className={`text-xs font-medium ${trendUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>{trend}</span>
+            <span className={`text-xs font-medium ${trendUp ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 dark:text-slate-400"}`}>{trend}</span>
           </div>
         )}
       </CardContent>
@@ -305,50 +304,43 @@ function StatsCard({ title, value, icon: Icon, color, trend, trendUp }: {
   );
 }
 
-const APPOINTMENT_TYPE_COLORS: Record<string, { border: string; timeBg: string; timeText: string; badge: string }> = {
+// Map para lookup O(1) de colores de tipo — equivalente a hash table en C
+const APPOINTMENT_TYPE_LABELS = new Map([
+  ["prenatal",   "Control Prenatal"],
+  ["gynecology", "Ginecología"],
+  ["ultrasound", "Ecografía"],
+  ["followup",   "Consulta Control"],
+]);
+
+const APPOINTMENT_TYPE_COLORS = {
   prenatal: {
-    border: "border-l-4 border-l-pink-400",
-    timeBg: "bg-pink-50 dark:bg-pink-900/20",
+    border:  "border-l-4 border-l-pink-400",
+    timeBg:  "bg-pink-50 dark:bg-pink-900/20",
     timeText: "text-pink-600 dark:text-pink-400",
-    badge: "border-pink-200 text-pink-700 bg-pink-50 dark:border-pink-800 dark:text-pink-400 dark:bg-pink-900/20",
+    badge:   "border-pink-200 text-pink-700 bg-pink-50 dark:border-pink-800 dark:text-pink-400 dark:bg-pink-900/20",
   },
   gynecology: {
-    border: "border-l-4 border-l-purple-400",
-    timeBg: "bg-purple-50 dark:bg-purple-900/20",
+    border:  "border-l-4 border-l-purple-400",
+    timeBg:  "bg-purple-50 dark:bg-purple-900/20",
     timeText: "text-purple-600 dark:text-purple-400",
-    badge: "border-purple-200 text-purple-700 bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:bg-purple-900/20",
+    badge:   "border-purple-200 text-purple-700 bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:bg-purple-900/20",
   },
   ultrasound: {
-    border: "border-l-4 border-l-blue-400",
-    timeBg: "bg-blue-50 dark:bg-blue-900/20",
+    border:  "border-l-4 border-l-blue-400",
+    timeBg:  "bg-blue-50 dark:bg-blue-900/20",
     timeText: "text-blue-600 dark:text-blue-400",
-    badge: "border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:bg-blue-900/20",
+    badge:   "border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:bg-blue-900/20",
   },
   followup: {
-    border: "border-l-4 border-l-emerald-400",
-    timeBg: "bg-emerald-50 dark:bg-emerald-900/20",
+    border:  "border-l-4 border-l-emerald-400",
+    timeBg:  "bg-emerald-50 dark:bg-emerald-900/20",
     timeText: "text-emerald-600 dark:text-emerald-400",
-    badge: "border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400 dark:bg-emerald-900/20",
+    badge:   "border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400 dark:bg-emerald-900/20",
   },
   default: {
-    border: "border-l-4 border-l-slate-300",
-    timeBg: "bg-slate-50 dark:bg-slate-800",
+    border:  "border-l-4 border-l-slate-300",
+    timeBg:  "bg-slate-50 dark:bg-slate-800",
     timeText: "text-slate-600 dark:text-slate-400",
-    badge: "border-slate-200 text-slate-700 bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:bg-slate-800",
+    badge:   "border-slate-200 text-slate-700 bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:bg-slate-800",
   },
-};
-
-function formatAppointmentType(type: string) {
-  switch (type) {
-    case "prenatal":
-      return "Control Prenatal";
-    case "gynecology":
-      return "Ginecología";
-    case "ultrasound":
-      return "Ecografía";
-    case "followup":
-      return "Consulta Control";
-    default:
-      return type;
-  }
-}
+} as const satisfies Record<string, { border: string; timeBg: string; timeText: string; badge: string }>;

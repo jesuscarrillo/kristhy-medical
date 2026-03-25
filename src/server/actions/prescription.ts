@@ -8,7 +8,7 @@ import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { prescriptionSchema } from "@/lib/validators/prescription";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 
 export async function createPrescription(formData: FormData) {
   try {
@@ -24,13 +24,13 @@ export async function createPrescription(formData: FormData) {
       data: validatedData,
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "prescription",
       entityId: prescription.id,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/prescripciones`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -79,14 +79,14 @@ export async function getPrescription(id: string) {
     throw new Error("Prescription not found");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "prescription",
     entityId: id,
     details: `Paciente: ${prescription.patient.firstName} ${prescription.patient.lastName}`,
-  }));
+  });
 
   return prescription;
 }
@@ -103,13 +103,13 @@ export async function updatePrescription(id: string, formData: FormData) {
       data: validatedData,
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "prescription",
       entityId: id,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
     revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones/${id}`);
@@ -132,13 +132,13 @@ export async function deletePrescription(id: string) {
       data: { isActive: false },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "prescription",
       entityId: id,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${prescription.patientId}/prescripciones`);
     return { success: true };

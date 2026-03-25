@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { AuditFilters } from "./AuditFilters";
 import type { AuditLogFilters, AuditEntity, AuditAction } from "@/server/actions/audit";
+import { fmt, dateTimeFormatter } from "@/lib/utils/formatters";
 
 interface PageProps {
   searchParams: Promise<{
@@ -32,30 +33,32 @@ interface PageProps {
   }>;
 }
 
-const actionLabels: Record<string, { label: string; badge: string }> = {
-  view: { label: "Ver", badge: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800" },
-  create: { label: "Crear", badge: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800" },
-  update: { label: "Actualizar", badge: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800" },
-  delete: { label: "Eliminar", badge: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800" },
-  export: { label: "Exportar", badge: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800" },
-  login: { label: "Iniciar sesión", badge: "bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-400 dark:border-cyan-800" },
-  logout: { label: "Cerrar sesión", badge: "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800" },
-};
+// as const satisfies: V8 optimiza hidden class + TS infiere tipos literales exactos
+// satisfies valida la forma sin ampliar los tipos a Record<string, unknown>
+const actionLabels = {
+  view:   { label: "Ver",            badge: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800" },
+  create: { label: "Crear",          badge: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800" },
+  update: { label: "Actualizar",     badge: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800" },
+  delete: { label: "Eliminar",       badge: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800" },
+  export: { label: "Exportar",       badge: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800" },
+  login:  { label: "Iniciar sesión", badge: "bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-400 dark:border-cyan-800" },
+  logout: { label: "Cerrar sesión",  badge: "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800" },
+} as const satisfies Record<string, { label: string; badge: string }>;
 
-const entityLabels: Record<string, string> = {
-  patient: "Paciente",
+const entityLabels = {
+  patient:       "Paciente",
   medical_record: "Historial Médico",
-  appointment: "Cita",
-  prescription: "Prescripción",
+  appointment:   "Cita",
+  prescription:  "Prescripción",
   medical_image: "Imagen Médica",
-  report: "Reporte",
-};
+  report:        "Reporte",
+} as const satisfies Record<string, string>;
 
 const STAT_CARDS = [
-  { key: "total", label: "Total Registros", icon: FileText, color: "border-t-primary" },
-  { key: "today", label: "Hoy", icon: Calendar, color: "border-t-blue-500" },
-  { key: "week", label: "Esta Semana", icon: Activity, color: "border-t-emerald-500" },
-  { key: "topAction", label: "Más Común", icon: Eye, color: "border-t-amber-500" },
+  { key: "total",     label: "Total Registros", icon: FileText, color: "border-t-primary" },
+  { key: "today",     label: "Hoy",             icon: Calendar, color: "border-t-blue-500" },
+  { key: "week",      label: "Esta Semana",     icon: Activity, color: "border-t-emerald-500" },
+  { key: "topAction", label: "Más Común",       icon: Eye,      color: "border-t-amber-500" },
 ] as const;
 
 export default async function AuditPage({ searchParams }: PageProps) {
@@ -121,11 +124,12 @@ async function AuditContent({
   const statValues = {
     total: stats.totalLogs,
     today: stats.todayLogs,
-    week: stats.weekLogs,
+    week:  stats.weekLogs,
     topAction: stats.byAction[0]
-      ? actionLabels[stats.byAction[0].action]?.label || stats.byAction[0].action
+      ? actionLabels[stats.byAction[0].action as keyof typeof actionLabels]?.label
+        ?? stats.byAction[0].action
       : "—",
-  };
+  } as const;
 
   const buildUrl = (newPage: number) => {
     const p = new URLSearchParams();
@@ -162,8 +166,11 @@ async function AuditContent({
         })}
       </div>
 
-      {/* Logs Table */}
-      <Card className="shadow-sm border-0 ring-1 ring-slate-200/50 dark:ring-slate-800 overflow-hidden">
+      {/* Logs Table — content-visibility:auto omite layout/paint de filas fuera del viewport */}
+      <Card
+        className="shadow-sm border-0 ring-1 ring-slate-200/50 dark:ring-slate-800 overflow-hidden"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 600px" }}
+      >
         <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary" />
@@ -190,36 +197,37 @@ async function AuditContent({
                   </TableCell>
                 </TableRow>
               ) : (
-                logsData.logs.map((log) => (
-                  <TableRow key={log.id} className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-900/30">
-                    <TableCell className="pl-6 whitespace-nowrap font-mono text-xs tabular-nums text-slate-600 dark:text-slate-400">
-                      {new Date(log.createdAt).toLocaleString("es-VE", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
-                    </TableCell>
-                    <TableCell className="max-w-[150px] truncate text-sm text-slate-600 dark:text-slate-400">
-                      {log.userEmail}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`text-[10px] px-1.5 py-0 h-5 ${actionLabels[log.action]?.badge || ""}`}
-                      >
-                        {actionLabels[log.action]?.label || log.action}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-slate-600 dark:text-slate-400">
-                      {entityLabels[log.entity] || log.entity}
-                    </TableCell>
-                    <TableCell className="max-w-[200px] truncate text-sm text-slate-500 dark:text-slate-400">
-                      {log.details || "—"}
-                    </TableCell>
-                    <TableCell className="pr-6 text-xs text-slate-400 dark:text-slate-500 font-mono">
-                      {log.ipAddress || "—"}
-                    </TableCell>
-                  </TableRow>
-                ))
+                logsData.logs.map((log) => {
+                  const action = actionLabels[log.action as keyof typeof actionLabels];
+                  const entity = entityLabels[log.entity as keyof typeof entityLabels] ?? log.entity;
+                  return (
+                    <TableRow key={log.id} className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-900/30">
+                      <TableCell className="pl-6 whitespace-nowrap font-mono text-xs tabular-nums text-slate-600 dark:text-slate-400">
+                        {fmt(dateTimeFormatter, log.createdAt)}
+                      </TableCell>
+                      <TableCell className="max-w-[150px] truncate text-sm text-slate-600 dark:text-slate-400">
+                        {log.userEmail}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] px-1.5 py-0 h-5 ${action?.badge ?? ""}`}
+                        >
+                          {action?.label ?? log.action}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-600 dark:text-slate-400">
+                        {entity}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate text-sm text-slate-500 dark:text-slate-400">
+                        {log.details ?? "—"}
+                      </TableCell>
+                      <TableCell className="pr-6 text-xs text-slate-400 dark:text-slate-500 font-mono">
+                        {log.ipAddress ?? "—"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

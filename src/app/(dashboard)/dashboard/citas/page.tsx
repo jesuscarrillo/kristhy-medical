@@ -9,10 +9,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  Clock,
   ArrowRight,
   CalendarDays,
 } from "lucide-react";
+import { fmt, timeFormatter, dateDayMonthFormatter } from "@/lib/utils/formatters";
 
 type AppointmentsPageProps = {
   searchParams?: Promise<{
@@ -22,37 +22,56 @@ type AppointmentsPageProps = {
 };
 
 const STATUS_FILTERS = [
-  { key: "all", label: "Todas" },
+  { key: "all",       label: "Todas" },
   { key: "scheduled", label: "Programadas" },
   { key: "completed", label: "Completadas" },
   { key: "cancelled", label: "Canceladas" },
 ] as const;
 
-const TYPE_STYLES: Record<string, { border: string; badge: string }> = {
+// as const satisfies: V8 hidden class optimizado + TS tipos literales exactos
+const TYPE_STYLES = {
   prenatal: {
     border: "border-l-pink-400",
-    badge: "bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-800",
+    badge:  "bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-800",
   },
   gynecology: {
     border: "border-l-purple-400",
-    badge: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+    badge:  "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
   },
   ultrasound: {
     border: "border-l-blue-400",
-    badge: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+    badge:  "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
   },
   followup: {
     border: "border-l-emerald-400",
-    badge: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
+    badge:  "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
   },
-};
+} as const satisfies Record<string, { border: string; badge: string }>;
 
-const STATUS_BADGES: Record<string, string> = {
+const STATUS_BADGES = {
   scheduled: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
   completed: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
   cancelled: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
-  noshow: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
-};
+  noshow:    "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
+} as const satisfies Record<string, string>;
+
+// Map para lookups O(1) — equivalente a hash table en C
+// Más eficiente que switch en hot paths con múltiples valores
+const APPOINTMENT_TYPE_LABELS = new Map([
+  ["prenatal",   "Prenatal"],
+  ["gynecology", "Ginecología"],
+  ["ultrasound", "Ecografía"],
+  ["followup",   "Control"],
+]);
+
+const APPOINTMENT_STATUS_LABELS = new Map([
+  ["scheduled", "Programada"],
+  ["completed", "Completada"],
+  ["cancelled", "Cancelada"],
+  ["noshow",    "No asistió"],
+]);
+
+const TYPE_DEFAULT = { border: "border-l-slate-300", badge: "" } as const;
 
 export default async function AppointmentsPage({ searchParams }: AppointmentsPageProps) {
   const resolvedParams = await searchParams;
@@ -157,14 +176,14 @@ async function AppointmentsContent({
               </div>
               <p className="text-base font-medium text-slate-600 dark:text-slate-300">No hay citas</p>
               <p className="text-sm text-slate-400 mt-1">
-                No hay citas {status ? `con estado "${formatAppointmentStatus(status)}"` : "programadas"}.
+                No hay citas {status ? `con estado "${APPOINTMENT_STATUS_LABELS.get(status) ?? status}"` : "programadas"}.
               </p>
             </CardContent>
           </Card>
         ) : (
           appointments.map((appointment) => {
-            const typeStyle = TYPE_STYLES[appointment.type] || { border: "border-l-slate-300", badge: "" };
-            const statusBadge = STATUS_BADGES[appointment.status] || "";
+            const typeStyle = TYPE_STYLES[appointment.type as keyof typeof TYPE_STYLES] ?? TYPE_DEFAULT;
+            const statusBadge = STATUS_BADGES[appointment.status as keyof typeof STATUS_BADGES] ?? "";
             return (
               <Link
                 key={appointment.id}
@@ -177,13 +196,10 @@ async function AppointmentsContent({
                       {/* Time Block */}
                       <div className="flex h-14 w-16 flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 shrink-0">
                         <span className="text-lg font-bold text-slate-800 dark:text-slate-200 leading-none tabular-nums">
-                          {new Date(appointment.date).toLocaleTimeString("es-VE", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }).split(' ')[0]}
+                          {fmt(timeFormatter, appointment.date)}
                         </span>
                         <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
-                          {new Date(appointment.date).toLocaleDateString("es-VE", { day: 'numeric', month: 'short' })}
+                          {fmt(dateDayMonthFormatter, appointment.date)}
                         </span>
                       </div>
 
@@ -194,10 +210,10 @@ async function AppointmentsContent({
                         </p>
                         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                           <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${typeStyle.badge}`}>
-                            {formatAppointmentType(appointment.type)}
+                            {APPOINTMENT_TYPE_LABELS.get(appointment.type) ?? appointment.type}
                           </Badge>
                           <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusBadge}`}>
-                            {formatAppointmentStatus(appointment.status)}
+                            {APPOINTMENT_STATUS_LABELS.get(appointment.status) ?? appointment.status}
                           </Badge>
                         </div>
                       </div>
@@ -271,24 +287,4 @@ function AppointmentsSkeleton() {
       ))}
     </div>
   );
-}
-
-function formatAppointmentType(type: string) {
-  switch (type) {
-    case "prenatal": return "Prenatal";
-    case "gynecology": return "Ginecología";
-    case "ultrasound": return "Ecografía";
-    case "followup": return "Control";
-    default: return type;
-  }
-}
-
-function formatAppointmentStatus(status: string) {
-  switch (status) {
-    case "scheduled": return "Programada";
-    case "completed": return "Completada";
-    case "cancelled": return "Cancelada";
-    case "noshow": return "No asistió";
-    default: return status;
-  }
 }

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import ReactDOM from "react-dom";
+import dynamic from "next/dynamic";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Hero } from "@/components/sections/Hero";
-import { Services } from "@/components/sections/Services";
-import { About } from "@/components/sections/About";
-import { Testimonials } from "@/components/sections/Testimonials";
-import { Contact } from "@/components/sections/Contact";
+
+const Services = dynamic(() => import("@/components/sections/Services").then((m) => ({ default: m.Services })));
+const About = dynamic(() => import("@/components/sections/About").then((m) => ({ default: m.About })));
+const Testimonials = dynamic(() => import("@/components/sections/Testimonials").then((m) => ({ default: m.Testimonials })));
+const Contact = dynamic(() => import("@/components/sections/Contact").then((m) => ({ default: m.Contact })));
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

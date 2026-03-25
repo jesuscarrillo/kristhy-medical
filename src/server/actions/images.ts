@@ -6,7 +6,7 @@ import { requireDoctor } from "@/server/middleware/auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
 import { nanoid } from "nanoid";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 import { medicalImageSchema } from "@/lib/validators/medicalImage";
 import type { DocumentType } from "@prisma/client";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
@@ -111,14 +111,14 @@ export async function uploadMedicalImage(formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "medical_image",
       entityId: image.id,
       details: `Archivo: ${file.name}, Tipo: ${fileType}${validatedData.documentType ? `, Documento: ${validatedData.documentType}` : ""}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${patientId}/imagenes`);
     revalidatePath(`/dashboard/pacientes/${patientId}`);
@@ -204,14 +204,14 @@ async function getMedicalImage(id: string) {
     throw new Error("Imagen no encontrada");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "medical_image",
     entityId: id,
     details: `Archivo: ${image.fileName}`,
-  }));
+  });
 
   return image;
 }
@@ -259,14 +259,14 @@ export async function updateMedicalImage(id: string, formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "medical_image",
       entityId: id,
       details: `Archivo: ${existing.fileName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
 
@@ -297,14 +297,14 @@ export async function deleteMedicalImage(id: string) {
       where: { id },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "medical_image",
       entityId: id,
       details: `Archivo: ${image.fileName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${image.patientId}/imagenes`);
 

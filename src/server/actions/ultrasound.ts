@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { supabaseAdmin } from "@/lib/supabase";
 import { nanoid } from "nanoid";
 import { ultrasoundSchema, validUltrasoundTypes } from "@/lib/validators/ultrasound";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 import type { PregnancyStatus, UltrasoundType } from "@prisma/client";
 import { z } from "zod";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
@@ -80,14 +80,14 @@ export async function createUltrasound(formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "ultrasound",
       entityId: ultrasound.id,
       details: `Ecografía ${validatedData.type} - Paciente: ${patient.firstName} ${patient.lastName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/ecografias`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -156,14 +156,14 @@ export async function getUltrasound(id: string) {
     throw new Error("Ecografía no encontrada");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "ultrasound",
     entityId: id,
     details: `Ecografía ${ultrasound.type} - Paciente: ${ultrasound.patient.firstName} ${ultrasound.patient.lastName}`,
-  }));
+  });
 
   return ultrasound;
 }
@@ -226,14 +226,14 @@ export async function updateUltrasound(id: string, formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "ultrasound",
       entityId: id,
       details: `Paciente: ${existing.patient.firstName} ${existing.patient.lastName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias`);
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias/${id}`);
@@ -264,14 +264,14 @@ export async function deleteUltrasound(id: string) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "ultrasound",
       entityId: id,
       details: `Paciente: ${ultrasound.patient.firstName} ${ultrasound.patient.lastName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias`);
 
@@ -365,14 +365,14 @@ export async function uploadUltrasoundImage(formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "ultrasound_image",
       entityId: image.id,
       details: `Ecografía: ${ultrasoundId} - Archivo: ${file.name}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${ultrasound.patientId}/ecografias/${ultrasoundId}`);
 
@@ -407,14 +407,14 @@ export async function deleteUltrasoundImage(id: string) {
       where: { id },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "ultrasound_image",
       entityId: id,
       details: `Archivo: ${image.fileName}`,
-    }));
+    });
 
     revalidatePath(
       `/dashboard/pacientes/${image.ultrasound.patientId}/ecografias/${image.ultrasoundId}`

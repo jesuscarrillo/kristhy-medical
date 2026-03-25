@@ -7,7 +7,7 @@ import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt, safeDecrypt } from "@/lib/utils/encryption";
 import { medicalRecordSchema } from "@/lib/validators/medicalRecord";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 import { z } from "zod";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
 
@@ -51,14 +51,14 @@ export async function createMedicalRecord(formData: FormData) {
       data: encryptMedicalRecordFields(validatedData),
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "medical_record",
       entityId: record.id,
       details: `Tipo: ${validatedData.consultationType}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/historial`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -127,14 +127,14 @@ export async function getMedicalRecord(id: string) {
     throw new Error("Medical record not found");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "medical_record",
     entityId: id,
     details: `Paciente: ${record.patient.firstName} ${record.patient.lastName}`,
-  }));
+  });
 
   return decryptMedicalRecordFields(record);
 }
@@ -154,13 +154,13 @@ export async function updateMedicalRecord(id: string, formData: FormData) {
       data: encryptMedicalRecordFields(validatedData),
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "medical_record",
       entityId: id,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
     revalidatePath(`/dashboard/pacientes/${record.patientId}/historial/${id}`);
@@ -186,13 +186,13 @@ export async function deleteMedicalRecord(id: string) {
       where: { id },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "medical_record",
       entityId: id,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${record.patientId}/historial`);
     revalidatePath(`/dashboard/pacientes/${record.patientId}`);

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireDoctor } from "@/server/middleware/auth";
 import { prisma } from "@/lib/prisma";
 import { certificateSchema } from "@/lib/validators/certificate";
-import { logAudit } from "./audit";
+import { scheduleAudit } from "./audit";
 import type { CertificateType } from "@prisma/client";
 import { z } from "zod";
 import { rateLimitAction, RATE_LIMITS } from "@/lib/rate-limit";
@@ -55,14 +55,14 @@ export async function createCertificate(formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "create",
       entity: "certificate",
       entityId: certificate.id,
       details: `Certificado ${validatedData.type} - Paciente: ${patient.firstName} ${patient.lastName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}/certificados`);
     revalidatePath(`/dashboard/pacientes/${validatedData.patientId}`);
@@ -125,14 +125,14 @@ export async function getCertificate(id: string) {
     throw new Error("Certificado no encontrado");
   }
 
-  after(() => logAudit({
+  await scheduleAudit({
     userId: session.user.id,
     userEmail: session.user.email,
     action: "view",
     entity: "certificate",
     entityId: id,
     details: `Certificado ${certificate.type} - Paciente: ${certificate.patient.firstName} ${certificate.patient.lastName}`,
-  }));
+  });
 
   return certificate;
 }
@@ -184,14 +184,14 @@ export async function updateCertificate(id: string, formData: FormData) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "update",
       entity: "certificate",
       entityId: id,
       details: `Paciente: ${existing.patient.firstName} ${existing.patient.lastName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
     revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados/${id}`);
@@ -225,14 +225,14 @@ export async function deleteCertificate(id: string) {
       },
     });
 
-    after(() => logAudit({
+    await scheduleAudit({
       userId: session.user.id,
       userEmail: session.user.email,
       action: "delete",
       entity: "certificate",
       entityId: id,
       details: `Paciente: ${certificate.patient.firstName} ${certificate.patient.lastName}`,
-    }));
+    });
 
     revalidatePath(`/dashboard/pacientes/${certificate.patientId}/certificados`);
 
