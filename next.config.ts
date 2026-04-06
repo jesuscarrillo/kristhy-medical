@@ -31,6 +31,16 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
   },
+  // Aislamiento de contexto entre ventanas/tabs — previene ataques Spectre y side-channel
+  {
+    key: "Cross-Origin-Opener-Policy",
+    value: "same-origin",
+  },
+  // Impide que otros sitios embeben tus recursos (imágenes, scripts, etc.)
+  {
+    key: "Cross-Origin-Resource-Policy",
+    value: "same-origin",
+  },
   {
     key: "Content-Security-Policy",
     value: [
